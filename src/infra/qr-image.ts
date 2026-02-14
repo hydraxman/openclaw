@@ -76,7 +76,7 @@ function encodePngRgba(buffer: Buffer, width: number, height: number) {
   const raw = Buffer.alloc((stride + 1) * height);
   for (let row = 0; row < height; row += 1) {
     const rawOffset = row * (stride + 1);
-    raw[rawOffset] = 0; // filter: none
+    raw[rawOffset] = 0;
     buffer.copy(raw, rawOffset + 1, row * stride, row * stride + stride);
   }
   const compressed = deflateSync(raw);
@@ -85,11 +85,11 @@ function encodePngRgba(buffer: Buffer, width: number, height: number) {
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(width, 0);
   ihdr.writeUInt32BE(height, 4);
-  ihdr[8] = 8; // bit depth
-  ihdr[9] = 6; // color type RGBA
-  ihdr[10] = 0; // compression
-  ihdr[11] = 0; // filter
-  ihdr[12] = 0; // interlace
+  ihdr[8] = 8;
+  ihdr[9] = 6;
+  ihdr[10] = 0;
+  ihdr[11] = 0;
+  ihdr[12] = 0;
 
   return Buffer.concat([
     signature,

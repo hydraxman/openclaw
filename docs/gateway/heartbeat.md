@@ -87,7 +87,7 @@ and logged; a message that is only `HEARTBEAT_OK` is dropped.
         every: "30m", // default: 30m (0m disables)
         model: "anthropic/claude-opus-4-6",
         includeReasoning: false, // default: false (deliver separate Reasoning: message when available)
-        target: "last", // last | none | <channel id> (core or plugin, e.g. "bluebubbles")
+        target: "last", // last | none | <channel id> (core or plugin, e.g. "matrix")
         to: "+15551234567", // optional channel-specific override
         accountId: "ops-bot", // optional multi-account channel id
         prompt: "Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.",
@@ -129,8 +129,8 @@ Example: two agents, only the second agent runs heartbeats.
         id: "ops",
         heartbeat: {
           every: "1h",
-          target: "whatsapp",
-          to: "+15551234567",
+          target: "telegram",
+          to: "12345678",
           prompt: "Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.",
         },
       },
@@ -203,9 +203,9 @@ Use `accountId` to target a specific account on multi-account channels like Tele
   - Session key formats: see [Sessions](/concepts/session) and [Groups](/channels/groups).
 - `target`:
   - `last` (default): deliver to the last used external channel.
-  - explicit channel: `whatsapp` / `telegram` / `discord` / `googlechat` / `slack` / `msteams` / `signal` / `imessage`.
+  - explicit channel: `telegram` / `discord` / `googlechat` / `slack` / `msteams` / `signal`.
   - `none`: run the heartbeat but **do not deliver** externally.
-- `to`: optional recipient override (channel-specific id, e.g. E.164 for WhatsApp or a Telegram chat id).
+- `to`: optional recipient override (channel-specific id, e.g. E.164 for Signal or a Telegram chat id).
 - `accountId`: optional account id for multi-account channels. When `target: "last"`, the account id applies to the resolved last channel if it supports accounts; otherwise it is ignored. If the account id does not match a configured account for the resolved channel, delivery is skipped.
 - `prompt`: overrides the default prompt body (not merged).
 - `ackMaxChars`: max chars allowed after `HEARTBEAT_OK` before delivery.
@@ -219,7 +219,7 @@ Use `accountId` to target a specific account on multi-account channels like Tele
 
 - Heartbeats run in the agent’s main session by default (`agent:<id>:<mainKey>`),
   or `global` when `session.scope = "global"`. Set `session` to override to a
-  specific channel session (Discord/WhatsApp/etc.).
+  specific channel session (Discord/Telegram/etc.).
 - `session` only affects the run context; delivery is controlled by `target` and `to`.
 - To deliver to a specific channel/recipient, set `target` + `to`. With
   `target: "last"`, delivery uses the last external channel for that session.
@@ -244,7 +244,7 @@ channels:
   telegram:
     heartbeat:
       showOk: true # Show OK acknowledgments on Telegram
-  whatsapp:
+  signal:
     accounts:
       work:
         heartbeat:

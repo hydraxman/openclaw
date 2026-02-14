@@ -47,7 +47,7 @@ Minimal config:
 
 Use the manifest below so scopes and events stay in sync.
 
-Multi-account support: use `channels.slack.accounts` with per-account tokens and optional `name`. See [`gateway/configuration`](/gateway/configuration#telegramaccounts--discordaccounts--slackaccounts--signalaccounts--imessageaccounts) for the shared pattern.
+Multi-account support: use `channels.slack.accounts` with per-account tokens and optional `name`. See [`gateway/configuration`](/gateway/configuration#channelstelegramaccounts--channelsdiscordaccounts--channelsgooglechataccounts--channelsslackaccounts--channelsmattermostaccounts--channelssignalaccounts) for the shared pattern.
 
 ### OpenClaw config (Socket mode)
 
@@ -467,7 +467,7 @@ For fine-grained control, use these tags in agent responses:
 
 ## Sessions + routing
 
-- DMs share the `main` session (like WhatsApp/Telegram).
+- DMs share the `main` session (like Telegram).
 - Channels map to `agent:<agentId>:slack:channel:<channelId>` sessions.
 - Slash commands use `agent:<agentId>:slack:slash:<userId>` sessions (prefix configurable via `channels.slack.slashCommand.sessionPrefix`).
 - If Slack doesn’t provide `channel_type`, OpenClaw infers it from the channel ID prefix (`D`, `C`, `G`) and defaults to `channel` to keep session keys stable.

@@ -50,8 +50,6 @@ export type AudioConfig = {
 };
 
 export type MessagesConfig = {
-  /** @deprecated Use `whatsapp.messagePrefix` (WhatsApp-only inbound prefix). */
-  messagePrefix?: string;
   /**
    * Prefix auto-added to all outbound replies.
    *

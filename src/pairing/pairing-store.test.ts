@@ -110,19 +110,19 @@ describe("pairing store", () => {
       const ids = ["+15550000001", "+15550000002", "+15550000003"];
       for (const id of ids) {
         const created = await upsertChannelPairingRequest({
-          channel: "whatsapp",
+          channel: "telegram",
           id,
         });
         expect(created.created).toBe(true);
       }
 
       const blocked = await upsertChannelPairingRequest({
-        channel: "whatsapp",
+        channel: "telegram",
         id: "+15550000004",
       });
       expect(blocked.created).toBe(false);
 
-      const list = await listChannelPairingRequests("whatsapp");
+      const list = await listChannelPairingRequests("telegram");
       const listIds = list.map((entry) => entry.id);
       expect(listIds).toHaveLength(3);
       expect(listIds).toContain("+15550000001");

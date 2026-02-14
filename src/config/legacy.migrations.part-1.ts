@@ -160,12 +160,10 @@ export const LEGACY_CONFIG_MIGRATIONS_PART_1: LegacyConfigMigration[] = [
     describe: "Move provider config sections to channels.*",
     apply: (raw, changes) => {
       const legacyKeys = [
-        "whatsapp",
         "telegram",
         "discord",
         "slack",
         "signal",
-        "imessage",
         "msteams",
       ];
       const legacyEntries = legacyKeys.filter((key) => isRecord(raw[key]));
@@ -192,47 +190,8 @@ export const LEGACY_CONFIG_MIGRATIONS_PART_1: LegacyConfigMigration[] = [
     },
   },
   {
-    id: "routing.allowFrom->channels.whatsapp.allowFrom",
-    describe: "Move routing.allowFrom to channels.whatsapp.allowFrom",
-    apply: (raw, changes) => {
-      const routing = raw.routing;
-      if (!routing || typeof routing !== "object") {
-        return;
-      }
-      const allowFrom = (routing as Record<string, unknown>).allowFrom;
-      if (allowFrom === undefined) {
-        return;
-      }
-
-      const channels = getRecord(raw.channels);
-      const whatsapp = channels ? getRecord(channels.whatsapp) : null;
-      if (!whatsapp) {
-        delete (routing as Record<string, unknown>).allowFrom;
-        if (Object.keys(routing as Record<string, unknown>).length === 0) {
-          delete raw.routing;
-        }
-        changes.push("Removed routing.allowFrom (channels.whatsapp not configured).");
-        return;
-      }
-
-      if (whatsapp.allowFrom === undefined) {
-        whatsapp.allowFrom = allowFrom;
-        changes.push("Moved routing.allowFrom → channels.whatsapp.allowFrom.");
-      } else {
-        changes.push("Removed routing.allowFrom (channels.whatsapp.allowFrom already set).");
-      }
-
-      delete (routing as Record<string, unknown>).allowFrom;
-      if (Object.keys(routing as Record<string, unknown>).length === 0) {
-        delete raw.routing;
-      }
-      channels!.whatsapp = whatsapp;
-      raw.channels = channels!;
-    },
-  },
-  {
     id: "routing.groupChat.requireMention->groups.*.requireMention",
-    describe: "Move routing.groupChat.requireMention to channels.whatsapp/telegram/imessage groups",
+    describe: "Move routing.groupChat.requireMention to channels.telegram groups",
     apply: (raw, changes) => {
       const routing = raw.routing;
       if (!routing || typeof routing !== "object") {
@@ -252,17 +211,8 @@ export const LEGACY_CONFIG_MIGRATIONS_PART_1: LegacyConfigMigration[] = [
       }
 
       const channels = ensureRecord(raw, "channels");
-      const applyTo = (
-        key: "whatsapp" | "telegram" | "imessage",
-        options?: { requireExisting?: boolean },
-      ) => {
-        if (options?.requireExisting && !isRecord(channels[key])) {
-          return;
-        }
-        const section =
-          channels[key] && typeof channels[key] === "object"
-            ? (channels[key] as Record<string, unknown>)
-            : {};
+      if (isRecord(channels.telegram)) {
+        const section = channels.telegram as Record<string, unknown>;
         const groups =
           section.groups && typeof section.groups === "object"
             ? (section.groups as Record<string, unknown>)
@@ -276,20 +226,16 @@ export const LEGACY_CONFIG_MIGRATIONS_PART_1: LegacyConfigMigration[] = [
           entry.requireMention = requireMention;
           groups[defaultKey] = entry;
           section.groups = groups;
-          channels[key] = section;
+          channels.telegram = section;
           changes.push(
-            `Moved routing.groupChat.requireMention → channels.${key}.groups."*".requireMention.`,
+            'Moved routing.groupChat.requireMention → channels.telegram.groups."*".requireMention.',
           );
         } else {
           changes.push(
-            `Removed routing.groupChat.requireMention (channels.${key}.groups."*" already set).`,
+            'Removed routing.groupChat.requireMention (channels.telegram.groups."*" already set).',
           );
         }
-      };
-
-      applyTo("whatsapp", { requireExisting: true });
-      applyTo("telegram");
-      applyTo("imessage");
+      }
 
       delete groupChat.requireMention;
       if (Object.keys(groupChat).length === 0) {

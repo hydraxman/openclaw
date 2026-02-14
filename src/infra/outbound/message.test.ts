@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChannelOutboundAdapter, ChannelPlugin } from "../../channels/plugins/types.js";
-import { createIMessageTestPlugin, createTestRegistry } from "../../test-utils/channel-plugins.js";
+import { createTestRegistry } from "../../test-utils/channel-plugins.js";
 const loadMessage = async () => await import("./message.js");
 
 const setRegistry = async (registry: ReturnType<typeof createTestRegistry>) => {
@@ -55,15 +55,15 @@ describe("sendMessage channel normalization", () => {
     expect(result.channel).toBe("msteams");
   });
 
-  it("normalizes iMessage alias", async () => {
+  it("normalizes Signal alias", async () => {
     const { sendMessage } = await loadMessage();
-    const sendIMessage = vi.fn(async () => ({ messageId: "i1" }));
+    const sendSignal = vi.fn(async () => ({ messageId: "s1" }));
     await setRegistry(
       createTestRegistry([
         {
-          pluginId: "imessage",
+          pluginId: "signal",
           source: "test",
-          plugin: createIMessageTestPlugin(),
+          plugin: createSignalAliasPlugin(),
         },
       ]),
     );
@@ -71,12 +71,12 @@ describe("sendMessage channel normalization", () => {
       cfg: {},
       to: "someone@example.com",
       content: "hi",
-      channel: "imsg",
-      deps: { sendIMessage },
+      channel: "sms",
+      deps: { sendSignal },
     });
 
-    expect(sendIMessage).toHaveBeenCalledWith("someone@example.com", "hi", expect.any(Object));
-    expect(result.channel).toBe("imessage");
+    expect(sendSignal).toHaveBeenCalledWith("someone@example.com", "hi", expect.any(Object));
+    expect(result.channel).toBe("signal");
   });
 });
 
@@ -149,6 +149,34 @@ const createMSTeamsOutbound = (opts?: { includePoll?: boolean }): ChannelOutboun
         sendPoll: async () => ({ channel: "msteams", messageId: "p1" }),
       }
     : {}),
+});
+
+const createSignalAliasPlugin = (): ChannelPlugin => ({
+  id: "signal",
+  meta: {
+    id: "signal",
+    label: "Signal",
+    selectionLabel: "Signal",
+    docsPath: "/channels/signal",
+    blurb: "signal test stub.",
+    aliases: ["sms"],
+  },
+  capabilities: { chatTypes: ["direct"] },
+  config: {
+    listAccountIds: () => [],
+    resolveAccount: () => ({}),
+  },
+  outbound: {
+    deliveryMode: "direct",
+    sendText: async ({ deps, to, text }) => {
+      const send = deps?.sendSignal;
+      if (!send) {
+        throw new Error("sendSignal missing");
+      }
+      const result = await send(to, text, {});
+      return { channel: "signal", ...result };
+    },
+  },
 });
 
 const createMSTeamsPlugin = (params: {

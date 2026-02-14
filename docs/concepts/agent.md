@@ -116,8 +116,8 @@ Model refs in config (for example `agents.defaults.model` and `agents.defaults.m
 At minimum, set:
 
 - `agents.defaults.workspace`
-- `channels.whatsapp.allowFrom` (strongly recommended)
+- `channels.<channel>.allowFrom` (strongly recommended)
 
 ---
 
-_Next: [Group Chats](/channels/group-messages)_ 🦞
+_Next: [Group Chats](/channels/groups)_ 🦞

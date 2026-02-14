@@ -459,7 +459,7 @@ describe("subagent announce formatting", () => {
       childSessionKey: "agent:main:subagent:test",
       childRunId: "run-direct-origin",
       requesterSessionKey: "agent:main:main",
-      requesterOrigin: { channel: " whatsapp ", accountId: " acct-987 " },
+      requesterOrigin: { channel: " signal ", accountId: " acct-987 " },
       requesterDisplayKey: "main",
       task: "do thing",
       timeoutMs: 1000,
@@ -472,7 +472,7 @@ describe("subagent announce formatting", () => {
 
     expect(didAnnounce).toBe(true);
     const call = agentSpy.mock.calls[0]?.[0] as { params?: Record<string, unknown> };
-    expect(call?.params?.channel).toBe("whatsapp");
+    expect(call?.params?.channel).toBe("signal");
     expect(call?.params?.accountId).toBe("acct-987");
   });
 
@@ -480,11 +480,11 @@ describe("subagent announce formatting", () => {
     const { runSubagentAnnounceFlow } = await import("./subagent-announce.js");
     embeddedRunMock.isEmbeddedPiRunActive.mockReturnValue(true);
     embeddedRunMock.isEmbeddedPiRunStreaming.mockReturnValue(false);
-    // Session store has stale whatsapp channel, but the requesterOrigin says bluebubbles.
+    // Session store has stale signal channel, but the requesterOrigin says matrix.
     sessionStore = {
       "agent:main:main": {
         sessionId: "session-stale",
-        lastChannel: "whatsapp",
+        lastChannel: "signal",
         queueMode: "collect",
         queueDebounceMs: 0,
       },
@@ -494,7 +494,7 @@ describe("subagent announce formatting", () => {
       childSessionKey: "agent:main:subagent:test",
       childRunId: "run-stale-channel",
       requesterSessionKey: "main",
-      requesterOrigin: { channel: "bluebubbles", to: "bluebubbles:chat_guid:123" },
+      requesterOrigin: { channel: "matrix", to: "matrix:room:!abc:example.org" },
       requesterDisplayKey: "main",
       task: "do thing",
       timeoutMs: 1000,
@@ -510,8 +510,8 @@ describe("subagent announce formatting", () => {
 
     const call = agentSpy.mock.calls[0]?.[0] as { params?: Record<string, unknown> };
     // The channel should match requesterOrigin, NOT the stale session entry.
-    expect(call?.params?.channel).toBe("bluebubbles");
-    expect(call?.params?.to).toBe("bluebubbles:chat_guid:123");
+    expect(call?.params?.channel).toBe("matrix");
+    expect(call?.params?.to).toBe("matrix:room:!abc:example.org");
   });
 
   it("splits collect-mode announces when accountId differs", async () => {
@@ -521,7 +521,7 @@ describe("subagent announce formatting", () => {
     sessionStore = {
       "agent:main:main": {
         sessionId: "session-789",
-        lastChannel: "whatsapp",
+        lastChannel: "signal",
         lastTo: "+1555",
         queueMode: "collect",
         queueDebounceMs: 0,

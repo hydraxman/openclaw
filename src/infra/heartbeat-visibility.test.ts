@@ -185,10 +185,10 @@ describe("resolveHeartbeatVisibility", () => {
     expect(result.showOk).toBe(true);
   });
 
-  it("works with whatsapp channel", () => {
+  it("works with signal channel", () => {
     const cfg = {
       channels: {
-        whatsapp: {
+        signal: {
           heartbeat: {
             showOk: true,
             showAlerts: false,
@@ -197,7 +197,7 @@ describe("resolveHeartbeatVisibility", () => {
       },
     } as OpenClawConfig;
 
-    const result = resolveHeartbeatVisibility({ cfg, channel: "whatsapp" });
+    const result = resolveHeartbeatVisibility({ cfg, channel: "signal" });
 
     expect(result).toEqual({
       showOk: true,

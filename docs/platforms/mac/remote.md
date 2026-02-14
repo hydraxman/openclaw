@@ -59,11 +59,6 @@ Remote mode supports two transports:
 - If you bind the Gateway to a non-loopback interface, require token/password auth.
 - See [Security](/gateway/security) and [Tailscale](/gateway/tailscale).
 
-## WhatsApp login flow (remote)
-
-- Run `openclaw channels login --verbose` **on the remote host**. Scan the QR with WhatsApp on your phone.
-- Re-run login on that host if auth expires. Health check will surface link problems.
-
 ## Troubleshooting
 
 - **exit 127 / not found**: `openclaw` isn’t on PATH for non-login shells. Add it to `/etc/paths`, your shell rc, or symlink into `/usr/local/bin`/`/opt/homebrew/bin`.

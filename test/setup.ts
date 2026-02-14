@@ -27,12 +27,8 @@ const pickSendFn = (id: ChannelId, deps?: OutboundSendDeps) => {
       return deps?.sendSlack;
     case "telegram":
       return deps?.sendTelegram;
-    case "whatsapp":
-      return deps?.sendWhatsApp;
     case "signal":
       return deps?.sendSignal;
-    case "imessage":
-      return deps?.sendIMessage;
     default:
       return undefined;
   }
@@ -134,23 +130,13 @@ const createDefaultRegistry = () =>
       source: "test",
     },
     {
-      pluginId: "whatsapp",
-      plugin: createStubPlugin({
-        id: "whatsapp",
-        label: "WhatsApp",
-        deliveryMode: "gateway",
-        preferSessionLookupForAnnounceTarget: true,
-      }),
-      source: "test",
-    },
-    {
       pluginId: "signal",
       plugin: createStubPlugin({ id: "signal", label: "Signal" }),
       source: "test",
     },
     {
-      pluginId: "imessage",
-      plugin: createStubPlugin({ id: "imessage", label: "iMessage", aliases: ["imsg"] }),
+      pluginId: "msteams",
+      plugin: createStubPlugin({ id: "msteams", label: "Microsoft Teams", aliases: ["teams"] }),
       source: "test",
     },
   ]);

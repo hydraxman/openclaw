@@ -112,10 +112,6 @@ export type AppViewState = {
   channelsSnapshot: ChannelsStatusSnapshot | null;
   channelsError: string | null;
   channelsLastSuccess: number | null;
-  whatsappLoginMessage: string | null;
-  whatsappLoginQrDataUrl: string | null;
-  whatsappLoginConnected: boolean | null;
-  whatsappBusy: boolean;
   nostrProfileFormState: NostrProfileFormState | null;
   nostrProfileAccountId: string | null;
   configFormDirty: boolean;
@@ -228,9 +224,6 @@ export type AppViewState = {
   loadOverview: () => Promise<void>;
   loadAssistantIdentity: () => Promise<void>;
   loadCron: () => Promise<void>;
-  handleWhatsAppStart: (force: boolean) => Promise<void>;
-  handleWhatsAppWait: () => Promise<void>;
-  handleWhatsAppLogout: () => Promise<void>;
   handleChannelConfigSave: () => Promise<void>;
   handleChannelConfigReload: () => Promise<void>;
   handleNostrProfileEdit: (accountId: string, profile: NostrProfile | null) => void;

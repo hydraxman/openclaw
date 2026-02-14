@@ -103,7 +103,6 @@ Process to derive the list:
 
 Current npm plugin list (update as needed):
 
-- @openclaw/bluebubbles
 - @openclaw/diagnostics-otel
 - @openclaw/discord
 - @openclaw/feishu

@@ -229,51 +229,6 @@ function setGroupPolicyAllowlist(params: {
   }
 }
 
-function setWhatsAppGroupAllowFromFromStore(params: {
-  cfg: OpenClawConfig;
-  storeAllowFrom: string[];
-  changes: string[];
-  policyFlips: Set<string>;
-}): void {
-  const section = params.cfg.channels?.whatsapp as Record<string, unknown> | undefined;
-  if (!section || typeof section !== "object") {
-    return;
-  }
-  if (params.storeAllowFrom.length === 0) {
-    return;
-  }
-
-  const maybeApply = (prefix: string, obj: Record<string, unknown>) => {
-    if (!params.policyFlips.has(prefix)) {
-      return;
-    }
-    const allowFrom = Array.isArray(obj.allowFrom) ? obj.allowFrom : [];
-    const groupAllowFrom = Array.isArray(obj.groupAllowFrom) ? obj.groupAllowFrom : [];
-    if (allowFrom.length > 0) {
-      return;
-    }
-    if (groupAllowFrom.length > 0) {
-      return;
-    }
-    obj.groupAllowFrom = params.storeAllowFrom;
-    params.changes.push(`${prefix}groupAllowFrom=pairing-store`);
-  };
-
-  maybeApply("channels.whatsapp.", section);
-
-  const accounts = section.accounts;
-  if (!accounts || typeof accounts !== "object") {
-    return;
-  }
-  for (const [accountId, accountValue] of Object.entries(accounts)) {
-    if (!accountValue || typeof accountValue !== "object") {
-      continue;
-    }
-    const account = accountValue as Record<string, unknown>;
-    maybeApply(`channels.whatsapp.accounts.${accountId}.`, account);
-  }
-}
-
 function applyConfigFixes(params: { cfg: OpenClawConfig; env: NodeJS.ProcessEnv }): {
   cfg: OpenClawConfig;
   changes: string[];
@@ -288,15 +243,7 @@ function applyConfigFixes(params: { cfg: OpenClawConfig; env: NodeJS.ProcessEnv 
     changes.push('logging.redactSensitive=off -> "tools"');
   }
 
-  for (const channel of [
-    "telegram",
-    "whatsapp",
-    "discord",
-    "signal",
-    "imessage",
-    "slack",
-    "msteams",
-  ]) {
+  for (const channel of ["telegram", "discord", "signal", "slack", "msteams"]) {
     setGroupPolicyAllowlist({ cfg: next, channel, changes, policyFlips });
   }
 
@@ -479,16 +426,6 @@ export async function fixSecurityFootguns(opts?: {
   if (snap.valid) {
     const fixed = applyConfigFixes({ cfg: snap.config, env });
     changes = fixed.changes;
-
-    const whatsappStoreAllowFrom = await readChannelAllowFromStore("whatsapp", env).catch(() => []);
-    if (whatsappStoreAllowFrom.length > 0) {
-      setWhatsAppGroupAllowFromFromStore({
-        cfg: fixed.cfg,
-        storeAllowFrom: whatsappStoreAllowFrom,
-        changes,
-        policyFlips: fixed.policyFlips,
-      });
-    }
 
     if (changes.length > 0) {
       try {

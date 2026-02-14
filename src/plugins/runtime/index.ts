@@ -3,7 +3,6 @@ import type { PluginRuntime } from "./types.js";
 import { resolveEffectiveMessagesConfig, resolveHumanDelayConfig } from "../../agents/identity.js";
 import { createMemoryGetTool, createMemorySearchTool } from "../../agents/tools/memory-tool.js";
 import { handleSlackAction } from "../../agents/tools/slack-actions.js";
-import { handleWhatsAppAction } from "../../agents/tools/whatsapp-actions.js";
 import {
   chunkByNewline,
   chunkMarkdownText,
@@ -42,9 +41,7 @@ import { resolveCommandAuthorizedFromAuthorizers } from "../../channels/command-
 import { discordMessageActions } from "../../channels/plugins/actions/discord.js";
 import { signalMessageActions } from "../../channels/plugins/actions/signal.js";
 import { telegramMessageActions } from "../../channels/plugins/actions/telegram.js";
-import { createWhatsAppLoginTool } from "../../channels/plugins/agent-tools/whatsapp-login.js";
 import { recordInboundSession } from "../../channels/session.js";
-import { monitorWebChannel } from "../../channels/web/index.js";
 import { registerMemoryCli } from "../../cli/memory-cli.js";
 import { loadConfig, writeConfigFile } from "../../config/config.js";
 import {
@@ -70,9 +67,6 @@ import { resolveDiscordChannelAllowlist } from "../../discord/resolve-channels.j
 import { resolveDiscordUserAllowlist } from "../../discord/resolve-users.js";
 import { sendMessageDiscord, sendPollDiscord } from "../../discord/send.js";
 import { shouldLogVerbose } from "../../globals.js";
-import { monitorIMessageProvider } from "../../imessage/monitor.js";
-import { probeIMessage } from "../../imessage/probe.js";
-import { sendMessageIMessage } from "../../imessage/send.js";
 import { getChannelActivity, recordChannelActivity } from "../../infra/channel-activity.js";
 import { enqueueSystemEvent } from "../../infra/system-events.js";
 import {
@@ -102,6 +96,7 @@ import { mediaKindFromMime } from "../../media/constants.js";
 import { fetchRemoteMedia } from "../../media/fetch.js";
 import { getImageMetadata, resizeToJpeg } from "../../media/image-ops.js";
 import { detectMime } from "../../media/mime.js";
+import { loadWebMedia, loadWebMediaRaw } from "../../media/load.js";
 import { saveMediaBuffer } from "../../media/store.js";
 import { buildPairingReply } from "../../pairing/pairing-messages.js";
 import {
@@ -131,18 +126,6 @@ import { probeTelegram } from "../../telegram/probe.js";
 import { sendMessageTelegram } from "../../telegram/send.js";
 import { resolveTelegramToken } from "../../telegram/token.js";
 import { textToSpeechTelephony } from "../../tts/tts.js";
-import { getActiveWebListener } from "../../web/active-listener.js";
-import {
-  getWebAuthAgeMs,
-  logoutWeb,
-  logWebSelfId,
-  readWebSelfId,
-  webAuthExists,
-} from "../../web/auth-store.js";
-import { startWebLoginWithQr, waitForWebLogin } from "../../web/login-qr.js";
-import { loginWeb } from "../../web/login.js";
-import { loadWebMedia } from "../../web/media.js";
-import { sendMessageWhatsApp, sendPollWhatsApp } from "../../web/outbound.js";
 import { formatNativeDependencyHint } from "./native-deps.js";
 
 let cachedVersion: string | null = null;
@@ -175,12 +158,13 @@ export function createPluginRuntime(): PluginRuntime {
       formatNativeDependencyHint,
     },
     media: {
-      loadWebMedia,
       detectMime,
       mediaKindFromMime,
       isVoiceCompatibleAudio,
       getImageMetadata,
       resizeToJpeg,
+      loadWebMedia,
+      loadWebMediaRaw,
     },
     tts: {
       textToSpeechTelephony,
@@ -296,27 +280,6 @@ export function createPluginRuntime(): PluginRuntime {
         sendMessageSignal,
         monitorSignalProvider,
         messageActions: signalMessageActions,
-      },
-      imessage: {
-        monitorIMessageProvider,
-        probeIMessage,
-        sendMessageIMessage,
-      },
-      whatsapp: {
-        getActiveWebListener,
-        getWebAuthAgeMs,
-        logoutWeb,
-        logWebSelfId,
-        readWebSelfId,
-        webAuthExists,
-        sendMessageWhatsApp,
-        sendPollWhatsApp,
-        loginWeb,
-        startWebLoginWithQr,
-        waitForWebLogin,
-        monitorWebChannel,
-        handleWhatsAppAction,
-        createLoginTool: createWhatsAppLoginTool,
       },
       line: {
         listLineAccountIds,

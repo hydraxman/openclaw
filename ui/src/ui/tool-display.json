@@ -172,14 +172,6 @@
         }
       }
     },
-    "whatsapp_login": {
-      "icon": "circle",
-      "title": "WhatsApp Login",
-      "actions": {
-        "start": { "label": "start" },
-        "wait": { "label": "wait" }
-      }
-    },
     "discord": {
       "icon": "messageSquare",
       "title": "Discord",

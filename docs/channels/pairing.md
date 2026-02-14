@@ -36,7 +36,7 @@ openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
-Supported channels: `telegram`, `whatsapp`, `signal`, `imessage`, `discord`, `slack`.
+Supported channels: `telegram`, `signal`, `discord`, `slack`.
 
 ### Where the state lives
 
@@ -95,9 +95,6 @@ Stored under `~/.openclaw/devices/`:
 - Updating safely (run doctor): [Updating](/install/updating)
 - Channel configs:
   - Telegram: [Telegram](/channels/telegram)
-  - WhatsApp: [WhatsApp](/channels/whatsapp)
   - Signal: [Signal](/channels/signal)
-  - BlueBubbles (iMessage): [BlueBubbles](/channels/bluebubbles)
-  - iMessage (legacy): [iMessage](/channels/imessage)
   - Discord: [Discord](/channels/discord)
   - Slack: [Slack](/channels/slack)

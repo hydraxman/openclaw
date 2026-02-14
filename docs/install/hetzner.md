@@ -58,7 +58,6 @@ For the generic Docker flow, see [Docker](/install/docker).
 - Docker and Docker Compose
 - Model auth credentials
 - Optional provider credentials
-  - WhatsApp QR
   - Telegram bot token
   - Gmail OAuth
 
@@ -208,7 +207,6 @@ The examples below show three common binaries only:
 
 - `gog` for Gmail access
 - `goplaces` for Google Places
-- `wacli` for WhatsApp
 
 These are examples, not a complete list.
 You may install as many binaries as needed using the same pattern.
@@ -233,10 +231,6 @@ RUN curl -L https://github.com/steipete/gog/releases/latest/download/gog_Linux_x
 # Example binary 2: Google Places CLI
 RUN curl -L https://github.com/steipete/goplaces/releases/latest/download/goplaces_Linux_x86_64.tar.gz \
   | tar -xz -C /usr/local/bin && chmod +x /usr/local/bin/goplaces
-
-# Example binary 3: WhatsApp CLI
-RUN curl -L https://github.com/steipete/wacli/releases/latest/download/wacli_Linux_x86_64.tar.gz \
-  | tar -xz -C /usr/local/bin && chmod +x /usr/local/bin/wacli
 
 # Add more binaries below using the same pattern
 
@@ -322,7 +316,6 @@ All long-lived state must survive restarts, rebuilds, and reboots.
 | Model auth profiles | `/home/node/.openclaw/`           | Host volume mount      | OAuth tokens, API keys           |
 | Skill configs       | `/home/node/.openclaw/skills/`    | Host volume mount      | Skill-level state                |
 | Agent workspace     | `/home/node/.openclaw/workspace/` | Host volume mount      | Code and agent artifacts         |
-| WhatsApp session    | `/home/node/.openclaw/`           | Host volume mount      | Preserves QR login               |
 | Gmail keyring       | `/home/node/.openclaw/`           | Host volume + password | Requires `GOG_KEYRING_PASSWORD`  |
 | External binaries   | `/usr/local/bin/`                 | Docker image           | Must be baked at build time      |
 | Node runtime        | Container filesystem              | Docker image           | Rebuilt every image build        |

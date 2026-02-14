@@ -8,7 +8,7 @@ title: "Model Providers"
 
 # Model providers
 
-This page covers **LLM/model providers** (not chat channels like WhatsApp/Telegram).
+This page covers **LLM/model providers** (not chat channels like Telegram/Discord).
 For model selection rules, see [/concepts/models](/concepts/models).
 
 ## Quick rules

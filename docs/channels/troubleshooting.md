@@ -28,18 +28,6 @@ Healthy baseline:
 - `RPC probe: ok`
 - Channel probe shows connected/ready
 
-## WhatsApp
-
-### WhatsApp failure signatures
-
-| Symptom                         | Fastest check                                       | Fix                                                     |
-| ------------------------------- | --------------------------------------------------- | ------------------------------------------------------- |
-| Connected but no DM replies     | `openclaw pairing list whatsapp`                    | Approve sender or switch DM policy/allowlist.           |
-| Group messages ignored          | Check `requireMention` + mention patterns in config | Mention the bot or relax mention policy for that group. |
-| Random disconnect/relogin loops | `openclaw channels status --probe` + logs           | Re-login and verify credentials directory is healthy.   |
-
-Full troubleshooting: [/channels/whatsapp#troubleshooting-quick](/channels/whatsapp#troubleshooting-quick)
-
 ## Telegram
 
 ### Telegram failure signatures
@@ -75,21 +63,6 @@ Full troubleshooting: [/channels/discord#troubleshooting](/channels/discord#trou
 | Channel message ignored                | Check `groupPolicy` and channel allowlist | Allow the channel or switch policy to `open`.     |
 
 Full troubleshooting: [/channels/slack#troubleshooting](/channels/slack#troubleshooting)
-
-## iMessage and BlueBubbles
-
-### iMessage and BlueBubbles failure signatures
-
-| Symptom                          | Fastest check                                                           | Fix                                                   |
-| -------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------- |
-| No inbound events                | Verify webhook/server reachability and app permissions                  | Fix webhook URL or BlueBubbles server state.          |
-| Can send but no receive on macOS | Check macOS privacy permissions for Messages automation                 | Re-grant TCC permissions and restart channel process. |
-| DM sender blocked                | `openclaw pairing list imessage` or `openclaw pairing list bluebubbles` | Approve pairing or update allowlist.                  |
-
-Full troubleshooting:
-
-- [/channels/imessage#troubleshooting-macos-privacy-and-security-tcc](/channels/imessage#troubleshooting-macos-privacy-and-security-tcc)
-- [/channels/bluebubbles#troubleshooting](/channels/bluebubbles#troubleshooting)
 
 ## Signal
 

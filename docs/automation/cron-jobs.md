@@ -214,7 +214,7 @@ Resolution priority:
 Isolated jobs can deliver output to a channel via the top-level `delivery` config:
 
 - `delivery.mode`: `announce` (deliver a summary) or `none`.
-- `delivery.channel`: `whatsapp` / `telegram` / `discord` / `slack` / `mattermost` (plugin) / `signal` / `imessage` / `last`.
+- `delivery.channel`: `telegram` / `discord` / `slack` / `mattermost` (plugin) / `signal` / `last`.
 - `delivery.to`: channel-specific recipient target.
 
 Delivery config is only valid for isolated jobs (`sessionTarget: "isolated"`).
@@ -367,7 +367,7 @@ openclaw cron add \
   --wake now
 ```
 
-Recurring isolated job (announce to WhatsApp):
+Recurring isolated job (announce to Telegram):
 
 ```bash
 openclaw cron add \
@@ -377,8 +377,8 @@ openclaw cron add \
   --session isolated \
   --message "Summarize inbox + calendar for today." \
   --announce \
-  --channel whatsapp \
-  --to "+15551234567"
+  --channel telegram \
+  --to "-1001234567890"
 ```
 
 Recurring isolated job (deliver to a Telegram topic):
@@ -407,7 +407,7 @@ openclaw cron add \
   --model "opus" \
   --thinking high \
   --announce \
-  --channel whatsapp \
+  --channel signal \
   --to "+15551234567"
 ```
 

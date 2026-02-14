@@ -46,11 +46,9 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [Is a local model OK for casual chats?](#is-a-local-model-ok-for-casual-chats)
   - [How do I keep hosted model traffic in a specific region?](#how-do-i-keep-hosted-model-traffic-in-a-specific-region)
   - [Do I have to buy a Mac Mini to install this?](#do-i-have-to-buy-a-mac-mini-to-install-this)
-  - [Do I need a Mac mini for iMessage support?](#do-i-need-a-mac-mini-for-imessage-support)
   - [If I buy a Mac mini to run OpenClaw, can I connect it to my MacBook Pro?](#if-i-buy-a-mac-mini-to-run-openclaw-can-i-connect-it-to-my-macbook-pro)
   - [Can I use Bun?](#can-i-use-bun)
   - [Telegram: what goes in `allowFrom`?](#telegram-what-goes-in-allowfrom)
-  - [Can multiple people use one WhatsApp number with different OpenClaw instances?](#can-multiple-people-use-one-whatsapp-number-with-different-openclaw-instances)
   - [Can I run a "fast chat" agent and an "Opus for coding" agent?](#can-i-run-a-fast-chat-agent-and-an-opus-for-coding-agent)
   - [Does Homebrew work on Linux?](#does-homebrew-work-on-linux)
   - [What's the difference between the hackable (git) install and npm install?](#whats-the-difference-between-the-hackable-git-install-and-npm-install)
@@ -128,8 +126,6 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [I'm getting "context too large" errors - how do I reset or compact?](#im-getting-context-too-large-errors-how-do-i-reset-or-compact)
   - [Why am I seeing "LLM request rejected: messages.N.content.X.tool_use.input: Field required"?](#why-am-i-seeing-llm-request-rejected-messagesncontentxtooluseinput-field-required)
   - [Why am I getting heartbeat messages every 30 minutes?](#why-am-i-getting-heartbeat-messages-every-30-minutes)
-  - [Do I need to add a "bot account" to a WhatsApp group?](#do-i-need-to-add-a-bot-account-to-a-whatsapp-group)
-  - [How do I get the JID of a WhatsApp group?](#how-do-i-get-the-jid-of-a-whatsapp-group)
   - [Why doesn't OpenClaw reply in a group?](#why-doesnt-openclaw-reply-in-a-group)
   - [Do groups/threads share context with DMs?](#do-groupsthreads-share-context-with-dms)
   - [How many workspaces and agents can I create?](#how-many-workspaces-and-agents-can-i-create)
@@ -188,7 +184,6 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [Can I give it autonomy over my text messages and is that safe](#can-i-give-it-autonomy-over-my-text-messages-and-is-that-safe)
   - [Can I use cheaper models for personal assistant tasks?](#can-i-use-cheaper-models-for-personal-assistant-tasks)
   - [I ran `/start` in Telegram but didn't get a pairing code](#i-ran-start-in-telegram-but-didnt-get-a-pairing-code)
-  - [WhatsApp: will it message my contacts? How does pairing work?](#whatsapp-will-it-message-my-contacts-how-does-pairing-work)
 - [Chat commands, aborting tasks, and "it won't stop"](#chat-commands-aborting-tasks-and-it-wont-stop)
   - [How do I stop internal system messages from showing in chat](#how-do-i-stop-internal-system-messages-from-showing-in-chat)
   - [How do I stop/cancel a running task?](#how-do-i-stopcancel-a-running-task)
@@ -420,7 +415,7 @@ state) as long as you copy **both** locations:
 3. Copy your workspace (default: `~/.openclaw/workspace`).
 4. Run `openclaw doctor` and restart the Gateway service.
 
-That preserves config, auth profiles, WhatsApp creds, sessions, and memory. If you're in
+That preserves config, auth profiles, channel creds, sessions, and memory. If you're in
 remote mode, remember the gateway host owns the session store and workspace.
 
 **Important:** if you only commit/push your workspace to GitHub, you're backing
@@ -650,7 +645,7 @@ Docs: [Update](/cli/update), [Updating](/install/updating).
 - **Model/auth setup** (Anthropic **setup-token** recommended for Claude subscriptions, OpenAI Codex OAuth supported, API keys optional, LM Studio local models supported)
 - **Workspace** location + bootstrap files
 - **Gateway settings** (bind/port/auth/tailscale)
-- **Providers** (WhatsApp, Telegram, Discord, Mattermost (plugin), Signal, iMessage)
+- **Providers** (Telegram, Discord, Mattermost (plugin), Signal, Google Chat)
 - **Daemon install** (LaunchAgent on macOS; systemd user unit on Linux/WSL2)
 - **Health checks** and **skills** selection
 
@@ -744,22 +739,9 @@ Pick region-pinned endpoints. OpenRouter exposes US-hosted options for MiniMax, 
 No. OpenClaw runs on macOS or Linux (Windows via WSL2). A Mac mini is optional - some people
 buy one as an always-on host, but a small VPS, home server, or Raspberry Pi-class box works too.
 
-You only need a Mac **for macOS-only tools**. For iMessage, use [BlueBubbles](/channels/bluebubbles) (recommended) - the BlueBubbles server runs on any Mac, and the Gateway can run on Linux or elsewhere. If you want other macOS-only tools, run the Gateway on a Mac or pair a macOS node.
+You only need a Mac **for macOS-only tools**. If you want macOS-only automation, run the Gateway on a Mac or pair a macOS node.
 
-Docs: [BlueBubbles](/channels/bluebubbles), [Nodes](/nodes), [Mac remote mode](/platforms/mac/remote).
-
-### Do I need a Mac mini for iMessage support
-
-You need **some macOS device** signed into Messages. It does **not** have to be a Mac mini -
-any Mac works. **Use [BlueBubbles](/channels/bluebubbles)** (recommended) for iMessage - the BlueBubbles server runs on macOS, while the Gateway can run on Linux or elsewhere.
-
-Common setups:
-
-- Run the Gateway on Linux/VPS, and run the BlueBubbles server on any Mac signed into Messages.
-- Run everything on the Mac if you want the simplest single‑machine setup.
-
-Docs: [BlueBubbles](/channels/bluebubbles), [Nodes](/nodes),
-[Mac remote mode](/platforms/mac/remote).
+Docs: [Nodes](/nodes), [Mac remote mode](/platforms/mac/remote).
 
 ### If I buy a Mac mini to run OpenClaw can I connect it to my MacBook Pro
 
@@ -777,11 +759,10 @@ Docs: [Nodes](/nodes), [Nodes CLI](/cli/nodes).
 
 ### Can I use Bun
 
-Bun is **not recommended**. We see runtime bugs, especially with WhatsApp and Telegram.
+Bun is **not recommended**. We see runtime bugs on some channels (for example Telegram).
 Use **Node** for stable gateways.
 
-If you still want to experiment with Bun, do it on a non-production gateway
-without WhatsApp/Telegram.
+If you still want to experiment with Bun, do it on a non-production gateway.
 
 ### Telegram what goes in allowFrom
 
@@ -800,10 +781,6 @@ Third-party (less private):
 - DM `@userinfobot` or `@getidsbot`.
 
 See [/channels/telegram](/channels/telegram#access-control-dms--groups).
-
-### Can multiple people use one WhatsApp number with different OpenClaw instances
-
-Yes, via **multi-agent routing**. Bind each sender's WhatsApp **DM** (peer `kind: "direct"`, sender E.164 like `+15551234567`) to a different `agentId`, so each person gets their own workspace and session store. Replies still come from the **same WhatsApp account**, and DM access control (`channels.whatsapp.dmPolicy` / `channels.whatsapp.allowFrom`) is global per WhatsApp account. See [Multi-Agent Routing](/concepts/multi-agent) and [WhatsApp](/channels/whatsapp).
 
 ### Can I run a fast chat agent and an Opus for coding agent
 
@@ -876,7 +853,7 @@ lowest friction and you're okay with sleep/restarts, run it locally.
 - **Pros:** always-on, stable network, no laptop sleep issues, easier to keep running.
 - **Cons:** often run headless (use screenshots), remote file access only, you must SSH for updates.
 
-**OpenClaw-specific note:** WhatsApp/Telegram/Slack/Mattermost (plugin)/Discord all work fine from a VPS. The only real trade-off is **headless browser** vs a visible window. See [Browser](/tools/browser).
+**OpenClaw-specific note:** Telegram/Slack/Mattermost (plugin)/Discord/Signal all work fine from a VPS. The only real trade-off is **headless browser** vs a visible window. See [Browser](/tools/browser).
 
 **Recommended default:** VPS if you had gateway disconnects before. Local is great when you're actively using the Mac and want local file access or UI automation with a visible browser.
 
@@ -920,7 +897,7 @@ If you are running macOS in a VM, see [macOS VM](/install/macos-vm).
 
 ### What is OpenClaw in one paragraph
 
-OpenClaw is a personal AI assistant you run on your own devices. It replies on the messaging surfaces you already use (WhatsApp, Telegram, Slack, Mattermost (plugin), Discord, Google Chat, Signal, iMessage, WebChat) and can also do voice + a live Canvas on supported platforms. The **Gateway** is the always-on control plane; the assistant is the product.
+OpenClaw is a personal AI assistant you run on your own devices. It replies on the messaging surfaces you already use (Telegram, Slack, Mattermost (plugin), Discord, Google Chat, Signal, Matrix, WebChat) and can also do voice + a live Canvas on supported platforms. The **Gateway** is the always-on control plane; the assistant is the product.
 
 ### What's the value proposition
 
@@ -933,7 +910,7 @@ Highlights:
 
 - **Your devices, your data:** run the Gateway wherever you want (Mac, Linux, VPS) and keep the
   workspace + session history local.
-- **Real channels, not a web sandbox:** WhatsApp/Telegram/Slack/Discord/Signal/iMessage/etc,
+- **Real channels, not a web sandbox:** Telegram/Slack/Discord/Signal/Matrix/etc,
   plus mobile voice and Canvas on supported platforms.
 - **Model-agnostic:** use Anthropic, OpenAI, MiniMax, OpenRouter, etc., with per-agent routing
   and failover.
@@ -987,7 +964,7 @@ want durable memory, cross-device access, and tool orchestration.
 Advantages:
 
 - **Persistent memory + workspace** across sessions
-- **Multi-platform access** (WhatsApp, Telegram, TUI, WebChat)
+- **Multi-platform access** (Telegram, TUI, WebChat)
 - **Tool orchestration** (browser, files, scheduling, hooks)
 - **Always-on Gateway** (run on a VPS, interact from anywhere)
 - **Nodes** for local browser/screen/camera/exec
@@ -1245,7 +1222,7 @@ No - **OpenClaw's state is local**, but **external services still see what you s
 - **Local by default:** sessions, memory files, config, and workspace live on the Gateway host
   (`~/.openclaw` + your workspace directory).
 - **Remote by necessity:** messages you send to model providers (Anthropic/OpenAI/etc.) go to
-  their APIs, and chat platforms (WhatsApp/Telegram/Slack/etc.) store message data on their
+  their APIs, and chat platforms (Telegram/Slack/Discord/etc.) store message data on their
   servers.
 - **You control the footprint:** using local models keeps prompts on your machine, but channel
   traffic still goes through the channel's servers.
@@ -1262,7 +1239,7 @@ Everything lives under `$OPENCLAW_STATE_DIR` (default: `~/.openclaw`):
 | `$OPENCLAW_STATE_DIR/credentials/oauth.json`                    | Legacy OAuth import (copied into auth profiles on first use) |
 | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Auth profiles (OAuth + API keys)                             |
 | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | Runtime auth cache (managed automatically)                   |
-| `$OPENCLAW_STATE_DIR/credentials/`                              | Provider state (e.g. `whatsapp/<accountId>/creds.json`)      |
+| `$OPENCLAW_STATE_DIR/credentials/`                              | Provider state (e.g. `telegram/<accountId>/creds.json`)      |
 | `$OPENCLAW_STATE_DIR/agents/`                                   | Per-agent state (agentDir + sessions)                        |
 | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`                | Conversation history & state (per agent)                     |
 | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/sessions.json`   | Session metadata (per agent)                                 |
@@ -1421,7 +1398,7 @@ Docs: [Web tools](/tools/web).
 
 The common pattern is **one Gateway** (e.g. Raspberry Pi) plus **nodes** and **agents**:
 
-- **Gateway (central):** owns channels (Signal/WhatsApp), routing, and sessions.
+- **Gateway (central):** owns channels (Signal/Telegram), routing, and sessions.
 - **Nodes (devices):** Macs/iOS/Android connect as peripherals and expose local tools (`system.run`, `canvas`, `camera`).
 - **Agents (workers):** separate brains/workspaces for special roles (e.g. "Hetzner ops", "Personal data").
 - **Sub-agents:** spawn background work from a main agent when you want parallelism.
@@ -1515,7 +1492,7 @@ Docs: [Tailscale](/gateway/tailscale), [Remote access](/gateway/remote), [Channe
 Yes. There is no built-in "bot-to-bot" bridge, but you can wire it up in a few
 reliable ways:
 
-**Simplest:** use a normal chat channel both bots can access (Telegram/Slack/WhatsApp).
+**Simplest:** use a normal chat channel both bots can access (Telegram/Slack/Discord).
 Have Bot A send a message to Bot B, then let Bot B reply as usual.
 
 **CLI bridge (generic):** run a script that calls the other Gateway with
@@ -1608,7 +1585,7 @@ Docs: [Config](/cli/config), [Configure](/cli/configure), [Doctor](/gateway/doct
 ```json5
 {
   agents: { defaults: { workspace: "~/.openclaw/workspace" } },
-  channels: { whatsapp: { allowFrom: ["+15555550123"] } },
+  channels: { telegram: { allowFrom: ["123456789"] } },
 }
 ```
 
@@ -1858,55 +1835,18 @@ If the file is missing, the heartbeat still runs and the model decides what to d
 
 Per-agent overrides use `agents.list[].heartbeat`. Docs: [Heartbeat](/gateway/heartbeat).
 
-### Do I need to add a bot account to a WhatsApp group
-
-No. OpenClaw runs on **your own account**, so if you're in the group, OpenClaw can see it.
-By default, group replies are blocked until you allow senders (`groupPolicy: "allowlist"`).
-
-If you want only **you** to be able to trigger group replies:
-
-```json5
-{
-  channels: {
-    whatsapp: {
-      groupPolicy: "allowlist",
-      groupAllowFrom: ["+15551234567"],
-    },
-  },
-}
-```
-
-### How do I get the JID of a WhatsApp group
-
-Option 1 (fastest): tail logs and send a test message in the group:
-
-```bash
-openclaw logs --follow --json
-```
-
-Look for `chatId` (or `from`) ending in `@g.us`, like:
-`1234567890-1234567890@g.us`.
-
-Option 2 (if already configured/allowlisted): list groups from config:
-
-```bash
-openclaw directory groups list --channel whatsapp
-```
-
-Docs: [WhatsApp](/channels/whatsapp), [Directory](/cli/directory), [Logs](/cli/logs).
-
 ### Why doesnt OpenClaw reply in a group
 
 Two common causes:
 
 - Mention gating is on (default). You must @mention the bot (or match `mentionPatterns`).
-- You configured `channels.whatsapp.groups` without `"*"` and the group isn't allowlisted.
+- You configured `channels.<channel>.groups` without `"*"` and the group isn't allowlisted.
 
-See [Groups](/channels/groups) and [Group messages](/channels/group-messages).
+See [Groups](/channels/groups).
 
 ### Do groupsthreads share context with DMs
 
-Direct chats collapse to the main session by default. Groups/channels have their own session keys, and Telegram topics / Discord threads are separate sessions. See [Groups](/channels/groups) and [Group messages](/channels/group-messages).
+Direct chats collapse to the main session by default. Groups/channels have their own session keys, and Telegram topics / Discord threads are separate sessions. See [Groups](/channels/groups).
 
 ### How many workspaces and agents can I create
 
@@ -2734,24 +2674,6 @@ openclaw pairing list telegram
 
 If you want immediate access, allowlist your sender id or set `dmPolicy: "open"`
 for that account.
-
-### WhatsApp will it message my contacts How does pairing work
-
-No. Default WhatsApp DM policy is **pairing**. Unknown senders only get a pairing code and their message is **not processed**. OpenClaw only replies to chats it receives or to explicit sends you trigger.
-
-Approve pairing with:
-
-```bash
-openclaw pairing approve whatsapp <code>
-```
-
-List pending requests:
-
-```bash
-openclaw pairing list whatsapp
-```
-
-Wizard phone number prompt: it's used to set your **allowlist/owner** so your own DMs are permitted. It's not used for auto-sending. If you run on your personal WhatsApp number, use that number and enable `channels.whatsapp.selfChatMode`.
 
 ## Chat commands, aborting tasks, and "it won't stop"
 

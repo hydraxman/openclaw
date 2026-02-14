@@ -9,7 +9,7 @@ title: "Features"
 
 <Columns>
   <Card title="Channels" icon="message-square">
-    WhatsApp, Telegram, Discord, and iMessage with a single Gateway.
+    Telegram, Discord, Slack, and Signal with a single Gateway.
   </Card>
   <Card title="Plugins" icon="plug">
     Add Mattermost and more with extensions.
@@ -30,11 +30,9 @@ title: "Features"
 
 ## Full list
 
-- WhatsApp integration via WhatsApp Web (Baileys)
 - Telegram bot support (grammY)
 - Discord bot support (channels.discord.js)
 - Mattermost bot support (plugin)
-- iMessage integration via local imsg CLI (macOS)
 - Agent bridge for Pi in RPC mode with tool streaming
 - Streaming and chunking for long responses
 - Multi-agent routing for isolated sessions per workspace or sender

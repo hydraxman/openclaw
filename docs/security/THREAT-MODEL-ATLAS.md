@@ -42,7 +42,7 @@ This threat model documents adversarial threats to the OpenClaw AI agent platfor
 | ---------------------- | -------- | ------------------------------------------------ |
 | OpenClaw Agent Runtime | Yes      | Core agent execution, tool calls, sessions       |
 | Gateway                | Yes      | Authentication, routing, channel integration     |
-| Channel Integrations   | Yes      | WhatsApp, Telegram, Discord, Signal, Slack, etc. |
+| Channel Integrations   | Yes      | Telegram, Discord, Signal, Slack, etc.           |
 | ClawHub Marketplace    | Yes      | Skill publishing, moderation, distribution       |
 | MCP Servers            | Yes      | External tool providers                          |
 | User Devices           | Partial  | Mobile apps, desktop clients                     |
@@ -61,7 +61,7 @@ Nothing is explicitly out of scope for this threat model.
 ┌─────────────────────────────────────────────────────────────────┐
 │                    UNTRUSTED ZONE                                │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
-│  │  WhatsApp   │  │  Telegram   │  │   Discord   │  ...         │
+│  │   Signal    │  │  Telegram   │  │   Discord   │  ...         │
 │  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘              │
 │         │                │                │                      │
 └─────────┼────────────────┼────────────────┼──────────────────────┘

@@ -63,7 +63,6 @@ Use these hubs to discover every page, including deep dives and reference docs t
 - [Bonjour](/gateway/bonjour)
 - [Channel routing](/channels/channel-routing)
 - [Groups](/channels/groups)
-- [Group messages](/channels/group-messages)
 - [Model failover](/concepts/model-failover)
 - [OAuth](/concepts/oauth)
 
@@ -71,15 +70,12 @@ Use these hubs to discover every page, including deep dives and reference docs t
 
 - [Chat channels hub](/channels)
 - [Model providers hub](/providers/models)
-- [WhatsApp](/channels/whatsapp)
 - [Telegram](/channels/telegram)
 - [Telegram (grammY notes)](/channels/grammy)
 - [Slack](/channels/slack)
 - [Discord](/channels/discord)
 - [Mattermost](/channels/mattermost) (plugin)
 - [Signal](/channels/signal)
-- [BlueBubbles (iMessage)](/channels/bluebubbles)
-- [iMessage (legacy)](/channels/imessage)
 - [Location parsing](/channels/location)
 - [WebChat](/web/webchat)
 - [Webhooks](/automation/webhook)

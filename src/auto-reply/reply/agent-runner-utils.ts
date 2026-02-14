@@ -28,7 +28,7 @@ export function buildThreadingToolContext(params: {
     return {};
   }
   const provider = normalizeChannelId(rawProvider) ?? normalizeAnyChannelId(rawProvider);
-  // Fallback for unrecognized/plugin channels (e.g., BlueBubbles before plugin registry init)
+  // Fallback for unrecognized/plugin channels before plugin registry init.
   const dock = provider ? getChannelDock(provider) : undefined;
   if (!dock?.threading?.buildToolContext) {
     return {

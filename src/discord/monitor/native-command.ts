@@ -41,7 +41,7 @@ import {
 } from "../../pairing/pairing-store.js";
 import { resolveAgentRoute } from "../../routing/resolve-route.js";
 import { buildUntrustedChannelMetadata } from "../../security/channel-metadata.js";
-import { loadWebMedia } from "../../web/media.js";
+import { loadWebMedia } from "../../media/load.js";
 import { chunkDiscordTextWithMode } from "../chunk.js";
 import {
   allowListMatches,

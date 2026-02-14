@@ -142,7 +142,7 @@ describe("applyConfig", () => {
     const state = createState();
     state.connected = true;
     state.client = { request } as unknown as ConfigState["client"];
-    state.applySessionKey = "agent:main:whatsapp:dm:+15555550123";
+    state.applySessionKey = "agent:main:signal:dm:+15555550123";
     state.configFormMode = "raw";
     state.configRaw = '{\n  agent: { workspace: "~/openclaw" }\n}\n';
     state.configSnapshot = {
@@ -154,7 +154,7 @@ describe("applyConfig", () => {
     expect(request).toHaveBeenCalledWith("config.apply", {
       raw: '{\n  agent: { workspace: "~/openclaw" }\n}\n',
       baseHash: "hash-123",
-      sessionKey: "agent:main:whatsapp:dm:+15555550123",
+      sessionKey: "agent:main:signal:dm:+15555550123",
     });
   });
 });
@@ -165,12 +165,12 @@ describe("runUpdate", () => {
     const state = createState();
     state.connected = true;
     state.client = { request } as unknown as ConfigState["client"];
-    state.applySessionKey = "agent:main:whatsapp:dm:+15555550123";
+    state.applySessionKey = "agent:main:signal:dm:+15555550123";
 
     await runUpdate(state);
 
     expect(request).toHaveBeenCalledWith("update.run", {
-      sessionKey: "agent:main:whatsapp:dm:+15555550123",
+      sessionKey: "agent:main:signal:dm:+15555550123",
     });
   });
 });

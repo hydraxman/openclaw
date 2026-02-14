@@ -45,7 +45,7 @@ title: "Elevated Mode"
 ## Availability + allowlists
 
 - Feature gate: `tools.elevated.enabled` (default can be off via config even if the code supports it).
-- Sender allowlist: `tools.elevated.allowFrom` with per-provider allowlists (e.g. `discord`, `whatsapp`).
+- Sender allowlist: `tools.elevated.allowFrom` with per-provider allowlists (e.g. `discord`, `telegram`).
 - Per-agent gate: `agents.list[].tools.elevated.enabled` (optional; can only further restrict).
 - Per-agent allowlist: `agents.list[].tools.elevated.allowFrom` (optional; when set, the sender must match **both** global + per-agent allowlists).
 - Discord fallback: if `tools.elevated.allowFrom.discord` is omitted, the `channels.discord.dm.allowFrom` list is used as a fallback. Set `tools.elevated.allowFrom.discord` (even `[]`) to override. Per-agent allowlists do **not** use the fallback.

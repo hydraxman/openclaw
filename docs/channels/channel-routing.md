@@ -1,5 +1,5 @@
 ---
-summary: "Routing rules per channel (WhatsApp, Telegram, Discord, Slack) and shared context"
+summary: "Routing rules per channel (Telegram, Discord, Slack, Signal) and shared context"
 read_when:
   - Changing channel routing or inbox behavior
 title: "Channel Routing"
@@ -13,7 +13,7 @@ host configuration.
 
 ## Key terms
 
-- **Channel**: `whatsapp`, `telegram`, `discord`, `slack`, `signal`, `imessage`, `webchat`.
+- **Channel**: `telegram`, `discord`, `slack`, `signal`, `googlechat`, `msteams`, `matrix`.
 - **AccountId**: per‑channel account instance (when supported).
 - **AgentId**: an isolated workspace + session store (“brain”).
 - **SessionKey**: the bucket key used to store context and control concurrency.
@@ -54,7 +54,7 @@ The matched agent determines which workspace and session store are used.
 
 ## Broadcast groups (run multiple agents)
 
-Broadcast groups let you run **multiple agents** for the same peer **when OpenClaw would normally reply** (for example: in WhatsApp groups, after mention/activation gating).
+Broadcast groups let you run **multiple agents** for the same peer **when OpenClaw would normally reply** (for example: in group chats after mention/activation gating).
 
 Config:
 
@@ -62,8 +62,8 @@ Config:
 {
   broadcast: {
     strategy: "parallel",
-    "120363403215116621@g.us": ["alfred", "baerbel"],
-    "+15555550123": ["support", "logger"],
+    "<group-id>": ["alfred", "baerbel"],
+    "<peer-id>": ["support", "logger"],
   },
 }
 ```
@@ -97,12 +97,6 @@ Session stores live under the state directory (default `~/.openclaw`):
 - JSONL transcripts live alongside the store
 
 You can override the store path via `session.store` and `{agentId}` templating.
-
-## WebChat behavior
-
-WebChat attaches to the **selected agent** and defaults to the agent’s main
-session. Because of this, WebChat lets you see cross‑channel context for that
-agent in one place.
 
 ## Reply context
 

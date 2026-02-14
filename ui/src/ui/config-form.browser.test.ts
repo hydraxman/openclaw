@@ -228,7 +228,7 @@ describe("config form renderer", () => {
         channels: {
           type: "object",
           properties: {
-            whatsapp: {
+            telegram: {
               type: "object",
               properties: {
                 enabled: { type: "boolean" },

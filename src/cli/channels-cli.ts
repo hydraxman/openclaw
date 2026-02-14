@@ -27,10 +27,6 @@ const optionNamesAdd = [
   "appToken",
   "signalNumber",
   "cliPath",
-  "dbPath",
-  "service",
-  "region",
-  "authDir",
   "httpUrl",
   "httpHost",
   "httpPort",
@@ -163,15 +159,11 @@ export function registerChannelsCli(program: Command) {
     .option("--bot-token <token>", "Slack bot token (xoxb-...)")
     .option("--app-token <token>", "Slack app token (xapp-...)")
     .option("--signal-number <e164>", "Signal account number (E.164)")
-    .option("--cli-path <path>", "CLI path (signal-cli or imsg)")
-    .option("--db-path <path>", "iMessage database path")
-    .option("--service <service>", "iMessage service (imessage|sms|auto)")
-    .option("--region <region>", "iMessage region (for SMS)")
-    .option("--auth-dir <path>", "WhatsApp auth directory override")
+    .option("--cli-path <path>", "CLI path (signal-cli)")
     .option("--http-url <url>", "Signal HTTP daemon base URL")
     .option("--http-host <host>", "Signal HTTP host")
     .option("--http-port <port>", "Signal HTTP port")
-    .option("--webhook-path <path>", "Webhook path (Google Chat/BlueBubbles)")
+    .option("--webhook-path <path>", "Webhook path (Google Chat)")
     .option("--webhook-url <url>", "Google Chat webhook URL")
     .option("--audience-type <type>", "Google Chat audience type (app-url|project-number)")
     .option("--audience <value>", "Google Chat audience value (app URL or project number)")
@@ -212,7 +204,7 @@ export function registerChannelsCli(program: Command) {
   channels
     .command("login")
     .description("Link a channel account (if supported)")
-    .option("--channel <channel>", "Channel alias (default: whatsapp)")
+    .option("--channel <channel>", "Channel alias (default: telegram)")
     .option("--account <id>", "Account id (accountId)")
     .option("--verbose", "Verbose connection logs", false)
     .action(async (opts) => {
@@ -231,7 +223,7 @@ export function registerChannelsCli(program: Command) {
   channels
     .command("logout")
     .description("Log out of a channel session (if supported)")
-    .option("--channel <channel>", "Channel alias (default: whatsapp)")
+    .option("--channel <channel>", "Channel alias (default: telegram)")
     .option("--account <id>", "Account id (accountId)")
     .action(async (opts) => {
       await runChannelsCommandWithDanger(async () => {

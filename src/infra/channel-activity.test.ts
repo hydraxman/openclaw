@@ -27,22 +27,22 @@ describe("channel activity", () => {
 
   it("isolates accounts", () => {
     recordChannelActivity({
-      channel: "whatsapp",
+      channel: "signal",
       accountId: "a",
       direction: "inbound",
       at: 1,
     });
     recordChannelActivity({
-      channel: "whatsapp",
+      channel: "signal",
       accountId: "b",
       direction: "inbound",
       at: 2,
     });
-    expect(getChannelActivity({ channel: "whatsapp", accountId: "a" })).toEqual({
+    expect(getChannelActivity({ channel: "signal", accountId: "a" })).toEqual({
       inboundAt: 1,
       outboundAt: null,
     });
-    expect(getChannelActivity({ channel: "whatsapp", accountId: "b" })).toEqual({
+    expect(getChannelActivity({ channel: "signal", accountId: "b" })).toEqual({
       inboundAt: 2,
       outboundAt: null,
     });

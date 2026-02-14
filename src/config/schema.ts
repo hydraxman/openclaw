@@ -320,15 +320,12 @@ const FIELD_LABELS: Record<string, string> = {
   "messages.ackReactionScope": "Ack Reaction Scope",
   "messages.inbound.debounceMs": "Inbound Message Debounce (ms)",
   "talk.apiKey": "Talk API Key",
-  "channels.whatsapp": "WhatsApp",
   "channels.telegram": "Telegram",
   "channels.telegram.customCommands": "Telegram Custom Commands",
   "channels.discord": "Discord",
   "channels.slack": "Slack",
   "channels.mattermost": "Mattermost",
   "channels.signal": "Signal",
-  "channels.imessage": "iMessage",
-  "channels.bluebubbles": "BlueBubbles",
   "channels.msteams": "MS Teams",
   "channels.telegram.botToken": "Telegram Bot Token",
   "channels.telegram.dmPolicy": "Telegram DM Policy",
@@ -343,12 +340,7 @@ const FIELD_LABELS: Record<string, string> = {
   "channels.telegram.network.autoSelectFamily": "Telegram autoSelectFamily",
   "channels.telegram.timeoutSeconds": "Telegram API Timeout (seconds)",
   "channels.telegram.capabilities.inlineButtons": "Telegram Inline Buttons",
-  "channels.whatsapp.dmPolicy": "WhatsApp DM Policy",
-  "channels.whatsapp.selfChatMode": "WhatsApp Self-Phone Mode",
-  "channels.whatsapp.debounceMs": "WhatsApp Message Debounce (ms)",
   "channels.signal.dmPolicy": "Signal DM Policy",
-  "channels.imessage.dmPolicy": "iMessage DM Policy",
-  "channels.bluebubbles.dmPolicy": "BlueBubbles DM Policy",
   "channels.discord.dm.policy": "Discord DM Policy",
   "channels.discord.retry.attempts": "Discord Retry Attempts",
   "channels.discord.retry.minDelayMs": "Discord Retry Min Delay (ms)",
@@ -374,7 +366,6 @@ const FIELD_LABELS: Record<string, string> = {
   "channels.mattermost.oncharPrefixes": "Mattermost Onchar Prefixes",
   "channels.mattermost.requireMention": "Mattermost Require Mention",
   "channels.signal.account": "Signal Account",
-  "channels.imessage.cliPath": "iMessage CLI Path",
   "agents.list[].skills": "Agent Skill Filter",
   "agents.list[].identity.avatar": "Agent Avatar",
   "discovery.mdns.mode": "mDNS Discovery Mode",
@@ -674,7 +665,7 @@ const FIELD_HELP: Record<string, string> = {
   "commands.restart": "Allow /restart and gateway restart tool actions (default: false).",
   "commands.useAccessGroups": "Enforce access-group allowlists/policies for commands.",
   "commands.ownerAllowFrom":
-    "Explicit owner allowlist for owner-only tools/commands. Use channel-native IDs (optionally prefixed like \"whatsapp:+15551234567\"). '*' is ignored.",
+    "Explicit owner allowlist for owner-only tools/commands. Use channel-native IDs (optionally prefixed like \"signal:+15551234567\"). '*' is ignored.",
   "session.dmScope":
     'DM session scoping: "main" keeps continuity; "per-peer", "per-channel-peer", or "per-account-channel-peer" isolates DM history (recommended for shared inboxes/multi-account).',
   "session.identityLinks":
@@ -687,12 +678,8 @@ const FIELD_HELP: Record<string, string> = {
     "Allow Mattermost to write config in response to channel events/commands (default: true).",
   "channels.discord.configWrites":
     "Allow Discord to write config in response to channel events/commands (default: true).",
-  "channels.whatsapp.configWrites":
-    "Allow WhatsApp to write config in response to channel events/commands (default: true).",
   "channels.signal.configWrites":
     "Allow Signal to write config in response to channel events/commands (default: true).",
-  "channels.imessage.configWrites":
-    "Allow iMessage to write config in response to channel events/commands (default: true).",
   "channels.msteams.configWrites":
     "Allow Microsoft Teams to write config in response to channel events/commands (default: true).",
   "channels.discord.commands.native": 'Override native commands for Discord (bool or "auto").',
@@ -733,17 +720,8 @@ const FIELD_HELP: Record<string, string> = {
     "Override Node autoSelectFamily for Telegram (true=enable, false=disable).",
   "channels.telegram.timeoutSeconds":
     "Max seconds before Telegram API requests are aborted (default: 500 per grammY).",
-  "channels.whatsapp.dmPolicy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.whatsapp.allowFrom=["*"].',
-  "channels.whatsapp.selfChatMode": "Same-phone setup (bot uses your personal WhatsApp number).",
-  "channels.whatsapp.debounceMs":
-    "Debounce window (ms) for batching rapid consecutive messages from the same sender (0 to disable).",
   "channels.signal.dmPolicy":
     'Direct message access control ("pairing" recommended). "open" requires channels.signal.allowFrom=["*"].',
-  "channels.imessage.dmPolicy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.imessage.allowFrom=["*"].',
-  "channels.bluebubbles.dmPolicy":
-    'Direct message access control ("pairing" recommended). "open" requires channels.bluebubbles.allowFrom=["*"].',
   "channels.discord.dm.policy":
     'Direct message access control ("pairing" recommended). "open" requires channels.discord.dm.allowFrom=["*"].',
   "channels.discord.retry.attempts":

@@ -381,7 +381,7 @@ Notes:
 ### Register a messaging channel
 
 Plugins can register **channel plugins** that behave like built‑in channels
-(WhatsApp, Telegram, etc.). Channel config lives under `channels.<id>` and is
+(Telegram, Discord, etc.). Channel config lives under `channels.<id>` and is
 validated by your channel plugin code.
 
 ```ts

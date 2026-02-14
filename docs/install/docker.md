@@ -256,12 +256,6 @@ CMD ["node","dist/index.js"]
 
 Use the CLI container to configure channels, then restart the gateway if needed.
 
-WhatsApp (QR):
-
-```bash
-docker compose run --rm openclaw-cli channels login
-```
-
 Telegram (bot token):
 
 ```bash
@@ -274,7 +268,7 @@ Discord (bot token):
 docker compose run --rm openclaw-cli channels add --channel discord --token "<token>"
 ```
 
-Docs: [WhatsApp](/channels/whatsapp), [Telegram](/channels/telegram), [Discord](/channels/discord)
+Docs: [Telegram](/channels/telegram), [Discord](/channels/discord)
 
 ### OpenAI Codex OAuth (headless Docker)
 

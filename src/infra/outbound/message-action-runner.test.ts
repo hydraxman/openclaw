@@ -5,16 +5,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChannelPlugin } from "../../channels/plugins/types.js";
 import type { OpenClawConfig } from "../../config/config.js";
 import { slackPlugin } from "../../../extensions/slack/src/channel.js";
+import { signalPlugin } from "../../../extensions/signal/src/channel.js";
 import { telegramPlugin } from "../../../extensions/telegram/src/channel.js";
-import { whatsappPlugin } from "../../../extensions/whatsapp/src/channel.js";
 import { jsonResult } from "../../agents/tools/common.js";
 import { setActivePluginRegistry } from "../../plugins/runtime.js";
-import { createIMessageTestPlugin, createTestRegistry } from "../../test-utils/channel-plugins.js";
-import { loadWebMedia } from "../../web/media.js";
+import { createTestRegistry } from "../../test-utils/channel-plugins.js";
+import { loadWebMedia } from "../../media/load.js";
 import { runMessageAction } from "./message-action-runner.js";
 
-vi.mock("../../web/media.js", async () => {
-  const actual = await vi.importActual<typeof import("../../web/media.js")>("../../web/media.js");
+vi.mock("../../media/load.js", async () => {
+  const actual = await vi.importActual<typeof import("../../media/load.js")>("../../media/load.js");
   return {
     ...actual,
     loadWebMedia: vi.fn(actual.loadWebMedia),
@@ -30,9 +30,9 @@ const slackConfig = {
   },
 } as OpenClawConfig;
 
-const whatsappConfig = {
+const signalConfig = {
   channels: {
-    whatsapp: {
+    signal: {
       allowFrom: ["*"],
     },
   },
@@ -42,12 +42,12 @@ describe("runMessageAction context isolation", () => {
   beforeEach(async () => {
     const { createPluginRuntime } = await import("../../plugins/runtime/index.js");
     const { setSlackRuntime } = await import("../../../extensions/slack/src/runtime.js");
+    const { setSignalRuntime } = await import("../../../extensions/signal/src/runtime.js");
     const { setTelegramRuntime } = await import("../../../extensions/telegram/src/runtime.js");
-    const { setWhatsAppRuntime } = await import("../../../extensions/whatsapp/src/runtime.js");
     const runtime = createPluginRuntime();
     setSlackRuntime(runtime);
+    setSignalRuntime(runtime);
     setTelegramRuntime(runtime);
-    setWhatsAppRuntime(runtime);
     setActivePluginRegistry(
       createTestRegistry([
         {
@@ -56,19 +56,14 @@ describe("runMessageAction context isolation", () => {
           plugin: slackPlugin,
         },
         {
-          pluginId: "whatsapp",
-          source: "test",
-          plugin: whatsappPlugin,
-        },
-        {
           pluginId: "telegram",
           source: "test",
           plugin: telegramPlugin,
         },
         {
-          pluginId: "imessage",
+          pluginId: "signal",
           source: "test",
-          plugin: createIMessageTestPlugin(),
+          plugin: signalPlugin,
         },
       ]),
     );
@@ -187,67 +182,32 @@ describe("runMessageAction context isolation", () => {
     expect(result.kind).toBe("action");
   });
 
-  it("allows WhatsApp send when target matches current chat", async () => {
+  it("allows Signal send when target matches current chat", async () => {
     const result = await runMessageAction({
-      cfg: whatsappConfig,
+      cfg: signalConfig,
       action: "send",
       params: {
-        channel: "whatsapp",
-        target: "123@g.us",
+        channel: "signal",
+        target: "+15551234567",
         message: "hi",
       },
-      toolContext: { currentChannelId: "123@g.us" },
+      toolContext: { currentChannelId: "+15551234567" },
       dryRun: true,
     });
 
     expect(result.kind).toBe("send");
   });
 
-  it("blocks WhatsApp send when target differs from current chat", async () => {
+  it("blocks Signal send when target differs from current chat", async () => {
     const result = await runMessageAction({
-      cfg: whatsappConfig,
+      cfg: signalConfig,
       action: "send",
       params: {
-        channel: "whatsapp",
-        target: "456@g.us",
+        channel: "signal",
+        target: "+15551230000",
         message: "hi",
       },
-      toolContext: { currentChannelId: "123@g.us", currentChannelProvider: "whatsapp" },
-      dryRun: true,
-    });
-
-    expect(result.kind).toBe("send");
-  });
-
-  it("allows iMessage send when target matches current handle", async () => {
-    const result = await runMessageAction({
-      cfg: whatsappConfig,
-      action: "send",
-      params: {
-        channel: "imessage",
-        target: "imessage:+15551234567",
-        message: "hi",
-      },
-      toolContext: { currentChannelId: "imessage:+15551234567" },
-      dryRun: true,
-    });
-
-    expect(result.kind).toBe("send");
-  });
-
-  it("blocks iMessage send when target differs from current handle", async () => {
-    const result = await runMessageAction({
-      cfg: whatsappConfig,
-      action: "send",
-      params: {
-        channel: "imessage",
-        target: "imessage:+15551230000",
-        message: "hi",
-      },
-      toolContext: {
-        currentChannelId: "imessage:+15551234567",
-        currentChannelProvider: "imessage",
-      },
+      toolContext: { currentChannelId: "+15551234567", currentChannelProvider: "signal" },
       dryRun: true,
     });
 
@@ -365,13 +325,13 @@ describe("runMessageAction context isolation", () => {
 
 describe("runMessageAction sendAttachment hydration", () => {
   const attachmentPlugin: ChannelPlugin = {
-    id: "bluebubbles",
+    id: "msteams",
     meta: {
-      id: "bluebubbles",
-      label: "BlueBubbles",
-      selectionLabel: "BlueBubbles",
-      docsPath: "/channels/bluebubbles",
-      blurb: "BlueBubbles test plugin.",
+      id: "msteams",
+      label: "Microsoft Teams",
+      selectionLabel: "Microsoft Teams",
+      docsPath: "/channels/msteams",
+      blurb: "Microsoft Teams test plugin.",
     },
     capabilities: { chatTypes: ["direct"], media: true },
     config: {
@@ -397,7 +357,7 @@ describe("runMessageAction sendAttachment hydration", () => {
     setActivePluginRegistry(
       createTestRegistry([
         {
-          pluginId: "bluebubbles",
+          pluginId: "msteams",
           source: "test",
           plugin: attachmentPlugin,
         },
@@ -419,10 +379,8 @@ describe("runMessageAction sendAttachment hydration", () => {
   it("hydrates buffer and filename from media for sendAttachment", async () => {
     const cfg = {
       channels: {
-        bluebubbles: {
+        msteams: {
           enabled: true,
-          serverUrl: "http://localhost:1234",
-          password: "test-password",
         },
       },
     } as OpenClawConfig;
@@ -431,7 +389,7 @@ describe("runMessageAction sendAttachment hydration", () => {
       cfg,
       action: "sendAttachment",
       params: {
-        channel: "bluebubbles",
+        channel: "msteams",
         target: "+15551234567",
         media: "https://example.com/pic.png",
         message: "caption",
@@ -453,10 +411,8 @@ describe("runMessageAction sendAttachment hydration", () => {
   it("rewrites sandboxed media paths for sendAttachment", async () => {
     const cfg = {
       channels: {
-        bluebubbles: {
+        msteams: {
           enabled: true,
-          serverUrl: "http://localhost:1234",
-          password: "test-password",
         },
       },
     } as OpenClawConfig;
@@ -466,7 +422,7 @@ describe("runMessageAction sendAttachment hydration", () => {
         cfg,
         action: "sendAttachment",
         params: {
-          channel: "bluebubbles",
+          channel: "msteams",
           target: "+15551234567",
           media: "./data/pic.png",
           message: "caption",

@@ -56,33 +56,6 @@ export type ChannelAccountSnapshot = {
   application?: unknown;
 };
 
-export type WhatsAppSelf = {
-  e164?: string | null;
-  jid?: string | null;
-};
-
-export type WhatsAppDisconnect = {
-  at: number;
-  status?: number | null;
-  error?: string | null;
-  loggedOut?: boolean | null;
-};
-
-export type WhatsAppStatus = {
-  configured: boolean;
-  linked: boolean;
-  authAgeMs?: number | null;
-  self?: WhatsAppSelf | null;
-  running: boolean;
-  connected: boolean;
-  lastConnectedAt?: number | null;
-  lastDisconnect?: WhatsAppDisconnect | null;
-  reconnectAttempts: number;
-  lastMessageAt?: number | null;
-  lastEventAt?: number | null;
-  lastError?: string | null;
-};
-
 export type TelegramBot = {
   id?: number | null;
   username?: string | null;
@@ -207,23 +180,6 @@ export type SignalStatus = {
   lastStopAt?: number | null;
   lastError?: string | null;
   probe?: SignalProbe | null;
-  lastProbeAt?: number | null;
-};
-
-export type IMessageProbe = {
-  ok: boolean;
-  error?: string | null;
-};
-
-export type IMessageStatus = {
-  configured: boolean;
-  running: boolean;
-  lastStartAt?: number | null;
-  lastStopAt?: number | null;
-  lastError?: string | null;
-  cliPath?: string | null;
-  dbPath?: string | null;
-  probe?: IMessageProbe | null;
   lastProbeAt?: number | null;
 };
 

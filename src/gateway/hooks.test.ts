@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import type { ChannelPlugin } from "../channels/plugins/types.js";
 import type { OpenClawConfig } from "../config/config.js";
 import { setActivePluginRegistry } from "../plugins/runtime.js";
-import { createIMessageTestPlugin, createTestRegistry } from "../test-utils/channel-plugins.js";
+import { createTestRegistry } from "../test-utils/channel-plugins.js";
 import {
   extractHookToken,
   normalizeAgentPayload,
@@ -90,19 +90,19 @@ describe("gateway hooks helpers", () => {
     setActivePluginRegistry(
       createTestRegistry([
         {
-          pluginId: "imessage",
+          pluginId: "signal",
           source: "test",
-          plugin: createIMessageTestPlugin(),
+          plugin: createSignalAliasPlugin(),
         },
       ]),
     );
-    const imsg = normalizeAgentPayload(
-      { message: "yo", channel: "imsg" },
+    const sms = normalizeAgentPayload(
+      { message: "yo", channel: "sms" },
       { idFactory: () => "x" },
     );
-    expect(imsg.ok).toBe(true);
-    if (imsg.ok) {
-      expect(imsg.value.channel).toBe("imessage");
+    expect(sms.ok).toBe(true);
+    if (sms.ok) {
+      expect(sms.value.channel).toBe("signal");
     }
 
     setActivePluginRegistry(
@@ -139,6 +139,23 @@ const createMSTeamsPlugin = (params: { aliases?: string[] }): ChannelPlugin => (
     docsPath: "/channels/msteams",
     blurb: "Bot Framework; enterprise support.",
     aliases: params.aliases,
+  },
+  capabilities: { chatTypes: ["direct"] },
+  config: {
+    listAccountIds: () => [],
+    resolveAccount: () => ({}),
+  },
+});
+
+const createSignalAliasPlugin = (): ChannelPlugin => ({
+  id: "signal",
+  meta: {
+    id: "signal",
+    label: "Signal",
+    selectionLabel: "Signal",
+    docsPath: "/channels/signal",
+    blurb: "signal test stub.",
+    aliases: ["sms"],
   },
   capabilities: { chatTypes: ["direct"] },
   config: {

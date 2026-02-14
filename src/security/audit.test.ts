@@ -28,8 +28,8 @@ function successfulProbeResult(url: string) {
 describe("security audit", () => {
   it("includes an attack surface summary (info)", async () => {
     const cfg: OpenClawConfig = {
-      channels: { whatsapp: { groupPolicy: "open" }, telegram: { groupPolicy: "allowlist" } },
-      tools: { elevated: { enabled: true, allowFrom: { whatsapp: ["+1"] } } },
+      channels: { signal: { groupPolicy: "open" }, telegram: { groupPolicy: "allowlist" } },
+      tools: { elevated: { enabled: true, allowFrom: { signal: ["+1"] } } },
       hooks: { enabled: true },
       browser: { enabled: true },
     };
@@ -266,7 +266,7 @@ describe("security audit", () => {
     const cfg: OpenClawConfig = {
       tools: {
         elevated: {
-          allowFrom: { whatsapp: ["*"] },
+          allowFrom: { signal: ["*"] },
         },
       },
     };
@@ -280,7 +280,7 @@ describe("security audit", () => {
     expect(res.findings).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          checkId: "tools.elevated.allowFrom.whatsapp.wildcard",
+          checkId: "tools.elevated.allowFrom.signal.wildcard",
           severity: "critical",
         }),
       ]),
@@ -359,12 +359,12 @@ describe("security audit", () => {
     const cfg: OpenClawConfig = { session: { dmScope: "main" } };
     const plugins: ChannelPlugin[] = [
       {
-        id: "whatsapp",
+        id: "signal",
         meta: {
-          id: "whatsapp",
-          label: "WhatsApp",
-          selectionLabel: "WhatsApp",
-          docsPath: "/channels/whatsapp",
+          id: "signal",
+          label: "Signal",
+          selectionLabel: "Signal",
+          docsPath: "/channels/signal",
           blurb: "Test",
         },
         capabilities: { chatTypes: ["direct"] },
@@ -378,8 +378,8 @@ describe("security audit", () => {
           resolveDmPolicy: () => ({
             policy: "allowlist",
             allowFrom: ["user-a", "user-b"],
-            policyPath: "channels.whatsapp.dmPolicy",
-            allowFromPath: "channels.whatsapp.",
+            policyPath: "channels.signal.dmPolicy",
+            allowFromPath: "channels.signal.",
             approveHint: "approve",
           }),
         },
@@ -396,7 +396,7 @@ describe("security audit", () => {
     expect(res.findings).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          checkId: "channels.whatsapp.dm.scope_main_multiuser",
+          checkId: "channels.signal.dm.scope_main_multiuser",
           severity: "warn",
         }),
       ]),
@@ -1175,8 +1175,8 @@ description: test skill
 
   it("flags open groupPolicy when tools.elevated is enabled", async () => {
     const cfg: OpenClawConfig = {
-      tools: { elevated: { enabled: true, allowFrom: { whatsapp: ["+1"] } } },
-      channels: { whatsapp: { groupPolicy: "open" } },
+      tools: { elevated: { enabled: true, allowFrom: { signal: ["+1"] } } },
+      channels: { signal: { groupPolicy: "open" } },
     };
 
     const res = await runSecurityAudit({

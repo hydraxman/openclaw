@@ -72,7 +72,7 @@ Example:
 Env option: `TELEGRAM_BOT_TOKEN=...` (works for the default account).
 If both env and config are set, config takes precedence.
 
-Multi-account support: use `channels.telegram.accounts` with per-account tokens and optional `name`. See [`gateway/configuration`](/gateway/configuration#telegramaccounts--discordaccounts--slackaccounts--signalaccounts--imessageaccounts) for the shared pattern.
+Multi-account support: use `channels.telegram.accounts` with per-account tokens and optional `name`. See [`gateway/configuration`](/gateway/configuration#channelstelegramaccounts--channelsdiscordaccounts--channelsgooglechataccounts--channelsslackaccounts--channelsmattermostaccounts--channelssignalaccounts) for the shared pattern.
 
 3. Start the gateway. Telegram starts when a token is resolved (config first, env fallback).
 4. DM access defaults to pairing. Approve the code when the bot is first contacted.

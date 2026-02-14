@@ -81,7 +81,7 @@ Example:
 }
 ```
 
-Multi-account support: use `channels.signal.accounts` with per-account config and optional `name`. See [`gateway/configuration`](/gateway/configuration#telegramaccounts--discordaccounts--slackaccounts--signalaccounts--imessageaccounts) for the shared pattern.
+Multi-account support: use `channels.signal.accounts` with per-account config and optional `name`. See [`gateway/configuration`](/gateway/configuration#channelstelegramaccounts--channelsdiscordaccounts--channelsgooglechataccounts--channelsslackaccounts--channelsmattermostaccounts--channelssignalaccounts) for the shared pattern.
 
 ## External daemon mode (httpUrl)
 

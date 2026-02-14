@@ -13,7 +13,6 @@ import {
 import { resolveDiscordAccount } from "../../discord/accounts.js";
 import { resolveDiscordUserAllowlist } from "../../discord/resolve-users.js";
 import { logVerbose } from "../../globals.js";
-import { resolveIMessageAccount } from "../../imessage/accounts.js";
 import {
   addChannelAllowFromStoreEntry,
   readChannelAllowFromStore,
@@ -24,7 +23,6 @@ import { resolveSignalAccount } from "../../signal/accounts.js";
 import { resolveSlackAccount } from "../../slack/accounts.js";
 import { resolveSlackUserAllowlist } from "../../slack/resolve-users.js";
 import { resolveTelegramAccount } from "../../telegram/accounts.js";
-import { resolveWhatsAppAccount } from "../../web/accounts.js";
 
 type AllowlistScope = "dm" | "group" | "all";
 type AllowlistAction = "list" | "add" | "remove";
@@ -256,23 +254,13 @@ function resolveChannelAllowFromPaths(
     if (channelId === "slack" || channelId === "discord") {
       return ["dm", "allowFrom"];
     }
-    if (
-      channelId === "telegram" ||
-      channelId === "whatsapp" ||
-      channelId === "signal" ||
-      channelId === "imessage"
-    ) {
+    if (channelId === "telegram" || channelId === "signal") {
       return ["allowFrom"];
     }
     return null;
   }
   if (scope === "group") {
-    if (
-      channelId === "telegram" ||
-      channelId === "whatsapp" ||
-      channelId === "signal" ||
-      channelId === "imessage"
-    ) {
+    if (channelId === "telegram" || channelId === "signal") {
       return ["groupAllowFrom"];
     }
     return null;
@@ -384,20 +372,8 @@ export const handleAllowlistCommand: CommandHandler = async (params, allowTextCo
           }
         }
       }
-    } else if (channelId === "whatsapp") {
-      const account = resolveWhatsAppAccount({ cfg: params.cfg, accountId });
-      dmAllowFrom = (account.allowFrom ?? []).map(String);
-      groupAllowFrom = (account.groupAllowFrom ?? []).map(String);
-      dmPolicy = account.dmPolicy;
-      groupPolicy = account.groupPolicy;
     } else if (channelId === "signal") {
       const account = resolveSignalAccount({ cfg: params.cfg, accountId });
-      dmAllowFrom = (account.config.allowFrom ?? []).map(String);
-      groupAllowFrom = (account.config.groupAllowFrom ?? []).map(String);
-      dmPolicy = account.config.dmPolicy;
-      groupPolicy = account.config.groupPolicy;
-    } else if (channelId === "imessage") {
-      const account = resolveIMessageAccount({ cfg: params.cfg, accountId });
       dmAllowFrom = (account.config.allowFrom ?? []).map(String);
       groupAllowFrom = (account.config.groupAllowFrom ?? []).map(String);
       dmPolicy = account.config.dmPolicy;

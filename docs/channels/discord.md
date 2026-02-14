@@ -156,7 +156,7 @@ Or via config:
 }
 ```
 
-Multi-account support: use `channels.discord.accounts` with per-account tokens and optional `name`. See [`gateway/configuration`](/gateway/configuration#telegramaccounts--discordaccounts--slackaccounts--signalaccounts--imessageaccounts) for the shared pattern.
+Multi-account support: use `channels.discord.accounts` with per-account tokens and optional `name`. See [`gateway/configuration`](/gateway/configuration#channelstelegramaccounts--channelsdiscordaccounts--channelsgooglechataccounts--channelsslackaccounts--channelsmattermostaccounts--channelssignalaccounts) for the shared pattern.
 
 #### Allowlist + channel routing
 

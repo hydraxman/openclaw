@@ -8,7 +8,7 @@ title: "Personal Assistant Setup"
 
 # Building a personal assistant with OpenClaw
 
-OpenClaw is a WhatsApp + Telegram + Discord + iMessage gateway for **Pi** agents. Plugins add Mattermost. This guide is the "personal assistant" setup: one dedicated WhatsApp number that behaves like your always-on agent.
+OpenClaw is a Telegram + Discord + Signal gateway for **Pi** agents. Plugins add Mattermost. This guide is the "personal assistant" setup: one dedicated bot account that behaves like your always-on agent.
 
 ## ⚠️ Safety first
 
@@ -16,46 +16,29 @@ You’re putting an agent in a position to:
 
 - run commands on your machine (depending on your Pi tool setup)
 - read/write files in your workspace
-- send messages back out via WhatsApp/Telegram/Discord/Mattermost (plugin)
+- send messages back out via Telegram/Discord/Mattermost (plugin)
 
 Start conservative:
 
-- Always set `channels.whatsapp.allowFrom` (never run open-to-the-world on your personal Mac).
-- Use a dedicated WhatsApp number for the assistant.
+- Always set `channels.telegram.allowFrom` (never run open-to-the-world on your personal Mac).
+- Use a dedicated bot account for the assistant.
 - Heartbeats now default to every 30 minutes. Disable until you trust the setup by setting `agents.defaults.heartbeat.every: "0m"`.
 
 ## Prerequisites
 
 - OpenClaw installed and onboarded — see [Getting Started](/start/getting-started) if you haven't done this yet
-- A second phone number (SIM/eSIM/prepaid) for the assistant
+- A Telegram bot token (or another channel account you control)
 
-## The two-phone setup (recommended)
+## Dedicated bot account (recommended)
 
-You want this:
-
-```
-Your Phone (personal)          Second Phone (assistant)
-┌─────────────────┐           ┌─────────────────┐
-│  Your WhatsApp  │  ──────▶  │  Assistant WA   │
-│  +1-555-YOU     │  message  │  +1-555-ASSIST  │
-└─────────────────┘           └────────┬────────┘
-                                       │ linked via QR
-                                       ▼
-                              ┌─────────────────┐
-                              │  Your Mac       │
-                              │  (openclaw)      │
-                              │    Pi agent     │
-                              └─────────────────┘
-```
-
-If you link your personal WhatsApp to OpenClaw, every message to you becomes “agent input”. That’s rarely what you want.
+Use a dedicated bot or app account for your assistant so your personal chats stay separate.
 
 ## 5-minute quick start
 
-1. Pair WhatsApp Web (shows QR; scan with the assistant phone):
+1. Add a Telegram bot:
 
 ```bash
-openclaw channels login
+openclaw channels add --channel telegram --token <bot-token>
 ```
 
 2. Start the Gateway (leave it running):
@@ -68,11 +51,11 @@ openclaw gateway --port 18789
 
 ```json5
 {
-  channels: { whatsapp: { allowFrom: ["+15555550123"] } },
+  channels: { telegram: { allowFrom: ["123456789"] } },
 }
 ```
 
-Now message the assistant number from your allowlisted phone.
+Now message the assistant bot from your allowlisted account.
 
 When onboarding finishes, we auto-open the dashboard and print a clean (non-tokenized) link. If it prompts for auth, paste the token from `gateway.auth.token` into Control UI settings. To reopen later: `openclaw dashboard`.
 
@@ -133,8 +116,8 @@ Example:
     heartbeat: { every: "0m" },
   },
   channels: {
-    whatsapp: {
-      allowFrom: ["+15555550123"],
+    telegram: {
+      allowFrom: ["123456789"],
       groups: {
         "*": { requireMention: true },
       },

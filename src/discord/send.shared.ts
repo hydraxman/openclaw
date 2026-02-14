@@ -7,7 +7,7 @@ import type { RetryConfig } from "../infra/retry.js";
 import { loadConfig } from "../config/config.js";
 import { createDiscordRetryRunner, type RetryRunner } from "../infra/retry-policy.js";
 import { normalizePollDurationHours, normalizePollInput, type PollInput } from "../polls.js";
-import { loadWebMedia } from "../web/media.js";
+import { loadWebMedia } from "../media/load.js";
 import { resolveDiscordAccount } from "./accounts.js";
 import { chunkDiscordTextWithMode } from "./chunk.js";
 import { fetchChannelPermissionsDiscord, isThreadChannelType } from "./send.permissions.js";

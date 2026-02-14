@@ -55,7 +55,7 @@ npm i -g openclaw@latest
 pnpm add -g openclaw@latest
 ```
 
-We do **not** recommend Bun for the Gateway runtime (WhatsApp/Telegram bugs).
+We do **not** recommend Bun for the Gateway runtime (Telegram bugs observed).
 
 To switch update channels (git + npm installs):
 

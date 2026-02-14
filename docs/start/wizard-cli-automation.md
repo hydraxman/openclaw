@@ -117,7 +117,7 @@ sessions, and auth profiles. Running without `--workspace` launches the wizard.
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
   --model openai/gpt-5.2 \
-  --bind whatsapp:biz \
+  --bind telegram:primary \
   --non-interactive \
   --json
 ```

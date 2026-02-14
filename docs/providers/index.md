@@ -11,7 +11,7 @@ title: "Model Providers"
 OpenClaw can use many LLM providers. Pick a provider, authenticate, then set the
 default model as `provider/model`.
 
-Looking for chat channel docs (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? See [Channels](/channels).
+Looking for chat channel docs (Telegram/Discord/Slack/Signal/Mattermost (plugin)/etc.)? See [Channels](/channels).
 
 ## Highlight: Venice (Venice AI)
 

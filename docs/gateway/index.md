@@ -11,7 +11,7 @@ Last updated: 2025-12-09
 
 ## What it is
 
-- The always-on process that owns the single Baileys/Telegram connection and the control/event plane.
+- The always-on process that owns channel connections and the control/event plane.
 - Replaces the legacy `gateway` command. CLI entry point: `openclaw gateway`.
 - Runs until stopped; exits non-zero on fatal errors so the supervisor restarts it.
 
@@ -111,7 +111,7 @@ Checklist per instance:
 - unique `OPENCLAW_CONFIG_PATH`
 - unique `OPENCLAW_STATE_DIR`
 - unique `agents.defaults.workspace`
-- separate WhatsApp numbers (if using WA)
+- separate channel accounts if you need strict isolation
 
 Service install per profile:
 
@@ -183,7 +183,7 @@ See also: [Presence](/concepts/presence) for how presence is produced/deduped an
 
 - Errors use `{ code, message, details?, retryable?, retryAfterMs? }`.
 - Standard codes:
-  - `NOT_LINKED` — WhatsApp not authenticated.
+  - `NOT_LINKED` — channel not authenticated.
   - `AGENT_TIMEOUT` — agent did not respond within the configured deadline.
   - `INVALID_REQUEST` — schema/param validation failed.
   - `UNAVAILABLE` — Gateway is shutting down or a dependency is unavailable.
@@ -318,7 +318,7 @@ Windows installs should use **WSL2** and follow the Linux systemd section above.
 ## CLI helpers
 
 - `openclaw gateway health|status` — request health/status over the Gateway WS.
-- `openclaw message send --target <num> --message "hi" [--media ...]` — send via Gateway (idempotent for WhatsApp).
+- `openclaw message send --target <num> --message "hi" [--media ...]` — send via Gateway (idempotent).
 - `openclaw agent --message "hi" --to <num>` — run an agent turn (waits for final by default).
 - `openclaw gateway call <method> --params '{"k":"v"}'` — raw method invoker for debugging.
 - `openclaw gateway stop|restart` — stop/restart the supervised gateway service (launchd/systemd).

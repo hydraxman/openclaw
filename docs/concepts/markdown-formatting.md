@@ -57,7 +57,7 @@ IR (schematic):
 ## Where it is used
 
 - Slack, Telegram, and Signal outbound adapters render from the IR.
-- Other channels (WhatsApp, iMessage, MS Teams, Discord) still use plain text or
+- Other channels (MS Teams, Discord, Google Chat) still use plain text or
   their own formatting rules, with Markdown table conversion applied before
   chunking when enabled.
 
@@ -67,7 +67,7 @@ Markdown tables are not consistently supported across chat clients. Use
 `markdown.tables` to control conversion per channel (and per account).
 
 - `code`: render tables as code blocks (default for most channels).
-- `bullets`: convert each row into bullet points (default for Signal + WhatsApp).
+- `bullets`: convert each row into bullet points (default for Signal).
 - `off`: disable table parsing and conversion; raw table text passes through.
 
 Config keys:

@@ -1,5 +1,5 @@
 ---
-summary: "Group chat behavior across surfaces (WhatsApp/Telegram/Discord/Slack/Signal/iMessage/Microsoft Teams)"
+summary: "Group chat behavior across surfaces (Telegram/Discord/Slack/Signal/Microsoft Teams/Matrix)"
 read_when:
   - Changing group chat behavior or mention gating
 title: "Groups"
@@ -7,11 +7,11 @@ title: "Groups"
 
 # Groups
 
-OpenClaw treats group chats consistently across surfaces: WhatsApp, Telegram, Discord, Slack, Signal, iMessage, Microsoft Teams.
+OpenClaw treats group chats consistently across surfaces: Telegram, Discord, Slack, Signal, Microsoft Teams, Matrix.
 
 ## Beginner intro (2 minutes)
 
-OpenClaw “lives” on your own messaging accounts. There is no separate WhatsApp bot user.
+OpenClaw “lives” on your own messaging accounts. There is no separate bot user for user-account channels.
 If **you** are in a group, OpenClaw can see that group and respond there.
 
 Default behavior:
@@ -132,10 +132,6 @@ Control how group/room messages are handled per channel:
 ```json5
 {
   channels: {
-    whatsapp: {
-      groupPolicy: "disabled", // "open" | "disabled" | "allowlist"
-      groupAllowFrom: ["+15551234567"],
-    },
     telegram: {
       groupPolicy: "disabled",
       groupAllowFrom: ["123456789", "@username"],
@@ -143,10 +139,6 @@ Control how group/room messages are handled per channel:
     signal: {
       groupPolicy: "disabled",
       groupAllowFrom: ["+15551234567"],
-    },
-    imessage: {
-      groupPolicy: "disabled",
-      groupAllowFrom: ["chat_id:123"],
     },
     msteams: {
       groupPolicy: "disabled",
@@ -183,7 +175,7 @@ Control how group/room messages are handled per channel:
 Notes:
 
 - `groupPolicy` is separate from mention-gating (which requires @mentions).
-- WhatsApp/Telegram/Signal/iMessage/Microsoft Teams: use `groupAllowFrom` (fallback: explicit `allowFrom`).
+- Telegram/Signal/Microsoft Teams: use `groupAllowFrom` (fallback: explicit `allowFrom`).
 - Discord: allowlist uses `channels.discord.guilds.<id>.channels`.
 - Slack: allowlist uses `channels.slack.channels`.
 - Matrix: allowlist uses `channels.matrix.groups` (room IDs, aliases, or names). Use `channels.matrix.groupAllowFrom` to restrict senders; per-room `users` allowlists are also supported.
@@ -201,27 +193,21 @@ Quick mental model (evaluation order for group messages):
 
 Group messages require a mention unless overridden per group. Defaults live per subsystem under `*.groups."*"`.
 
-Replying to a bot message counts as an implicit mention (when the channel supports reply metadata). This applies to Telegram, WhatsApp, Slack, Discord, and Microsoft Teams.
+Replying to a bot message counts as an implicit mention (when the channel supports reply metadata). This applies to Telegram, Slack, Discord, and Microsoft Teams.
 
 ```json5
 {
   channels: {
-    whatsapp: {
-      groups: {
-        "*": { requireMention: true },
-        "123@g.us": { requireMention: false },
-      },
-    },
     telegram: {
       groups: {
         "*": { requireMention: true },
         "123456789": { requireMention: false },
       },
     },
-    imessage: {
+    signal: {
       groups: {
         "*": { requireMention: true },
-        "123": { requireMention: false },
+        "<group-id>": { requireMention: false },
       },
     },
   },
@@ -289,7 +275,7 @@ Notes:
 
 ## Group allowlists
 
-When `channels.whatsapp.groups`, `channels.telegram.groups`, or `channels.imessage.groups` is configured, the keys act as a group allowlist. Use `"*"` to allow all groups while still setting default mention behavior.
+When `channels.<channel>.groups` is configured, the keys act as a group allowlist. Use `"*"` to allow all groups while still setting default mention behavior.
 
 Common intents (copy/paste):
 
@@ -297,19 +283,19 @@ Common intents (copy/paste):
 
 ```json5
 {
-  channels: { whatsapp: { groupPolicy: "disabled" } },
+  channels: { telegram: { groupPolicy: "disabled" } },
 }
 ```
 
-2. Allow only specific groups (WhatsApp)
+2. Allow only specific groups (Telegram)
 
 ```json5
 {
   channels: {
-    whatsapp: {
+    telegram: {
       groups: {
-        "123@g.us": { requireMention: true },
-        "456@g.us": { requireMention: false },
+        "-1001234567890": { requireMention: true },
+        "-1009876543210": { requireMention: false },
       },
     },
   },
@@ -321,21 +307,21 @@ Common intents (copy/paste):
 ```json5
 {
   channels: {
-    whatsapp: {
+    telegram: {
       groups: { "*": { requireMention: true } },
     },
   },
 }
 ```
 
-4. Only the owner can trigger in groups (WhatsApp)
+4. Only the owner can trigger in groups (Telegram)
 
 ```json5
 {
   channels: {
-    whatsapp: {
+    telegram: {
       groupPolicy: "allowlist",
-      groupAllowFrom: ["+15551234567"],
+      groupAllowFrom: ["123456789"],
       groups: { "*": { requireMention: true } },
     },
   },
@@ -349,7 +335,7 @@ Group owners can toggle per-group activation:
 - `/activation mention`
 - `/activation always`
 
-Owner is determined by `channels.whatsapp.allowFrom` (or the bot’s self E.164 when unset). Send the command as a standalone message. Other surfaces currently ignore `/activation`.
+Owner is determined by `channels.<channel>.allowFrom` (or the bot’s self id when unset). Send the command as a standalone message. Other surfaces currently ignore `/activation`.
 
 ## Context fields
 
@@ -363,12 +349,6 @@ Group inbound payloads set:
 
 The agent system prompt includes a group intro on the first turn of a new group session. It reminds the model to respond like a human, avoid Markdown tables, and avoid typing literal `\n` sequences.
 
-## iMessage specifics
+## Channel specifics
 
-- Prefer `chat_id:<id>` when routing or allowlisting.
-- List chats: `imsg chats --limit 20`.
-- Group replies always go back to the same `chat_id`.
-
-## WhatsApp specifics
-
-See [Group messages](/channels/group-messages) for WhatsApp-only behavior (history injection, mention handling details).
+See channel-specific docs for group quirks (Telegram, Discord, Slack, Signal, Matrix).

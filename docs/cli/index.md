@@ -367,7 +367,7 @@ Options:
 
 ### `channels`
 
-Manage chat channel accounts (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/MS Teams).
+Manage chat channel accounts (Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/MS Teams).
 
 Subcommands:
 
@@ -377,24 +377,24 @@ Subcommands:
 - `channels logs`: show recent channel logs from the gateway log file.
 - `channels add`: wizard-style setup when no flags are passed; flags switch to non-interactive mode.
 - `channels remove`: disable by default; pass `--delete` to remove config entries without prompts.
-- `channels login`: interactive channel login (WhatsApp Web only).
+- `channels login`: interactive channel login (when supported).
 - `channels logout`: log out of a channel session (if supported).
 
 Common options:
 
-- `--channel <name>`: `whatsapp|telegram|discord|googlechat|slack|mattermost|signal|imessage|msteams`
+- `--channel <name>`: `telegram|discord|googlechat|slack|mattermost|signal|msteams`
 - `--account <id>`: channel account id (default `default`)
 - `--name <label>`: display name for the account
 
 `channels login` options:
 
-- `--channel <channel>` (default `whatsapp`; supports `whatsapp`/`web`)
+- `--channel <channel>`
 - `--account <id>`
 - `--verbose`
 
 `channels logout` options:
 
-- `--channel <channel>` (default `whatsapp`)
+- `--channel <channel>`
 - `--account <id>`
 
 `channels list` options:
@@ -486,7 +486,7 @@ Subcommands:
 
 Examples:
 
-- `openclaw message send --target +15555550123 --message "Hi"`
+- `openclaw message send --channel telegram --target 123456789 --message "Hi"`
 - `openclaw message poll --channel discord --target channel:123 --poll-question "Snack?" --poll-option Pizza --poll-option Sushi`
 
 ### `agent`
@@ -503,7 +503,7 @@ Options:
 - `--session-id <id>`
 - `--thinking <off|minimal|low|medium|high|xhigh>` (GPT-5.2 + Codex models only)
 - `--verbose <on|full|off>`
-- `--channel <whatsapp|telegram|discord|slack|mattermost|signal|imessage|msteams>`
+- `--channel <telegram|discord|slack|mattermost|signal|msteams>`
 - `--local`
 - `--deliver`
 - `--json`
@@ -535,7 +535,7 @@ Options:
 - `--non-interactive`
 - `--json`
 
-Binding specs use `channel[:accountId]`. When `accountId` is omitted for WhatsApp, the default account id is used.
+Binding specs use `channel[:accountId]`. When `accountId` is omitted, the default account id is used.
 
 #### `agents delete <id>`
 
@@ -690,7 +690,7 @@ Notes:
 - `gateway status` also surfaces legacy or extra gateway services when it can detect them (`--deep` adds system-level scans). Profile-named OpenClaw services are treated as first-class and aren't flagged as "extra".
 - `gateway status` prints which config path the CLI uses vs which config the service likely uses (service env), plus the resolved probe target URL.
 - `gateway install|uninstall|start|stop|restart` support `--json` for scripting (default output stays human-friendly).
-- `gateway install` defaults to Node runtime; bun is **not recommended** (WhatsApp/Telegram bugs).
+- `gateway install` defaults to Node runtime; bun is **not recommended** (Telegram bugs observed).
 - `gateway install` options: `--port`, `--runtime`, `--token`, `--force`, `--json`.
 
 ### `logs`

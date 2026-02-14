@@ -34,14 +34,9 @@ describe("buildPairingReply", () => {
       code: "GHI789",
     },
     {
-      channel: "imessage",
-      idLine: "Your iMessage sender id: +15550002222",
+      channel: "telegram",
+      idLine: "Your Telegram chat id: 123456",
       code: "JKL012",
-    },
-    {
-      channel: "whatsapp",
-      idLine: "Your WhatsApp phone number: +15550003333",
-      code: "MNO345",
     },
   ] as const;
 

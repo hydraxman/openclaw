@@ -31,7 +31,6 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 
 ## ID formats (by channel)
 
-- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (group)
 - Telegram: `@username` or numeric chat id; groups are numeric ids
 - Slack: `user:U…` and `channel:C…`
 - Discord: `user:<id>` and `channel:<id>`

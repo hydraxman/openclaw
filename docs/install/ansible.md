@@ -63,7 +63,7 @@ sudo -i -u openclaw
 The post-install script will guide you through:
 
 1. **Onboarding wizard**: Configure OpenClaw settings
-2. **Provider login**: Connect WhatsApp/Telegram/Discord/Signal
+2. **Provider login**: Connect Telegram/Discord/Signal
 3. **Gateway testing**: Verify the installation
 4. **Tailscale setup**: Connect to your VPN mesh
 
@@ -81,7 +81,7 @@ sudo systemctl restart openclaw
 
 # Provider login (run as openclaw user)
 sudo -i -u openclaw
-openclaw channels login
+openclaw channels add --channel telegram --token "<token>"
 ```
 
 ## Security Architecture

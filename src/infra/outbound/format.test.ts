@@ -10,8 +10,8 @@ describe("formatOutboundDeliverySummary", () => {
     expect(formatOutboundDeliverySummary("telegram")).toBe(
       "✅ Sent via Telegram. Message ID: unknown",
     );
-    expect(formatOutboundDeliverySummary("imessage")).toBe(
-      "✅ Sent via iMessage. Message ID: unknown",
+    expect(formatOutboundDeliverySummary("signal")).toBe(
+      "✅ Sent via Signal. Message ID: unknown",
     );
   });
 
@@ -53,24 +53,7 @@ describe("buildOutboundDeliveryJson", () => {
     });
   });
 
-  it("supports whatsapp metadata when present", () => {
-    expect(
-      buildOutboundDeliveryJson({
-        channel: "whatsapp",
-        to: "+1",
-        result: { channel: "whatsapp", messageId: "w1", toJid: "jid" },
-      }),
-    ).toEqual({
-      channel: "whatsapp",
-      via: "direct",
-      to: "+1",
-      messageId: "w1",
-      mediaUrl: null,
-      toJid: "jid",
-    });
-  });
-
-  it("keeps timestamp for signal", () => {
+  it("supports signal metadata when present", () => {
     expect(
       buildOutboundDeliveryJson({
         channel: "signal",
@@ -90,8 +73,8 @@ describe("buildOutboundDeliveryJson", () => {
 
 describe("formatGatewaySummary", () => {
   it("formats gateway summaries with channel", () => {
-    expect(formatGatewaySummary({ channel: "whatsapp", messageId: "m1" })).toBe(
-      "✅ Sent via gateway (whatsapp). Message ID: m1",
+    expect(formatGatewaySummary({ channel: "signal", messageId: "m1" })).toBe(
+      "✅ Sent via gateway (signal). Message ID: m1",
     );
   });
 

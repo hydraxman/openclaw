@@ -2,14 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { OpenClawConfig } from "../../config/config.js";
 import { signalOutbound } from "../../channels/plugins/outbound/signal.js";
 import { telegramOutbound } from "../../channels/plugins/outbound/telegram.js";
-import { whatsappOutbound } from "../../channels/plugins/outbound/whatsapp.js";
 import { setActivePluginRegistry } from "../../plugins/runtime.js";
 import { markdownToSignalTextChunks } from "../../signal/format.js";
-import {
-  createIMessageTestPlugin,
-  createOutboundTestPlugin,
-  createTestRegistry,
-} from "../../test-utils/channel-plugins.js";
+import { createOutboundTestPlugin, createTestRegistry } from "../../test-utils/channel-plugins.js";
 
 const mocks = vi.hoisted(() => ({
   appendAssistantMessageToSessionTranscript: vi.fn(async () => ({ ok: true, sessionFile: "x" })),
@@ -146,53 +141,53 @@ describe("deliverOutboundPayloads", () => {
     });
   });
 
-  it("chunks WhatsApp text and returns all results", async () => {
-    const sendWhatsApp = vi
+  it("chunks Signal text and returns all results", async () => {
+    const sendSignal = vi
       .fn()
-      .mockResolvedValueOnce({ messageId: "w1", toJid: "jid" })
-      .mockResolvedValueOnce({ messageId: "w2", toJid: "jid" });
+      .mockResolvedValueOnce({ messageId: "s1", timestamp: 1 })
+      .mockResolvedValueOnce({ messageId: "s2", timestamp: 2 });
     const cfg: OpenClawConfig = {
-      channels: { whatsapp: { textChunkLimit: 2 } },
+      channels: { signal: { textChunkLimit: 2 } },
     };
 
     const results = await deliverOutboundPayloads({
       cfg,
-      channel: "whatsapp",
+      channel: "signal",
       to: "+1555",
       payloads: [{ text: "abcd" }],
-      deps: { sendWhatsApp },
+      deps: { sendSignal },
     });
 
-    expect(sendWhatsApp).toHaveBeenCalledTimes(2);
-    expect(results.map((r) => r.messageId)).toEqual(["w1", "w2"]);
+    expect(sendSignal).toHaveBeenCalledTimes(2);
+    expect(results.map((r) => r.messageId)).toEqual(["s1", "s2"]);
   });
 
-  it("respects newline chunk mode for WhatsApp", async () => {
-    const sendWhatsApp = vi.fn().mockResolvedValue({ messageId: "w1", toJid: "jid" });
+  it("respects newline chunk mode for Signal", async () => {
+    const sendSignal = vi.fn().mockResolvedValue({ messageId: "s1", timestamp: 1 });
     const cfg: OpenClawConfig = {
-      channels: { whatsapp: { textChunkLimit: 4000, chunkMode: "newline" } },
+      channels: { signal: { textChunkLimit: 4000, chunkMode: "newline" } },
     };
 
     await deliverOutboundPayloads({
       cfg,
-      channel: "whatsapp",
+      channel: "signal",
       to: "+1555",
       payloads: [{ text: "Line one\n\nLine two" }],
-      deps: { sendWhatsApp },
+      deps: { sendSignal },
     });
 
-    expect(sendWhatsApp).toHaveBeenCalledTimes(2);
-    expect(sendWhatsApp).toHaveBeenNthCalledWith(
+    expect(sendSignal).toHaveBeenCalledTimes(2);
+    expect(sendSignal).toHaveBeenNthCalledWith(
       1,
       "+1555",
       "Line one",
-      expect.objectContaining({ verbose: false }),
+      expect.any(Object),
     );
-    expect(sendWhatsApp).toHaveBeenNthCalledWith(
+    expect(sendSignal).toHaveBeenNthCalledWith(
       2,
       "+1555",
       "Line two",
-      expect.objectContaining({ verbose: false }),
+      expect.any(Object),
     );
   });
 
@@ -244,14 +239,14 @@ describe("deliverOutboundPayloads", () => {
     expect(chunker).toHaveBeenNthCalledWith(1, text, 4000);
   });
 
-  it("uses iMessage media maxBytes from agent fallback", async () => {
-    const sendIMessage = vi.fn().mockResolvedValue({ messageId: "i1" });
+  it("uses Signal media maxBytes from agent fallback", async () => {
+    const sendSignal = vi.fn().mockResolvedValue({ messageId: "s1" });
     setActivePluginRegistry(
       createTestRegistry([
         {
-          pluginId: "imessage",
+          pluginId: "signal",
           source: "test",
-          plugin: createIMessageTestPlugin(),
+          plugin: createOutboundTestPlugin({ id: "signal", outbound: signalOutbound }),
         },
       ]),
     );
@@ -261,14 +256,14 @@ describe("deliverOutboundPayloads", () => {
 
     await deliverOutboundPayloads({
       cfg,
-      channel: "imessage",
-      to: "chat_id:42",
+      channel: "signal",
+      to: "+15551234567",
       payloads: [{ text: "hello" }],
-      deps: { sendIMessage },
+      deps: { sendSignal },
     });
 
-    expect(sendIMessage).toHaveBeenCalledWith(
-      "chat_id:42",
+    expect(sendSignal).toHaveBeenCalledWith(
+      "+15551234567",
       "hello",
       expect.objectContaining({ maxBytes: 3 * 1024 * 1024 }),
     );
@@ -287,39 +282,39 @@ describe("deliverOutboundPayloads", () => {
   });
 
   it("continues on errors when bestEffort is enabled", async () => {
-    const sendWhatsApp = vi
+    const sendSignal = vi
       .fn()
       .mockRejectedValueOnce(new Error("fail"))
-      .mockResolvedValueOnce({ messageId: "w2", toJid: "jid" });
+      .mockResolvedValueOnce({ messageId: "s2", timestamp: 456 });
     const onError = vi.fn();
     const cfg: OpenClawConfig = {};
 
     const results = await deliverOutboundPayloads({
       cfg,
-      channel: "whatsapp",
+      channel: "signal",
       to: "+1555",
       payloads: [{ text: "a" }, { text: "b" }],
-      deps: { sendWhatsApp },
+      deps: { sendSignal },
       bestEffort: true,
       onError,
     });
 
-    expect(sendWhatsApp).toHaveBeenCalledTimes(2);
+    expect(sendSignal).toHaveBeenCalledTimes(2);
     expect(onError).toHaveBeenCalledTimes(1);
-    expect(results).toEqual([{ channel: "whatsapp", messageId: "w2", toJid: "jid" }]);
+    expect(results).toEqual([{ channel: "signal", messageId: "s2", timestamp: 456 }]);
   });
 
   it("passes normalized payload to onError", async () => {
-    const sendWhatsApp = vi.fn().mockRejectedValue(new Error("boom"));
+    const sendSignal = vi.fn().mockRejectedValue(new Error("boom"));
     const onError = vi.fn();
     const cfg: OpenClawConfig = {};
 
     await deliverOutboundPayloads({
       cfg,
-      channel: "whatsapp",
+      channel: "signal",
       to: "+1555",
       payloads: [{ text: "hi", mediaUrl: "https://x.test/a.jpg" }],
-      deps: { sendWhatsApp },
+      deps: { sendSignal },
       bestEffort: true,
       onError,
     });
@@ -367,16 +362,6 @@ const defaultRegistry = createTestRegistry([
   {
     pluginId: "signal",
     plugin: createOutboundTestPlugin({ id: "signal", outbound: signalOutbound }),
-    source: "test",
-  },
-  {
-    pluginId: "whatsapp",
-    plugin: createOutboundTestPlugin({ id: "whatsapp", outbound: whatsappOutbound }),
-    source: "test",
-  },
-  {
-    pluginId: "imessage",
-    plugin: createIMessageTestPlugin(),
     source: "test",
   },
 ]);

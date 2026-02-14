@@ -53,7 +53,7 @@ If you run `--deep`, OpenClaw also attempts a best-effort live Gateway probe.
 
 Use this when auditing access or deciding what to back up:
 
-- **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
+- **Channel credentials**: `~/.openclaw/credentials/<channel>/<accountId>/...` (when applicable)
 - **Telegram bot token**: config/env or `channels.telegram.tokenFile`
 - **Discord bot token**: config/env (token file not yet supported)
 - **Slack tokens**: config/env (`channels.slack.*`)
@@ -134,7 +134,7 @@ Your AI assistant can:
 - Execute arbitrary shell commands
 - Read/write files
 - Access network services
-- Send messages to anyone (if you give it WhatsApp access)
+- Send messages to anyone (if you give it channel send access)
 
 People who message you can:
 
@@ -224,8 +224,8 @@ OpenClaw has two separate “who can trigger me?” layers:
   - When `dmPolicy="pairing"`, approvals are written to `~/.openclaw/credentials/<channel>-allowFrom.json` (merged with config allowlists).
 - **Group allowlist** (channel-specific): which groups/channels/guilds the bot will accept messages from at all.
   - Common patterns:
-    - `channels.whatsapp.groups`, `channels.telegram.groups`, `channels.imessage.groups`: per-group defaults like `requireMention`; when set, it also acts as a group allowlist (include `"*"` to keep allow-all behavior).
-    - `groupPolicy="allowlist"` + `groupAllowFrom`: restrict who can trigger the bot _inside_ a group session (WhatsApp/Telegram/Signal/iMessage/Microsoft Teams).
+    - `channels.<channel>.groups` (or channel-specific group maps): per-group defaults like `requireMention`; when set, it also acts as a group allowlist (include `"*"` to keep allow-all behavior).
+    - `groupPolicy="allowlist"` + `groupAllowFrom`: restrict who can trigger the bot _inside_ a group session (Telegram/Signal/Microsoft Teams).
     - `channels.discord.guilds` / `channels.slack.channels`: per-surface allowlists + mention defaults.
   - **Security note:** treat `dmPolicy="open"` and `groupPolicy="open"` as last-resort settings. They should be barely used; prefer pairing + allowlists unless you fully trust every member of the room.
 
@@ -486,7 +486,7 @@ Avoid:
 Assume anything under `~/.openclaw/` (or `$OPENCLAW_STATE_DIR/`) may contain secrets or private data:
 
 - `openclaw.json`: config may include tokens (gateway, remote gateway), provider settings, and allowlists.
-- `credentials/**`: channel credentials (example: WhatsApp creds), pairing allowlists, legacy OAuth imports.
+- `credentials/**`: channel credentials (example: Telegram creds), pairing allowlists, legacy OAuth imports.
 - `agents/<agentId>/agent/auth-profiles.json`: API keys + OAuth tokens (imported from legacy `credentials/oauth.json`).
 - `agents/<agentId>/sessions/**`: session transcripts (`*.jsonl`) + routing metadata (`sessions.json`) that can contain private messages and tool output.
 - `extensions/**`: installed plugins (plus their `node_modules/`).
@@ -518,7 +518,7 @@ Details: [Logging](/gateway/logging)
 
 ```json5
 {
-  channels: { whatsapp: { dmPolicy: "pairing" } },
+  channels: { telegram: { dmPolicy: "pairing" } },
 }
 ```
 
@@ -527,7 +527,7 @@ Details: [Logging](/gateway/logging)
 ```json
 {
   "channels": {
-    "whatsapp": {
+    "telegram": {
       "groups": {
         "*": { "requireMention": true }
       }
@@ -546,12 +546,12 @@ Details: [Logging](/gateway/logging)
 
 In group chats, only respond when explicitly mentioned.
 
-### 3. Separate Numbers
+### 3. Separate Accounts
 
-Consider running your AI on a separate phone number from your personal one:
+Consider running your AI on a separate account from your personal one:
 
-- Personal number: Your conversations stay private
-- Bot number: AI handles these, with appropriate boundaries
+- Personal account: Your conversations stay private
+- Bot account: AI handles these, with appropriate boundaries
 
 ### 4. Read-Only Mode (Today, via sandbox + tools)
 
@@ -575,7 +575,7 @@ One “safe default” config that keeps the Gateway private, requires DM pairin
     auth: { mode: "token", token: "your-long-random-token" },
   },
   channels: {
-    whatsapp: {
+    telegram: {
       dmPolicy: "pairing",
       groups: { "*": { requireMention: true } },
     },
@@ -697,7 +697,6 @@ Common use cases:
             "sessions_send",
             "sessions_spawn",
             "session_status",
-            "whatsapp",
             "telegram",
             "slack",
             "discord",
@@ -750,7 +749,7 @@ If your AI does something bad:
 
 1. Rotate Gateway auth (`gateway.auth.token` / `OPENCLAW_GATEWAY_PASSWORD`) and restart.
 2. Rotate remote client secrets (`gateway.remote.token` / `.password`) on any machine that can call the Gateway.
-3. Rotate provider/API credentials (WhatsApp creds, Slack/Discord tokens, model/API keys in `auth-profiles.json`).
+3. Rotate provider/API credentials (Slack/Discord tokens, model/API keys in `auth-profiles.json`).
 
 ### Audit
 

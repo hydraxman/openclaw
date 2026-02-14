@@ -18,11 +18,11 @@ Examples below are aligned with the current config schema. For the exhaustive re
 ```json5
 {
   agent: { workspace: "~/.openclaw/workspace" },
-  channels: { whatsapp: { allowFrom: ["+15555550123"] } },
+  channels: { telegram: { allowFrom: ["123456789"] } },
 }
 ```
 
-Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
+Save to `~/.openclaw/openclaw.json` and you can DM the bot from that user id.
 
 ### Recommended starter
 
@@ -38,8 +38,8 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
     model: { primary: "anthropic/claude-sonnet-4-5" },
   },
   channels: {
-    whatsapp: {
-      allowFrom: ["+15555550123"],
+    telegram: {
+      allowFrom: ["123456789"],
       groups: { "*": { requireMention: true } },
     },
   },
@@ -115,12 +115,10 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "collect",
         telegram: "collect",
         discord: "collect",
         slack: "collect",
         signal: "collect",
-        imessage: "collect",
         webchat: "collect",
       },
     },
@@ -169,14 +167,6 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
 
   // Channels
   channels: {
-    whatsapp: {
-      dmPolicy: "pairing",
-      allowFrom: ["+15555550123"],
-      groupPolicy: "allowlist",
-      groupAllowFrom: ["+15555550123"],
-      groups: { "*": { requireMention: true } },
-    },
-
     telegram: {
       enabled: true,
       botToken: "YOUR_TELEGRAM_BOT_TOKEN",
@@ -302,12 +292,10 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
     elevated: {
       enabled: true,
       allowFrom: {
-        whatsapp: ["+15555550123"],
         telegram: ["123456789"],
         discord: ["steipete"],
         slack: ["U123"],
         signal: ["+15555550123"],
-        imessage: ["user@example.com"],
         webchat: ["session:demo"],
       },
     },
@@ -431,7 +419,6 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
 {
   agent: { workspace: "~/.openclaw/workspace" },
   channels: {
-    whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
       enabled: true,
       botToken: "YOUR_TOKEN",
@@ -456,10 +443,9 @@ If more than one person can DM your bot (multiple entries in `allowFrom`, pairin
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Example: WhatsApp multi-user inbox
-    whatsapp: {
-      dmPolicy: "allowlist",
-      allowFrom: ["+15555550123", "+15555550124"],
+    // Example: Telegram multi-user inbox
+    telegram: {
+      allowFrom: ["123456789", "987654321"],
     },
 
     // Example: Discord multi-user inbox
@@ -602,5 +588,5 @@ If more than one person can DM your bot (multiple entries in `allowFrom`, pairin
 
 - If you set `dmPolicy: "open"`, the matching `allowFrom` list must include `"*"`.
 - Provider IDs differ (phone numbers, user IDs, channel IDs). Use the provider docs to confirm the format.
-- Optional sections to add later: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- See [Providers](/channels/whatsapp) and [Troubleshooting](/gateway/troubleshooting) for deeper setup notes.
+- Optional sections to add later: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`.
+- See [Channels](/channels/index) and [Troubleshooting](/gateway/troubleshooting) for deeper setup notes.

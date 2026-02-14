@@ -16,6 +16,6 @@ Related:
 ## Commands
 
 ```bash
-openclaw pairing list whatsapp
-openclaw pairing approve whatsapp <code> --notify
+openclaw pairing list <channel>
+openclaw pairing approve <channel> <code> --notify
 ```

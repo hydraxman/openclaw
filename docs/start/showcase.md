@@ -200,7 +200,7 @@ CLI for Linear that integrates with agentic workflows (Claude Code, OpenClaw). M
 <Card title="Beeper CLI" icon="message" href="https://github.com/blqke/beepcli">
   **@jules** • `messaging` `beeper` `cli` `automation`
 
-Read, send, and archive messages via Beeper Desktop. Uses Beeper local MCP API so agents can manage all your chats (iMessage, WhatsApp, etc.) in one place.
+Read, send, and archive messages via Beeper Desktop. Uses Beeper local MCP API so agents can manage all your chats (Telegram, Discord, Slack, etc.) in one place.
 </Card>
 
 </CardGroup>
@@ -295,10 +295,10 @@ Watches company Slack channel, responds helpfully, and forwards notifications to
   <img src="/assets/showcase/xuezh-pronunciation.jpeg" alt="xuezh pronunciation feedback" />
 </Card>
 
-<Card title="WhatsApp Memory Vault" icon="vault">
+<Card title="Chat Memory Vault" icon="vault">
   **Community** • `memory` `transcription` `indexing`
   
-  Ingests full WhatsApp exports, transcribes 1k+ voice notes, cross-checks with git logs, outputs linked markdown reports.
+  Ingests full chat exports, transcribes voice notes, cross-checks with git logs, outputs linked markdown reports.
 </Card>
 
 <Card title="Karakeep Semantic Search" icon="magnifying-glass" href="https://github.com/jamesbrooksco/karakeep-semantic-search">

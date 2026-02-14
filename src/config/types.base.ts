@@ -152,7 +152,7 @@ export type WebReconnectConfig = {
 };
 
 export type WebConfig = {
-  /** If false, do not start the WhatsApp web provider. Default: true. */
+  /** If false, do not start the web provider. Default: true. */
   enabled?: boolean;
   heartbeatSeconds?: number;
   reconnect?: WebReconnectConfig;

@@ -1,7 +1,7 @@
 ---
 summary: "CLI reference for `openclaw channels` (accounts, status, login/logout, logs)"
 read_when:
-  - You want to add/remove channel accounts (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage)
+  - You want to add/remove channel accounts (Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal)
   - You want to check channel status or tail channel logs
 title: "channels"
 ---
@@ -35,11 +35,11 @@ openclaw channels remove --channel telegram --delete
 
 Tip: `openclaw channels add --help` shows per-channel flags (token, app token, signal-cli paths, etc).
 
-## Login / logout (interactive)
+## Login / logout (interactive, when supported)
 
 ```bash
-openclaw channels login --channel whatsapp
-openclaw channels logout --channel whatsapp
+openclaw channels login --channel <name>
+openclaw channels logout --channel <name>
 ```
 
 ## Troubleshooting

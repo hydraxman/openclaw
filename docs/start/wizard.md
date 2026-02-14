@@ -51,7 +51,7 @@ The wizard starts with **QuickStart** (defaults) vs **Advanced** (full control).
     - Gateway port **18789**
     - Gateway auth **Token** (auto‑generated, even on loopback)
     - Tailscale exposure **Off**
-    - Telegram + WhatsApp DMs default to **allowlist** (you'll be prompted for your phone number)
+    - Telegram DMs default to **allowlist** (you'll be prompted for your phone number)
   </Tab>
   <Tab title="Advanced (full control)">
     - Exposes every step (mode, workspace, gateway, channels, daemon, skills).
@@ -65,7 +65,7 @@ The wizard starts with **QuickStart** (defaults) vs **Advanced** (full control).
 1. **Model/Auth** — Anthropic API key (recommended), OAuth, OpenAI, or other providers. Pick a default model.
 2. **Workspace** — Location for agent files (default `~/.openclaw/workspace`). Seeds bootstrap files.
 3. **Gateway** — Port, bind address, auth mode, Tailscale exposure.
-4. **Channels** — WhatsApp, Telegram, Discord, Google Chat, Mattermost, Signal, BlueBubbles, or iMessage.
+4. **Channels** — Telegram, Discord, Google Chat, Mattermost, Signal, and plugin channels.
 5. **Daemon** — Installs a LaunchAgent (macOS) or systemd user unit (Linux/WSL2).
 6. **Health check** — Starts the Gateway and verifies it's running.
 7. **Skills** — Installs recommended skills and optional dependencies.

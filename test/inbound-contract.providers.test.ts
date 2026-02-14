@@ -6,20 +6,6 @@ import { expectInboundContextContract } from "./helpers/inbound-contract.js";
 describe("inbound context contract (providers + extensions)", () => {
   const cases: Array<{ name: string; ctx: MsgContext }> = [
     {
-      name: "whatsapp group",
-      ctx: {
-        Provider: "whatsapp",
-        Surface: "whatsapp",
-        ChatType: "group",
-        From: "123@g.us",
-        To: "+15550001111",
-        Body: "[WhatsApp 123@g.us] hi",
-        RawBody: "hi",
-        CommandBody: "hi",
-        SenderName: "Alice",
-      },
-    },
-    {
       name: "telegram group",
       ctx: {
         Provider: "telegram",
@@ -75,21 +61,6 @@ describe("inbound context contract (providers + extensions)", () => {
         Body: "[Signal] hi",
         RawBody: "hi",
         CommandBody: "hi",
-      },
-    },
-    {
-      name: "imessage group",
-      ctx: {
-        Provider: "imessage",
-        Surface: "imessage",
-        ChatType: "group",
-        From: "group:chat_id:123",
-        To: "chat_id:123",
-        Body: "[iMessage Group] hi",
-        RawBody: "hi",
-        CommandBody: "hi",
-        GroupSubject: "iMessage Group",
-        SenderName: "Alice",
       },
     },
     {

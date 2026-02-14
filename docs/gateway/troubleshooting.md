@@ -146,7 +146,6 @@ Common signatures:
 Related:
 
 - [/channels/troubleshooting](/channels/troubleshooting)
-- [/channels/whatsapp](/channels/whatsapp)
 - [/channels/telegram](/channels/telegram)
 - [/channels/discord](/channels/discord)
 

@@ -27,7 +27,7 @@ import {
   type GatewayClientMode,
   type GatewayClientName,
 } from "../../utils/message-channel.js";
-import { loadWebMedia } from "../../web/media.js";
+import { loadWebMedia } from "../../media/load.js";
 import {
   listConfiguredMessageChannels,
   resolveMessageChannelSelection,

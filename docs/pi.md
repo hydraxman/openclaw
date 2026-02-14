@@ -123,8 +123,7 @@ src/agents/
 │   ├── session*.ts
 │   ├── slack-actions.ts
 │   ├── telegram-actions.ts
-│   ├── web-*.ts
-│   └── whatsapp-actions.ts
+│   └── web-*.ts
 └── ...
 ```
 
@@ -139,7 +138,7 @@ import { runEmbeddedPiAgent } from "./agents/pi-embedded-runner.js";
 
 const result = await runEmbeddedPiAgent({
   sessionId: "user-123",
-  sessionKey: "main:whatsapp:+1234567890",
+  sessionKey: "main:telegram:1234567890",
   sessionFile: "/path/to/session.jsonl",
   workspaceDir: "/path/to/workspace",
   config: openclawConfig,
@@ -235,7 +234,7 @@ The SDK handles the full agent loop: sending to LLM, executing tool calls, strea
 1. **Base Tools**: pi's `codingTools` (read, bash, edit, write)
 2. **Custom Replacements**: OpenClaw replaces bash with `exec`/`process`, customizes read/edit/write for sandbox
 3. **OpenClaw Tools**: messaging, browser, canvas, sessions, cron, gateway, etc.
-4. **Channel Tools**: Discord/Telegram/Slack/WhatsApp-specific action tools
+4. **Channel Tools**: Discord/Telegram/Slack-specific action tools
 5. **Policy Filtering**: Tools filtered by profile, provider, agent, group, sandbox policies
 6. **Schema Normalization**: Schemas cleaned for Gemini/OpenAI quirks
 7. **AbortSignal Wrapping**: Tools wrapped to respect abort signals

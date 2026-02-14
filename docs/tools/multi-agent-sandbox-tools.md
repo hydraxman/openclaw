@@ -71,11 +71,11 @@ For debugging “why is this blocked?”, see [Sandbox vs Tool Policy vs Elevate
     {
       "agentId": "family",
       "match": {
-        "provider": "whatsapp",
+        "provider": "telegram",
         "accountId": "*",
         "peer": {
           "kind": "group",
-          "id": "120363424282127706@g.us"
+          "id": "-1001234567890"
         }
       }
     }

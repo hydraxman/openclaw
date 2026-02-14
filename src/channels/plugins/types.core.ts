@@ -25,7 +25,6 @@ export type ChannelSetupInput = {
   signalNumber?: string;
   cliPath?: string;
   dbPath?: string;
-  service?: "imessage" | "sms" | "auto";
   region?: string;
   authDir?: string;
   httpUrl?: string;

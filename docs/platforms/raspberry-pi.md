@@ -17,7 +17,7 @@ Perfect for:
 
 - 24/7 personal AI assistant
 - Home automation hub
-- Low-power, always-available Telegram/WhatsApp bot
+- Low-power, always-available Telegram/Discord bot
 
 ## Hardware Requirements
 
@@ -226,7 +226,6 @@ Most OpenClaw features work on ARM64, but some external binaries may need ARM bu
 | Tool               | ARM64 Status | Notes                               |
 | ------------------ | ------------ | ----------------------------------- |
 | Node.js            | ✅           | Works great                         |
-| WhatsApp (Baileys) | ✅           | Pure JS, no issues                  |
 | Telegram           | ✅           | Pure JS, no issues                  |
 | gog (Gmail CLI)    | ⚠️           | Check for ARM release               |
 | Chromium (browser) | ✅           | `sudo apt install chromium-browser` |

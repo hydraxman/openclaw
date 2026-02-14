@@ -82,7 +82,7 @@ openclaw onboard --install-daemon
 The wizard will walk you through:
 
 - Model auth (API keys or OAuth)
-- Channel setup (Telegram, WhatsApp, Discord, etc.)
+- Channel setup (Telegram, Discord, Signal, etc.)
 - Gateway token (auto-generated)
 - Daemon installation (systemd)
 
@@ -147,13 +147,6 @@ Open: `http://<tailscale-ip>:18789` (token required).
 ```bash
 openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
-```
-
-### WhatsApp
-
-```bash
-openclaw channels login whatsapp
-# Scan QR code
 ```
 
 See [Channels](/channels) for other providers.

@@ -2,10 +2,8 @@ import type { ReplyPayload } from "../../auto-reply/types.js";
 import type { ChannelOutboundAdapter } from "../../channels/plugins/types.js";
 import type { OpenClawConfig } from "../../config/config.js";
 import type { sendMessageDiscord } from "../../discord/send.js";
-import type { sendMessageIMessage } from "../../imessage/send.js";
 import type { sendMessageSlack } from "../../slack/send.js";
 import type { sendMessageTelegram } from "../../telegram/send.js";
-import type { sendMessageWhatsApp } from "../../web/outbound.js";
 import type { NormalizedOutboundPayload } from "./payloads.js";
 import type { OutboundChannel } from "./targets.js";
 import {
@@ -35,12 +33,10 @@ type SendMatrixMessage = (
 ) => Promise<{ messageId: string; roomId: string }>;
 
 export type OutboundSendDeps = {
-  sendWhatsApp?: typeof sendMessageWhatsApp;
   sendTelegram?: typeof sendMessageTelegram;
   sendDiscord?: typeof sendMessageDiscord;
   sendSlack?: typeof sendMessageSlack;
   sendSignal?: typeof sendMessageSignal;
-  sendIMessage?: typeof sendMessageIMessage;
   sendMatrix?: SendMatrixMessage;
   sendMSTeams?: (
     to: string,

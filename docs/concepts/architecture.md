@@ -11,14 +11,14 @@ Last updated: 2026-01-22
 
 ## Overview
 
-- A single long‑lived **Gateway** owns all messaging surfaces (WhatsApp via
-  Baileys, Telegram via grammY, Slack, Discord, Signal, iMessage, WebChat).
+- A single long‑lived **Gateway** owns all messaging surfaces (Telegram via
+  grammY, Slack, Discord, Signal, WebChat).
 - Control-plane clients (macOS app, CLI, web UI, automations) connect to the
   Gateway over **WebSocket** on the configured bind host (default
   `127.0.0.1:18789`).
 - **Nodes** (macOS/iOS/Android/headless) also connect over **WebSocket**, but
   declare `role: node` with explicit caps/commands.
-- One Gateway per host; it is the only place that opens a WhatsApp session.
+- One Gateway per host; it is the only place that opens channel sessions.
 - A **canvas host** (default `18793`) serves agent‑editable HTML and A2UI.
 
 ## Components and flows

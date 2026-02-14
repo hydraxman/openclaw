@@ -6,19 +6,17 @@ import { requireActivePluginRegistry } from "../plugins/runtime.js";
 // register the plugin in its extension entrypoint and keep protocol IDs in sync.
 export const CHAT_CHANNEL_ORDER = [
   "telegram",
-  "whatsapp",
   "discord",
   "googlechat",
   "slack",
   "signal",
-  "imessage",
 ] as const;
 
 export type ChatChannelId = (typeof CHAT_CHANNEL_ORDER)[number];
 
 export const CHANNEL_IDS = [...CHAT_CHANNEL_ORDER] as const;
 
-export const DEFAULT_CHAT_CHANNEL: ChatChannelId = "whatsapp";
+export const DEFAULT_CHAT_CHANNEL: ChatChannelId = "telegram";
 
 export type ChatChannelMeta = ChannelMeta;
 
@@ -37,16 +35,6 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     selectionDocsPrefix: "",
     selectionDocsOmitLabel: true,
     selectionExtras: [WEBSITE_URL],
-  },
-  whatsapp: {
-    id: "whatsapp",
-    label: "WhatsApp",
-    selectionLabel: "WhatsApp (QR link)",
-    detailLabel: "WhatsApp Web",
-    docsPath: "/channels/whatsapp",
-    docsLabel: "whatsapp",
-    blurb: "works with your own number; recommend a separate phone + eSIM.",
-    systemImage: "message",
   },
   discord: {
     id: "discord",
@@ -88,20 +76,9 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     blurb: 'signal-cli linked device; more setup (David Reagans: "Hop on Discord.").',
     systemImage: "antenna.radiowaves.left.and.right",
   },
-  imessage: {
-    id: "imessage",
-    label: "iMessage",
-    selectionLabel: "iMessage (imsg)",
-    detailLabel: "iMessage",
-    docsPath: "/channels/imessage",
-    docsLabel: "imessage",
-    blurb: "this is still a work in progress.",
-    systemImage: "message.fill",
-  },
 };
 
 export const CHAT_CHANNEL_ALIASES: Record<string, ChatChannelId> = {
-  imsg: "imessage",
   "google-chat": "googlechat",
   gchat: "googlechat",
 };

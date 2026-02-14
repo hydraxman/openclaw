@@ -60,7 +60,7 @@ that sets `deliver` + optional `channel`/`to`:
 ```
 
 If you want a fixed channel, set `channel` + `to`. Otherwise `channel: "last"`
-uses the last delivery route (falls back to WhatsApp).
+uses the last delivery route (falls back to the default channel).
 
 To force a cheaper model for Gmail runs, set `model` in the mapping
 (`provider/model` or alias). If you enforce `agents.defaults.models`, include it there.

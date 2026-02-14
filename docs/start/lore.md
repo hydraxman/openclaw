@@ -11,7 +11,7 @@ _A tale of lobsters, molting shells, and too many tokens._
 
 ## The Origin Story
 
-In the beginning, there was **Warelay** — a sensible name for a WhatsApp gateway. It did its job. It was fine.
+In the beginning, there was **Warelay** — a sensible name for a messaging gateway. It did its job. It was fine.
 
 But then came a space lobster.
 

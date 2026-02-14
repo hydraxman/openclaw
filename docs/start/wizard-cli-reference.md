@@ -19,7 +19,7 @@ Local mode (default) walks you through:
 - Model and auth setup (OpenAI Code subscription OAuth, Anthropic API key or setup token, plus MiniMax, GLM, Moonshot, and AI Gateway options)
 - Workspace location and bootstrap files
 - Gateway settings (port, bind, auth, tailscale)
-- Channels and providers (Telegram, WhatsApp, Discord, Google Chat, Mattermost plugin, Signal)
+- Channels and providers (Telegram, Discord, Google Chat, Mattermost plugin, Signal)
 - Daemon install (LaunchAgent or systemd user unit)
 - Health check
 - Skills setup
@@ -54,14 +54,11 @@ It does not install or modify anything on the remote host.
     - Non-loopback binds still require auth.
   </Step>
   <Step title="Channels">
-    - [WhatsApp](/channels/whatsapp): optional QR login
     - [Telegram](/channels/telegram): bot token
     - [Discord](/channels/discord): bot token
     - [Google Chat](/channels/googlechat): service account JSON + webhook audience
     - [Mattermost](/channels/mattermost) plugin: bot token + base URL
     - [Signal](/channels/signal): optional `signal-cli` install + account config
-    - [BlueBubbles](/channels/bluebubbles): recommended for iMessage; server URL + password + webhook
-    - [iMessage](/channels/imessage): legacy `imsg` CLI path + DB access
     - DM security: default is pairing. First DM sends a code; approve via
       `openclaw pairing approve <channel> <code>` or use allowlists.
   </Step>
@@ -71,7 +68,7 @@ It does not install or modify anything on the remote host.
     - Linux and Windows via WSL2: systemd user unit
       - Wizard attempts `loginctl enable-linger <user>` so gateway stays up after logout.
       - May prompt for sudo (writes `/var/lib/systemd/linger`); it tries without sudo first.
-    - Runtime selection: Node (recommended; required for WhatsApp and Telegram). Bun is not recommended.
+    - Runtime selection: Node (recommended; required for Telegram). Bun is not recommended.
   </Step>
   <Step title="Health check">
     - Starts gateway (if needed) and runs `openclaw health`.
@@ -203,7 +200,7 @@ Typical fields in `~/.openclaw/openclaw.json`:
 - `agents.defaults.workspace`
 - `agents.defaults.model` / `models.providers` (if Minimax chosen)
 - `gateway.*` (mode, bind, auth, tailscale)
-- `channels.telegram.botToken`, `channels.discord.token`, `channels.signal.*`, `channels.imessage.*`
+- `channels.telegram.botToken`, `channels.discord.token`, `channels.signal.*`
 - Channel allowlists (Slack, Discord, Matrix, Microsoft Teams) when you opt in during prompts (names resolve to IDs when possible)
 - `skills.install.nodeManager`
 - `wizard.lastRunAt`
@@ -214,7 +211,6 @@ Typical fields in `~/.openclaw/openclaw.json`:
 
 `openclaw agents add` writes `agents.list[]` and optional `bindings`.
 
-WhatsApp credentials go under `~/.openclaw/credentials/whatsapp/<accountId>/`.
 Sessions are stored under `~/.openclaw/agents/<agentId>/sessions/`.
 
 <Note>

@@ -61,10 +61,10 @@ node openclaw.mjs gateway --port 18789 --verbose
 1. Install + launch **OpenClaw.app** (menu bar).
 2. Complete the onboarding/permissions checklist (TCC prompts).
 3. Ensure Gateway is **Local** and running (the app manages it).
-4. Link surfaces (example: WhatsApp):
+4. Link surfaces (example: Telegram bot):
 
 ```bash
-openclaw channels login
+openclaw channels add --channel telegram --token <bot-token>
 ```
 
 5. Sanity check:
@@ -75,7 +75,7 @@ openclaw health
 
 If onboarding is not available in your build:
 
-- Run `openclaw setup`, then `openclaw channels login`, then start the Gateway manually (`openclaw gateway`).
+- Run `openclaw setup`, then `openclaw channels add --channel telegram --token <bot-token>`, then start the Gateway manually (`openclaw gateway`).
 
 ## Bleeding edge workflow (Gateway in a terminal)
 
@@ -126,7 +126,7 @@ openclaw health
 
 Use this when debugging auth or deciding what to back up:
 
-- **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
+- **Channel credentials**: `~/.openclaw/credentials/<channel>/<accountId>/...` (when applicable)
 - **Telegram bot token**: config/env or `channels.telegram.tokenFile`
 - **Discord bot token**: config/env (token file not yet supported)
 - **Slack tokens**: config/env (`channels.slack.*`)

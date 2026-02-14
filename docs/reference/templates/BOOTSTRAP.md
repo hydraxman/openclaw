@@ -47,7 +47,7 @@ Write it down. Make it real.
 Ask how they want to reach you:
 
 - **Just here** — web chat only
-- **WhatsApp** — link their personal account (you'll show a QR code)
+- **Discord** — add a bot and invite it to their server
 - **Telegram** — set up a bot via BotFather
 
 Guide them through whichever they pick.

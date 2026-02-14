@@ -64,7 +64,7 @@ cat ~/.openclaw/openclaw.json
 - Skills status summary (eligible/missing/blocked).
 - Config normalization for legacy values.
 - OpenCode Zen provider override warnings (`models.providers.opencode`).
-- Legacy on-disk state migration (sessions/agent dir/WhatsApp auth).
+- Legacy on-disk state migration (sessions/agent dir).
 - State integrity and permissions checks (sessions, transcripts, state dir).
 - Config file permission checks (chmod 600) when running locally.
 - Model auth health: checks OAuth expiry, can refresh expiring tokens, and reports auth-profile cooldown/disabled states.
@@ -111,8 +111,6 @@ legacy config format, so stale configs are repaired without manual intervention.
 
 Current migrations:
 
-- `routing.allowFrom` → `channels.whatsapp.allowFrom`
-- `routing.groupChat.requireMention` → `channels.whatsapp/telegram/imessage.groups."*".requireMention`
 - `routing.groupChat.historyLimit` → `messages.groupChat.historyLimit`
 - `routing.groupChat.mentionPatterns` → `messages.groupChat.mentionPatterns`
 - `routing.queue` → `messages.queue`
@@ -141,15 +139,11 @@ Doctor can migrate older on-disk layouts into the current structure:
   - from `~/.openclaw/sessions/` to `~/.openclaw/agents/<agentId>/sessions/`
 - Agent dir:
   - from `~/.openclaw/agent/` to `~/.openclaw/agents/<agentId>/agent/`
-- WhatsApp auth state (Baileys):
-  - from legacy `~/.openclaw/credentials/*.json` (except `oauth.json`)
-  - to `~/.openclaw/credentials/whatsapp/<accountId>/...` (default account id: `default`)
 
 These migrations are best-effort and idempotent; doctor will emit warnings when
 it leaves any legacy folders behind as backups. The Gateway/CLI also auto-migrates
 the legacy sessions + agent dir on startup so history/auth/models land in the
-per-agent path without a manual doctor run. WhatsApp auth is intentionally only
-migrated via `openclaw doctor`.
+per-agent path without a manual doctor run.
 
 ### 4) State integrity checks (session persistence, routing, and safety)
 
@@ -263,8 +257,8 @@ running, SSH tunnel).
 ### 17) Gateway runtime best practices
 
 Doctor warns when the gateway service runs on Bun or a version-managed Node path
-(`nvm`, `fnm`, `volta`, `asdf`, etc.). WhatsApp + Telegram channels require Node,
-and version-manager paths can break after upgrades because the service does not
+(`nvm`, `fnm`, `volta`, `asdf`, etc.). Some channel runtimes require Node, and
+version-manager paths can break after upgrades because the service does not
 load your shell init. Doctor offers to migrate to a system Node install when
 available (Homebrew/apt/choco).
 
