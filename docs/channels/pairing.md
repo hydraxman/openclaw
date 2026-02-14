@@ -36,7 +36,11 @@ openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
+<<<<<<< HEAD
 Supported channels: `telegram`, `signal`, `discord`, `slack`.
+=======
+Supported channels: `telegram`, `whatsapp`, `signal`, `imessage`, `discord`, `slack`, `feishu`.
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 
 ### Where the state lives
 

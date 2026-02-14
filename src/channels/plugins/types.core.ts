@@ -124,6 +124,7 @@ export type ChannelAccountSnapshot = {
   botTokenSource?: string;
   appTokenSource?: string;
   credentialSource?: string;
+  secretSource?: string;
   audienceType?: string;
   audience?: string;
   webhookPath?: string;
@@ -138,6 +139,10 @@ export type ChannelAccountSnapshot = {
   audit?: unknown;
   application?: unknown;
   bot?: unknown;
+  publicKey?: string | null;
+  profile?: unknown;
+  channelAccessToken?: string;
+  channelSecret?: string;
 };
 
 export type ChannelLogSink = {
@@ -327,4 +332,5 @@ export type ChannelPollContext = {
   to: string;
   poll: PollInput;
   accountId?: string | null;
+  threadId?: string | null;
 };

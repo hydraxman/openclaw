@@ -4,6 +4,11 @@ import { GroupPolicySchema } from "./zod-schema.core.js";
 import {
   DiscordConfigSchema,
   GoogleChatConfigSchema,
+<<<<<<< HEAD
+=======
+  IMessageConfigSchema,
+  IrcConfigSchema,
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
   MSTeamsConfigSchema,
   SignalConfigSchema,
   SlackConfigSchema,
@@ -24,6 +29,7 @@ export const ChannelsSchema = z
       .optional(),
     telegram: TelegramConfigSchema.optional(),
     discord: DiscordConfigSchema.optional(),
+    irc: IrcConfigSchema.optional(),
     googlechat: GoogleChatConfigSchema.optional(),
     slack: SlackConfigSchema.optional(),
     signal: SignalConfigSchema.optional(),

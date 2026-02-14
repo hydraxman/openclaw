@@ -8,6 +8,10 @@ import { slackOutbound } from "../../channels/plugins/outbound/slack.js";
 import { telegramOutbound } from "../../channels/plugins/outbound/telegram.js";
 import { setActivePluginRegistry } from "../../plugins/runtime.js";
 import { createOutboundTestPlugin, createTestRegistry } from "../../test-utils/channel-plugins.js";
+<<<<<<< HEAD
+=======
+import { createIMessageTestPlugin } from "../../test-utils/imessage-test-plugin.js";
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 import { SILENT_REPLY_TOKEN } from "../tokens.js";
 
 const mocks = vi.hoisted(() => ({

@@ -126,6 +126,18 @@ import { probeTelegram } from "../../telegram/probe.js";
 import { sendMessageTelegram } from "../../telegram/send.js";
 import { resolveTelegramToken } from "../../telegram/token.js";
 import { textToSpeechTelephony } from "../../tts/tts.js";
+<<<<<<< HEAD
+=======
+import { getActiveWebListener } from "../../web/active-listener.js";
+import {
+  getWebAuthAgeMs,
+  logoutWeb,
+  logWebSelfId,
+  readWebSelfId,
+  webAuthExists,
+} from "../../web/auth-store.js";
+import { loadWebMedia } from "../../web/media.js";
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 import { formatNativeDependencyHint } from "./native-deps.js";
 
 let cachedVersion: string | null = null;
@@ -143,6 +155,85 @@ function resolveVersion(): string {
     cachedVersion = "unknown";
     return cachedVersion;
   }
+}
+
+const sendMessageWhatsAppLazy: PluginRuntime["channel"]["whatsapp"]["sendMessageWhatsApp"] = async (
+  ...args
+) => {
+  const { sendMessageWhatsApp } = await loadWebOutbound();
+  return sendMessageWhatsApp(...args);
+};
+
+const sendPollWhatsAppLazy: PluginRuntime["channel"]["whatsapp"]["sendPollWhatsApp"] = async (
+  ...args
+) => {
+  const { sendPollWhatsApp } = await loadWebOutbound();
+  return sendPollWhatsApp(...args);
+};
+
+const loginWebLazy: PluginRuntime["channel"]["whatsapp"]["loginWeb"] = async (...args) => {
+  const { loginWeb } = await loadWebLogin();
+  return loginWeb(...args);
+};
+
+const startWebLoginWithQrLazy: PluginRuntime["channel"]["whatsapp"]["startWebLoginWithQr"] = async (
+  ...args
+) => {
+  const { startWebLoginWithQr } = await loadWebLoginQr();
+  return startWebLoginWithQr(...args);
+};
+
+const waitForWebLoginLazy: PluginRuntime["channel"]["whatsapp"]["waitForWebLogin"] = async (
+  ...args
+) => {
+  const { waitForWebLogin } = await loadWebLoginQr();
+  return waitForWebLogin(...args);
+};
+
+const monitorWebChannelLazy: PluginRuntime["channel"]["whatsapp"]["monitorWebChannel"] = async (
+  ...args
+) => {
+  const { monitorWebChannel } = await loadWebChannel();
+  return monitorWebChannel(...args);
+};
+
+const handleWhatsAppActionLazy: PluginRuntime["channel"]["whatsapp"]["handleWhatsAppAction"] =
+  async (...args) => {
+    const { handleWhatsAppAction } = await loadWhatsAppActions();
+    return handleWhatsAppAction(...args);
+  };
+
+let webOutboundPromise: Promise<typeof import("../../web/outbound.js")> | null = null;
+let webLoginPromise: Promise<typeof import("../../web/login.js")> | null = null;
+let webLoginQrPromise: Promise<typeof import("../../web/login-qr.js")> | null = null;
+let webChannelPromise: Promise<typeof import("../../channels/web/index.js")> | null = null;
+let whatsappActionsPromise: Promise<
+  typeof import("../../agents/tools/whatsapp-actions.js")
+> | null = null;
+
+function loadWebOutbound() {
+  webOutboundPromise ??= import("../../web/outbound.js");
+  return webOutboundPromise;
+}
+
+function loadWebLogin() {
+  webLoginPromise ??= import("../../web/login.js");
+  return webLoginPromise;
+}
+
+function loadWebLoginQr() {
+  webLoginQrPromise ??= import("../../web/login-qr.js");
+  return webLoginQrPromise;
+}
+
+function loadWebChannel() {
+  webChannelPromise ??= import("../../channels/web/index.js");
+  return webChannelPromise;
+}
+
+function loadWhatsAppActions() {
+  whatsappActionsPromise ??= import("../../agents/tools/whatsapp-actions.js");
+  return whatsappActionsPromise;
 }
 
 export function createPluginRuntime(): PluginRuntime {
@@ -195,6 +286,7 @@ export function createPluginRuntime(): PluginRuntime {
         dispatchReplyFromConfig,
         finalizeInboundContext,
         formatAgentEnvelope,
+        /** @deprecated Prefer `BodyForAgent` + structured user-context blocks (do not build plaintext envelopes for prompts). */
         formatInboundEnvelope,
         resolveEnvelopeFormatOptions,
       },
@@ -281,6 +373,30 @@ export function createPluginRuntime(): PluginRuntime {
         monitorSignalProvider,
         messageActions: signalMessageActions,
       },
+<<<<<<< HEAD
+=======
+      imessage: {
+        monitorIMessageProvider,
+        probeIMessage,
+        sendMessageIMessage,
+      },
+      whatsapp: {
+        getActiveWebListener,
+        getWebAuthAgeMs,
+        logoutWeb,
+        logWebSelfId,
+        readWebSelfId,
+        webAuthExists,
+        sendMessageWhatsApp: sendMessageWhatsAppLazy,
+        sendPollWhatsApp: sendPollWhatsAppLazy,
+        loginWeb: loginWebLazy,
+        startWebLoginWithQr: startWebLoginWithQrLazy,
+        waitForWebLogin: waitForWebLoginLazy,
+        monitorWebChannel: monitorWebChannelLazy,
+        handleWhatsAppAction: handleWhatsAppActionLazy,
+        createLoginTool: createWhatsAppLoginTool,
+      },
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
       line: {
         listLineAccountIds,
         resolveDefaultLineAccountId,

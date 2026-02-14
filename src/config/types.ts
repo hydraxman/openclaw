@@ -13,6 +13,11 @@ export * from "./types.discord.js";
 export * from "./types.googlechat.js";
 export * from "./types.gateway.js";
 export * from "./types.hooks.js";
+<<<<<<< HEAD
+=======
+export * from "./types.imessage.js";
+export * from "./types.irc.js";
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 export * from "./types.messages.js";
 export * from "./types.models.js";
 export * from "./types.node-host.js";

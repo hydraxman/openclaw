@@ -9,6 +9,11 @@ import {
   listChatChannels,
   normalizeChatChannelId,
 } from "../channels/registry.js";
+<<<<<<< HEAD
+=======
+import { isRecord } from "../utils.js";
+import { hasAnyWhatsAppAuth } from "../web/accounts.js";
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 
 type PluginEnableChange = {
   pluginId: string;
@@ -34,10 +39,6 @@ const PROVIDER_PLUGIN_IDS: Array<{ pluginId: string; providerId: string }> = [
   { pluginId: "copilot-proxy", providerId: "copilot-proxy" },
   { pluginId: "minimax-portal-auth", providerId: "minimax-portal" },
 ];
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value && typeof value === "object" && !Array.isArray(value));
-}
 
 function hasNonEmptyString(value: unknown): boolean {
   return typeof value === "string" && value.trim().length > 0;
@@ -107,6 +108,23 @@ function isDiscordConfigured(cfg: OpenClawConfig, env: NodeJS.ProcessEnv): boole
   return recordHasKeys(entry);
 }
 
+function isIrcConfigured(cfg: OpenClawConfig, env: NodeJS.ProcessEnv): boolean {
+  if (hasNonEmptyString(env.IRC_HOST) && hasNonEmptyString(env.IRC_NICK)) {
+    return true;
+  }
+  const entry = resolveChannelConfig(cfg, "irc");
+  if (!entry) {
+    return false;
+  }
+  if (hasNonEmptyString(entry.host) || hasNonEmptyString(entry.nick)) {
+    return true;
+  }
+  if (accountsHaveKeys(entry.accounts, ["host", "nick"])) {
+    return true;
+  }
+  return recordHasKeys(entry);
+}
+
 function isSlackConfigured(cfg: OpenClawConfig, env: NodeJS.ProcessEnv): boolean {
   if (
     hasNonEmptyString(env.SLACK_BOT_TOKEN) ||
@@ -167,6 +185,8 @@ export function isChannelConfigured(
       return isTelegramConfigured(cfg, env);
     case "discord":
       return isDiscordConfigured(cfg, env);
+    case "irc":
+      return isIrcConfigured(cfg, env);
     case "slack":
       return isSlackConfigured(cfg, env);
     case "signal":
@@ -364,7 +384,7 @@ function registerPluginEntry(cfg: OpenClawConfig, pluginId: string): OpenClawCon
     ...cfg.plugins?.entries,
     [pluginId]: {
       ...(cfg.plugins?.entries?.[pluginId] as Record<string, unknown> | undefined),
-      enabled: false,
+      enabled: true,
     },
   };
   return {
@@ -383,7 +403,7 @@ function formatAutoEnableChange(entry: PluginEnableChange): string {
     const label = getChatChannelMeta(channelId).label;
     reason = reason.replace(new RegExp(`^${channelId}\\b`, "i"), label);
   }
-  return `${reason}, not enabled yet.`;
+  return `${reason}, enabled automatically.`;
 }
 
 export function applyPluginAutoEnable(params: {

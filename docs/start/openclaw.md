@@ -31,7 +31,19 @@ Start conservative:
 
 ## Dedicated bot account (recommended)
 
+<<<<<<< HEAD
 Use a dedicated bot or app account for your assistant so your personal chats stay separate.
+=======
+You want this:
+
+```mermaid
+flowchart TB
+    A["<b>Your Phone (personal)<br></b><br>Your WhatsApp<br>+1-555-YOU"] -- message --> B["<b>Second Phone (assistant)<br></b><br>Assistant WA<br>+1-555-ASSIST"]
+    B -- linked via QR --> C["<b>Your Mac (openclaw)<br></b><br>Pi agent"]
+```
+
+If you link your personal WhatsApp to OpenClaw, every message to you becomes “agent input”. That’s rarely what you want.
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 
 ## 5-minute quick start
 

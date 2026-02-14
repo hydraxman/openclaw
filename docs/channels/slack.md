@@ -1,26 +1,47 @@
 ---
-summary: "Slack setup for socket or HTTP webhook mode"
-read_when: "Setting up Slack or debugging Slack socket/HTTP mode"
+summary: "Slack setup and runtime behavior (Socket Mode + HTTP Events API)"
+read_when:
+  - Setting up Slack or debugging Slack socket/HTTP mode
 title: "Slack"
 ---
 
 # Slack
 
-## Socket mode (default)
+Status: production-ready for DMs + channels via Slack app integrations. Default mode is Socket Mode; HTTP Events API mode is also supported.
 
-### Quick setup (beginner)
+<CardGroup cols={3}>
+  <Card title="Pairing" icon="link" href="/channels/pairing">
+    Slack DMs default to pairing mode.
+  </Card>
+  <Card title="Slash commands" icon="terminal" href="/tools/slash-commands">
+    Native command behavior and command catalog.
+  </Card>
+  <Card title="Channel troubleshooting" icon="wrench" href="/channels/troubleshooting">
+    Cross-channel diagnostics and repair playbooks.
+  </Card>
+</CardGroup>
 
-1. Create a Slack app and enable **Socket Mode**.
-2. Create an **App Token** (`xapp-...`) and **Bot Token** (`xoxb-...`).
-3. Set tokens for OpenClaw and start the gateway.
+## Quick setup
 
-Minimal config:
+<Tabs>
+  <Tab title="Socket Mode (default)">
+    <Steps>
+      <Step title="Create Slack app and tokens">
+        In Slack app settings:
+
+        - enable **Socket Mode**
+        - create **App Token** (`xapp-...`) with `connections:write`
+        - install app and copy **Bot Token** (`xoxb-...`)
+      </Step>
+
+      <Step title="Configure OpenClaw">
 
 ```json5
 {
   channels: {
     slack: {
       enabled: true,
+      mode: "socket",
       appToken: "xapp-...",
       botToken: "xoxb-...",
     },
@@ -28,8 +49,9 @@ Minimal config:
 }
 ```
 
-### Setup
+        Env fallback (default account only):
 
+<<<<<<< HEAD
 1. Create a Slack app (From scratch) in [https://api.slack.com/apps](https://api.slack.com/apps).
 2. **Socket Mode** → toggle on. Then go to **Basic Information** → **App-Level Tokens** → **Generate Token and Scopes** with scope `connections:write`. Copy the **App Token** (`xapp-...`).
 3. **OAuth & Permissions** → add bot token scopes (use the manifest below). Click **Install to Workspace**. Copy the **Bot User OAuth Token** (`xoxb-...`).
@@ -68,81 +90,50 @@ Or via config:
     },
   },
 }
+=======
+```bash
+SLACK_APP_TOKEN=xapp-...
+SLACK_BOT_TOKEN=xoxb-...
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 ```
 
-### User token (optional)
+      </Step>
 
-OpenClaw can use a Slack user token (`xoxp-...`) for read operations (history,
-pins, reactions, emoji, member info). By default this stays read-only: reads
-prefer the user token when present, and writes still use the bot token unless
-you explicitly opt in. Even with `userTokenReadOnly: false`, the bot token stays
-preferred for writes when it is available.
+      <Step title="Subscribe app events">
+        Subscribe bot events for:
 
-User tokens are configured in the config file (no env var support). For
-multi-account, set `channels.slack.accounts.<id>.userToken`.
+        - `app_mention`
+        - `message.channels`, `message.groups`, `message.im`, `message.mpim`
+        - `reaction_added`, `reaction_removed`
+        - `member_joined_channel`, `member_left_channel`
+        - `channel_rename`
+        - `pin_added`, `pin_removed`
 
-Example with bot + app + user tokens:
+        Also enable App Home **Messages Tab** for DMs.
+      </Step>
 
-```json5
-{
-  channels: {
-    slack: {
-      enabled: true,
-      appToken: "xapp-...",
-      botToken: "xoxb-...",
-      userToken: "xoxp-...",
-    },
-  },
-}
+      <Step title="Start gateway">
+
+```bash
+openclaw gateway
 ```
 
-Example with userTokenReadOnly explicitly set (allow user token writes):
+      </Step>
+    </Steps>
 
-```json5
-{
-  channels: {
-    slack: {
-      enabled: true,
-      appToken: "xapp-...",
-      botToken: "xoxb-...",
-      userToken: "xoxp-...",
-      userTokenReadOnly: false,
-    },
-  },
-}
-```
+  </Tab>
 
-#### Token usage
+  <Tab title="HTTP Events API mode">
+    <Steps>
+      <Step title="Configure Slack app for HTTP">
 
-- Read operations (history, reactions list, pins list, emoji list, member info,
-  search) prefer the user token when configured, otherwise the bot token.
-- Write operations (send/edit/delete messages, add/remove reactions, pin/unpin,
-  file uploads) use the bot token by default. If `userTokenReadOnly: false` and
-  no bot token is available, OpenClaw falls back to the user token.
+        - set mode to HTTP (`channels.slack.mode="http"`)
+        - copy Slack **Signing Secret**
+        - set Event Subscriptions + Interactivity + Slash command Request URL to the same webhook path (default `/slack/events`)
 
-### History context
+      </Step>
 
-- `channels.slack.historyLimit` (or `channels.slack.accounts.*.historyLimit`) controls how many recent channel/group messages are wrapped into the prompt.
-- Falls back to `messages.groupChat.historyLimit`. Set `0` to disable (default 50).
-
-## HTTP mode (Events API)
-
-Use HTTP webhook mode when your Gateway is reachable by Slack over HTTPS (typical for server deployments).
-HTTP mode uses the Events API + Interactivity + Slash Commands with a shared request URL.
-
-### Setup (HTTP mode)
-
-1. Create a Slack app and **disable Socket Mode** (optional if you only use HTTP).
-2. **Basic Information** → copy the **Signing Secret**.
-3. **OAuth & Permissions** → install the app and copy the **Bot User OAuth Token** (`xoxb-...`).
-4. **Event Subscriptions** → enable events and set the **Request URL** to your gateway webhook path (default `/slack/events`).
-5. **Interactivity & Shortcuts** → enable and set the same **Request URL**.
-6. **Slash Commands** → set the same **Request URL** for your command(s).
-
-Example request URL:
-`https://gateway-host/slack/events`
-
-### OpenClaw config (minimal)
+      <Step title="Configure OpenClaw HTTP mode">
 
 ```json5
 {
@@ -158,13 +149,187 @@ Example request URL:
 }
 ```
 
-Multi-account HTTP mode: set `channels.slack.accounts.<id>.mode = "http"` and provide a unique
-`webhookPath` per account so each Slack app can point to its own URL.
+      </Step>
 
-### Manifest (optional)
+      <Step title="Use unique webhook paths for multi-account HTTP">
+        Per-account HTTP mode is supported.
 
-Use this Slack app manifest to create the app quickly (adjust the name/command if you want). Include the
-user scopes if you plan to configure a user token.
+        Give each account a distinct `webhookPath` so registrations do not collide.
+      </Step>
+    </Steps>
+
+  </Tab>
+</Tabs>
+
+## Token model
+
+- `botToken` + `appToken` are required for Socket Mode.
+- HTTP mode requires `botToken` + `signingSecret`.
+- Config tokens override env fallback.
+- `SLACK_BOT_TOKEN` / `SLACK_APP_TOKEN` env fallback applies only to the default account.
+- `userToken` (`xoxp-...`) is config-only (no env fallback) and defaults to read-only behavior (`userTokenReadOnly: true`).
+
+<Tip>
+For actions/directory reads, user token can be preferred when configured. For writes, bot token remains preferred; user-token writes are only allowed when `userTokenReadOnly: false` and bot token is unavailable.
+</Tip>
+
+## Access control and routing
+
+<Tabs>
+  <Tab title="DM policy">
+    `channels.slack.dm.policy` controls DM access:
+
+    - `pairing` (default)
+    - `allowlist`
+    - `open` (requires `dm.allowFrom` to include `"*"`)
+    - `disabled`
+
+    DM flags:
+
+    - `dm.enabled` (default true)
+    - `dm.allowFrom`
+    - `dm.groupEnabled` (group DMs default false)
+    - `dm.groupChannels` (optional MPIM allowlist)
+
+    Pairing in DMs uses `openclaw pairing approve slack <code>`.
+
+  </Tab>
+
+  <Tab title="Channel policy">
+    `channels.slack.groupPolicy` controls channel handling:
+
+    - `open`
+    - `allowlist`
+    - `disabled`
+
+    Channel allowlist lives under `channels.slack.channels`.
+
+    Runtime note: if `channels.slack` is completely missing (env-only setup) and `channels.defaults.groupPolicy` is unset, runtime falls back to `groupPolicy="open"` and logs a warning.
+
+    Name/ID resolution:
+
+    - channel allowlist entries and DM allowlist entries are resolved at startup when token access allows
+    - unresolved entries are kept as configured
+
+  </Tab>
+
+  <Tab title="Mentions and channel users">
+    Channel messages are mention-gated by default.
+
+    Mention sources:
+
+    - explicit app mention (`<@botId>`)
+    - mention regex patterns (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
+    - implicit reply-to-bot thread behavior
+
+    Per-channel controls (`channels.slack.channels.<id|name>`):
+
+    - `requireMention`
+    - `users` (allowlist)
+    - `allowBots`
+    - `skills`
+    - `systemPrompt`
+    - `tools`, `toolsBySender`
+
+  </Tab>
+</Tabs>
+
+## Commands and slash behavior
+
+- Native command auto-mode is **off** for Slack (`commands.native: "auto"` does not enable Slack native commands).
+- Enable native Slack command handlers with `channels.slack.commands.native: true` (or global `commands.native: true`).
+- When native commands are enabled, register matching slash commands in Slack (`/<command>` names).
+- If native commands are not enabled, you can run a single configured slash command via `channels.slack.slashCommand`.
+
+Default slash command settings:
+
+- `enabled: false`
+- `name: "openclaw"`
+- `sessionPrefix: "slack:slash"`
+- `ephemeral: true`
+
+Slash sessions use isolated keys:
+
+- `agent:<agentId>:slack:slash:<userId>`
+
+and still route command execution against the target conversation session (`CommandTargetSessionKey`).
+
+## Threading, sessions, and reply tags
+
+- DMs route as `direct`; channels as `channel`; MPIMs as `group`.
+- With default `session.dmScope=main`, Slack DMs collapse to agent main session.
+- Channel sessions: `agent:<agentId>:slack:channel:<channelId>`.
+- Thread replies can create thread session suffixes (`:thread:<threadTs>`) when applicable.
+- `channels.slack.thread.historyScope` default is `thread`; `thread.inheritParent` default is `false`.
+- `channels.slack.thread.initialHistoryLimit` controls how many existing thread messages are fetched when a new thread session starts (default `20`; set `0` to disable).
+
+Reply threading controls:
+
+- `channels.slack.replyToMode`: `off|first|all` (default `off`)
+- `channels.slack.replyToModeByChatType`: per `direct|group|channel`
+- legacy fallback for direct chats: `channels.slack.dm.replyToMode`
+
+Manual reply tags are supported:
+
+- `[[reply_to_current]]`
+- `[[reply_to:<id>]]`
+
+Note: `replyToMode="off"` disables implicit reply threading. Explicit `[[reply_to_*]]` tags are still honored.
+
+## Media, chunking, and delivery
+
+<AccordionGroup>
+  <Accordion title="Inbound attachments">
+    Slack file attachments are downloaded from Slack-hosted private URLs (token-authenticated request flow) and written to the media store when fetch succeeds and size limits permit.
+
+    Runtime inbound size cap defaults to `20MB` unless overridden by `channels.slack.mediaMaxMb`.
+
+  </Accordion>
+
+  <Accordion title="Outbound text and files">
+    - text chunks use `channels.slack.textChunkLimit` (default 4000)
+    - `channels.slack.chunkMode="newline"` enables paragraph-first splitting
+    - file sends use Slack upload APIs and can include thread replies (`thread_ts`)
+    - outbound media cap follows `channels.slack.mediaMaxMb` when configured; otherwise channel sends use MIME-kind defaults from media pipeline
+  </Accordion>
+
+  <Accordion title="Delivery targets">
+    Preferred explicit targets:
+
+    - `user:<id>` for DMs
+    - `channel:<id>` for channels
+
+    Slack DMs are opened via Slack conversation APIs when sending to user targets.
+
+  </Accordion>
+</AccordionGroup>
+
+## Actions and gates
+
+Slack actions are controlled by `channels.slack.actions.*`.
+
+Available action groups in current Slack tooling:
+
+| Group      | Default |
+| ---------- | ------- |
+| messages   | enabled |
+| reactions  | enabled |
+| pins       | enabled |
+| memberInfo | enabled |
+| emojiList  | enabled |
+
+## Events and operational behavior
+
+- Message edits/deletes/thread broadcasts are mapped into system events.
+- Reaction add/remove events are mapped into system events.
+- Member join/leave, channel created/renamed, and pin add/remove events are mapped into system events.
+- `channel_id_changed` can migrate channel config keys when `configWrites` is enabled.
+- Channel topic/purpose metadata is treated as untrusted context and can be injected into routing context.
+
+## Manifest and scope checklist
+
+<AccordionGroup>
+  <Accordion title="Slack app manifest example">
 
 ```json
 {
@@ -196,14 +361,8 @@ user scopes if you plan to configure a user token.
         "channels:history",
         "channels:read",
         "groups:history",
-        "groups:read",
-        "groups:write",
         "im:history",
-        "im:read",
-        "im:write",
         "mpim:history",
-        "mpim:read",
-        "mpim:write",
         "users:read",
         "app_mentions:read",
         "reactions:read",
@@ -214,21 +373,6 @@ user scopes if you plan to configure a user token.
         "commands",
         "files:read",
         "files:write"
-      ],
-      "user": [
-        "channels:history",
-        "channels:read",
-        "groups:history",
-        "groups:read",
-        "im:history",
-        "im:read",
-        "mpim:history",
-        "mpim:read",
-        "users:read",
-        "reactions:read",
-        "pins:read",
-        "emoji:read",
-        "search:read"
       ]
     }
   },
@@ -254,14 +398,20 @@ user scopes if you plan to configure a user token.
 }
 ```
 
-If you enable native commands, add one `slash_commands` entry per command you want to expose (matching the `/help` list). Override with `channels.slack.commands.native`.
+  </Accordion>
 
-## Scopes (current vs optional)
+  <Accordion title="Optional user-token scopes (read operations)">
+    If you configure `channels.slack.userToken`, typical read scopes are:
 
-Slack's Conversations API is type-scoped: you only need the scopes for the
-conversation types you actually touch (channels, groups, im, mpim). See
-[https://docs.slack.dev/apis/web-api/using-the-conversations-api/](https://docs.slack.dev/apis/web-api/using-the-conversations-api/) for the overview.
+    - `channels:history`, `groups:history`, `im:history`, `mpim:history`
+    - `channels:read`, `groups:read`, `im:read`, `mpim:read`
+    - `users:read`
+    - `reactions:read`
+    - `pins:read`
+    - `emoji:read`
+    - `search:read` (if you depend on Slack search reads)
 
+<<<<<<< HEAD
 ### Bot token scopes (required)
 
 - `chat:write` (send/update/delete messages via `chat.postMessage`)
@@ -536,39 +686,89 @@ Slack tool actions can be gated with `channels.slack.actions.*`:
 - If you enable user-token writes, make sure the user token includes the write
   scopes you expect (`chat:write`, `reactions:write`, `pins:write`,
   `files:write`) or those operations will fail.
+=======
+  </Accordion>
+</AccordionGroup>
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 
 ## Troubleshooting
 
-Run this ladder first:
+<AccordionGroup>
+  <Accordion title="No replies in channels">
+    Check, in order:
+
+    - `groupPolicy`
+    - channel allowlist (`channels.slack.channels`)
+    - `requireMention`
+    - per-channel `users` allowlist
+
+    Useful commands:
 
 ```bash
-openclaw status
-openclaw gateway status
+openclaw channels status --probe
 openclaw logs --follow
 openclaw doctor
-openclaw channels status --probe
 ```
 
-Then confirm DM pairing state if needed:
+  </Accordion>
+
+  <Accordion title="DM messages ignored">
+    Check:
+
+    - `channels.slack.dm.enabled`
+    - `channels.slack.dm.policy`
+    - pairing approvals / allowlist entries
 
 ```bash
 openclaw pairing list slack
 ```
 
-Common failures:
+  </Accordion>
 
-- Connected but no channel replies: channel blocked by `groupPolicy` or not in `channels.slack.channels` allowlist.
-- DMs ignored: sender not approved when `channels.slack.dm.policy="pairing"`.
-- API errors (`missing_scope`, `not_in_channel`, auth failures): bot/app tokens or Slack scopes are incomplete.
+  <Accordion title="Socket mode not connecting">
+    Validate bot + app tokens and Socket Mode enablement in Slack app settings.
+  </Accordion>
 
-For triage flow: [/channels/troubleshooting](/channels/troubleshooting).
+  <Accordion title="HTTP mode not receiving events">
+    Validate:
 
-## Notes
+    - signing secret
+    - webhook path
+    - Slack Request URLs (Events + Interactivity + Slash Commands)
+    - unique `webhookPath` per HTTP account
 
-- Mention gating is controlled via `channels.slack.channels` (set `requireMention` to `true`); `agents.list[].groupChat.mentionPatterns` (or `messages.groupChat.mentionPatterns`) also count as mentions.
-- Multi-agent override: set per-agent patterns on `agents.list[].groupChat.mentionPatterns`.
-- Reaction notifications follow `channels.slack.reactionNotifications` (use `reactionAllowlist` with mode `allowlist`).
-- Bot-authored messages are ignored by default; enable via `channels.slack.allowBots` or `channels.slack.channels.<id>.allowBots`.
-- Warning: If you allow replies to other bots (`channels.slack.allowBots=true` or `channels.slack.channels.<id>.allowBots=true`), prevent bot-to-bot reply loops with `requireMention`, `channels.slack.channels.<id>.users` allowlists, and/or clear guardrails in `AGENTS.md` and `SOUL.md`.
-- For the Slack tool, reaction removal semantics are in [/tools/reactions](/tools/reactions).
-- Attachments are downloaded to the media store when permitted and under the size limit.
+  </Accordion>
+
+  <Accordion title="Native/slash commands not firing">
+    Verify whether you intended:
+
+    - native command mode (`channels.slack.commands.native: true`) with matching slash commands registered in Slack
+    - or single slash command mode (`channels.slack.slashCommand.enabled: true`)
+
+    Also check `commands.useAccessGroups` and channel/user allowlists.
+
+  </Accordion>
+</AccordionGroup>
+
+## Configuration reference pointers
+
+Primary reference:
+
+- [Configuration reference - Slack](/gateway/configuration-reference#slack)
+
+High-signal Slack fields:
+
+- mode/auth: `mode`, `botToken`, `appToken`, `signingSecret`, `webhookPath`, `accounts.*`
+- DM access: `dm.enabled`, `dm.policy`, `dm.allowFrom`, `dm.groupEnabled`, `dm.groupChannels`
+- channel access: `groupPolicy`, `channels.*`, `channels.*.users`, `channels.*.requireMention`
+- threading/history: `replyToMode`, `replyToModeByChatType`, `thread.*`, `historyLimit`, `dmHistoryLimit`, `dms.*.historyLimit`
+- delivery: `textChunkLimit`, `chunkMode`, `mediaMaxMb`
+- ops/features: `configWrites`, `commands.native`, `slashCommand.*`, `actions.*`, `userToken`, `userTokenReadOnly`
+
+## Related
+
+- [Pairing](/channels/pairing)
+- [Channel routing](/channels/channel-routing)
+- [Troubleshooting](/channels/troubleshooting)
+- [Configuration](/gateway/configuration)
+- [Slash commands](/tools/slash-commands)

@@ -20,6 +20,7 @@ Merge a prepared PR via `gh pr merge --squash` and clean up the worktree after s
 - Use `gh pr merge --squash` as the only path to `main`.
 - Do not run `git push` at all during merge.
 - Do not run gateway stop commands. Do not kill processes. Do not touch port 18792.
+- Do not execute merge or PR-comment GitHub write actions until maintainer explicitly approves.
 
 ## Execution Rule
 
@@ -132,6 +133,8 @@ else
 fi
 ```
 
+Before running merge command, pause and ask for explicit maintainer go-ahead.
+
 If merge fails, report the error and stop. Do not retry in a loop.
 If the PR needs changes beyond what `/preparepr` already did, stop and say to run `/preparepr` again.
 
@@ -147,13 +150,7 @@ echo "merge_sha=$merge_sha"
 Use a literal multiline string or heredoc for newlines.
 
 ```sh
-gh pr comment <PR> -F - <<'EOF'
-Merged via squash.
-
-- Merge commit: $merge_sha
-
-Thanks @$contrib!
-EOF
+gh pr comment <PR> --body "$(printf 'Merged via squash.\n\n- Merge commit: %s\n\nThanks @%s!\n' \"$merge_sha\" \"$contrib\")"
 ```
 
 6. Verify PR state is MERGED

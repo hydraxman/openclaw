@@ -45,6 +45,7 @@ Start with the smallest access that still works, then widen it as you gain confi
 - **Browser control exposure** (remote nodes, relay ports, remote CDP endpoints).
 - **Local disk hygiene** (permissions, symlinks, config includes, “synced folder” paths).
 - **Plugins** (extensions exist without an explicit allowlist).
+- **Policy drift/misconfig** (sandbox docker settings configured but sandbox mode off; ineffective `gateway.nodes.denyCommands` patterns; global `tools.profile="minimal"` overridden by per-agent profiles; extension plugin tools reachable under permissive tool policy).
 - **Model hygiene** (warn when configured models look legacy; not a hard block).
 
 If you run `--deep`, OpenClaw also attempts a best-effort live Gateway probe.
@@ -265,6 +266,9 @@ tool calls. Reduce the blast radius by:
 - Using a read-only or tool-disabled **reader agent** to summarize untrusted content,
   then pass the summary to your main agent.
 - Keeping `web_search` / `web_fetch` / `browser` off for tool-enabled agents unless needed.
+- For OpenResponses URL inputs (`input_file` / `input_image`), set tight
+  `gateway.http.endpoints.responses.files.urlAllowlist` and
+  `gateway.http.endpoints.responses.images.urlAllowlist`, and keep `maxUrlParts` low.
 - Enabling sandboxing and strict tool allowlists for any agent that touches untrusted input.
 - Keeping secrets out of prompts; pass them via env/config on the gateway host instead.
 
@@ -435,6 +439,7 @@ Auth modes:
 
 - `gateway.auth.mode: "token"`: shared bearer token (recommended for most setups).
 - `gateway.auth.mode: "password"`: password auth (prefer setting via env: `OPENCLAW_GATEWAY_PASSWORD`).
+- `gateway.auth.mode: "trusted-proxy"`: trust an identity-aware reverse proxy to authenticate users and pass identity via headers (see [Trusted Proxy Auth](/gateway/trusted-proxy-auth)).
 
 Rotation checklist (token/password):
 
@@ -455,7 +460,7 @@ injected by Tailscale.
 
 **Security rule:** do not forward these headers from your own reverse proxy. If
 you terminate TLS or proxy in front of the gateway, disable
-`gateway.auth.allowTailscale` and use token/password auth instead.
+`gateway.auth.allowTailscale` and use token/password auth (or [Trusted Proxy Auth](/gateway/trusted-proxy-auth)) instead.
 
 Trusted proxies:
 
@@ -796,21 +801,17 @@ Commit the updated `.secrets.baseline` once it reflects the intended state.
 
 ## The Trust Hierarchy
 
-```
-Owner (Peter)
-  │ Full trust
-  ▼
-AI (Clawd)
-  │ Trust but verify
-  ▼
-Friends in allowlist
-  │ Limited trust
-  ▼
-Strangers
-  │ No trust
-  ▼
-Mario asking for find ~
-  │ Definitely no trust 😏
+```mermaid
+flowchart TB
+    A["Owner (Peter)"] -- Full trust --> B["AI (Clawd)"]
+    B -- Trust but verify --> C["Friends in allowlist"]
+    C -- Limited trust --> D["Strangers"]
+    D -- No trust --> E["Mario asking for find ~"]
+    E -- Definitely no trust 😏 --> F[" "]
+
+     %% The transparent box is needed to show the bottom-most label correctly
+     F:::Class_transparent_box
+    classDef Class_transparent_box fill:transparent, stroke:transparent
 ```
 
 ## Reporting Security Issues

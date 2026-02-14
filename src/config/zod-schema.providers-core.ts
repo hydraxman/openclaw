@@ -20,6 +20,7 @@ import {
   RetryConfigSchema,
   requireOpenAllowFrom,
 } from "./zod-schema.core.js";
+import { sensitive } from "./zod-schema.sensitive.js";
 
 const ToolPolicyBySenderSchema = z.record(z.string(), ToolPolicySchema).optional();
 
@@ -97,7 +98,7 @@ export const TelegramAccountSchemaBase = z
     customCommands: z.array(TelegramCustomCommandSchema).optional(),
     configWrites: z.boolean().optional(),
     dmPolicy: DmPolicySchema.optional().default("pairing"),
-    botToken: z.string().optional(),
+    botToken: z.string().optional().register(sensitive),
     tokenFile: z.string().optional(),
     replyToMode: ReplyToModeSchema.optional(),
     groups: z.record(z.string(), TelegramGroupSchema.optional()).optional(),
@@ -124,8 +125,9 @@ export const TelegramAccountSchemaBase = z
       .optional(),
     proxy: z.string().optional(),
     webhookUrl: z.string().optional(),
-    webhookSecret: z.string().optional(),
+    webhookSecret: z.string().optional().register(sensitive),
     webhookPath: z.string().optional(),
+    webhookHost: z.string().optional(),
     actions: z
       .object({
         reactions: z.boolean().optional(),
@@ -235,6 +237,7 @@ export const DiscordGuildChannelSchema = z
     skills: z.array(z.string()).optional(),
     enabled: z.boolean().optional(),
     users: z.array(z.union([z.string(), z.number()])).optional(),
+    roles: z.array(z.union([z.string(), z.number()])).optional(),
     systemPrompt: z.string().optional(),
     includeThreadStarter: z.boolean().optional(),
     autoThread: z.boolean().optional(),
@@ -249,6 +252,7 @@ export const DiscordGuildSchema = z
     toolsBySender: ToolPolicyBySenderSchema,
     reactionNotifications: z.enum(["off", "own", "all", "allowlist"]).optional(),
     users: z.array(z.union([z.string(), z.number()])).optional(),
+    roles: z.array(z.union([z.string(), z.number()])).optional(),
     channels: z.record(z.string(), DiscordGuildChannelSchema.optional()).optional(),
   })
   .strict();
@@ -261,7 +265,8 @@ export const DiscordAccountSchema = z
     enabled: z.boolean().optional(),
     commands: ProviderCommandsSchema,
     configWrites: z.boolean().optional(),
-    token: z.string().optional(),
+    token: z.string().optional().register(sensitive),
+    proxy: z.string().optional(),
     allowBots: z.boolean().optional(),
     groupPolicy: GroupPolicySchema.optional().default("allowlist"),
     historyLimit: z.number().int().min(0).optional(),
@@ -308,6 +313,7 @@ export const DiscordAccountSchema = z
         approvers: z.array(z.union([z.string(), z.number()])).optional(),
         agentFilter: z.array(z.string()).optional(),
         sessionFilter: z.array(z.string()).optional(),
+        cleanupAfterResolve: z.boolean().optional(),
       })
       .strict()
       .optional(),
@@ -321,13 +327,50 @@ export const DiscordAccountSchema = z
     pluralkit: z
       .object({
         enabled: z.boolean().optional(),
-        token: z.string().optional(),
+        token: z.string().optional().register(sensitive),
       })
       .strict()
       .optional(),
     responsePrefix: z.string().optional(),
+    activity: z.string().optional(),
+    status: z.enum(["online", "dnd", "idle", "invisible"]).optional(),
+    activityType: z
+      .union([z.literal(0), z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)])
+      .optional(),
+    activityUrl: z.string().url().optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((value, ctx) => {
+    const activityText = typeof value.activity === "string" ? value.activity.trim() : "";
+    const hasActivity = Boolean(activityText);
+    const hasActivityType = value.activityType !== undefined;
+    const activityUrl = typeof value.activityUrl === "string" ? value.activityUrl.trim() : "";
+    const hasActivityUrl = Boolean(activityUrl);
+
+    if ((hasActivityType || hasActivityUrl) && !hasActivity) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "channels.discord.activity is required when activityType or activityUrl is set",
+        path: ["activity"],
+      });
+    }
+
+    if (value.activityType === 1 && !hasActivityUrl) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "channels.discord.activityUrl is required when activityType is 1 (Streaming)",
+        path: ["activityUrl"],
+      });
+    }
+
+    if (hasActivityUrl && value.activityType !== 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "channels.discord.activityType must be 1 (Streaming) when activityUrl is set",
+        path: ["activityType"],
+      });
+    }
+  });
 
 export const DiscordConfigSchema = DiscordAccountSchema.extend({
   accounts: z.record(z.string(), DiscordAccountSchema.optional()).optional(),
@@ -444,6 +487,7 @@ export const SlackThreadSchema = z
   .object({
     historyScope: z.enum(["thread", "channel"]).optional(),
     inheritParent: z.boolean().optional(),
+    initialHistoryLimit: z.number().int().min(0).optional(),
   })
   .strict();
 
@@ -459,16 +503,16 @@ export const SlackAccountSchema = z
   .object({
     name: z.string().optional(),
     mode: z.enum(["socket", "http"]).optional(),
-    signingSecret: z.string().optional(),
+    signingSecret: z.string().optional().register(sensitive),
     webhookPath: z.string().optional(),
     capabilities: z.array(z.string()).optional(),
     markdown: MarkdownConfigSchema,
     enabled: z.boolean().optional(),
     commands: ProviderCommandsSchema,
     configWrites: z.boolean().optional(),
-    botToken: z.string().optional(),
-    appToken: z.string().optional(),
-    userToken: z.string().optional(),
+    botToken: z.string().optional().register(sensitive),
+    appToken: z.string().optional().register(sensitive),
+    userToken: z.string().optional().register(sensitive),
     userTokenReadOnly: z.boolean().optional().default(true),
     allowBots: z.boolean().optional(),
     requireMention: z.boolean().optional(),
@@ -517,7 +561,7 @@ export const SlackAccountSchema = z
 
 export const SlackConfigSchema = SlackAccountSchema.extend({
   mode: z.enum(["socket", "http"]).optional().default("socket"),
-  signingSecret: z.string().optional(),
+  signingSecret: z.string().optional().register(sensitive),
   webhookPath: z.string().optional().default("/slack/events"),
   accounts: z.record(z.string(), SlackAccountSchema.optional()).optional(),
 }).superRefine((value, ctx) => {
@@ -621,6 +665,251 @@ export const SignalConfigSchema = SignalAccountSchemaBase.extend({
   });
 });
 
+<<<<<<< HEAD
+=======
+export const IrcGroupSchema = z
+  .object({
+    requireMention: z.boolean().optional(),
+    tools: ToolPolicySchema,
+    toolsBySender: ToolPolicyBySenderSchema,
+    skills: z.array(z.string()).optional(),
+    enabled: z.boolean().optional(),
+    allowFrom: z.array(z.union([z.string(), z.number()])).optional(),
+    systemPrompt: z.string().optional(),
+  })
+  .strict();
+
+export const IrcNickServSchema = z
+  .object({
+    enabled: z.boolean().optional(),
+    service: z.string().optional(),
+    password: z.string().optional().register(sensitive),
+    passwordFile: z.string().optional(),
+    register: z.boolean().optional(),
+    registerEmail: z.string().optional(),
+  })
+  .strict();
+
+export const IrcAccountSchemaBase = z
+  .object({
+    name: z.string().optional(),
+    capabilities: z.array(z.string()).optional(),
+    markdown: MarkdownConfigSchema,
+    enabled: z.boolean().optional(),
+    configWrites: z.boolean().optional(),
+    host: z.string().optional(),
+    port: z.number().int().min(1).max(65535).optional(),
+    tls: z.boolean().optional(),
+    nick: z.string().optional(),
+    username: z.string().optional(),
+    realname: z.string().optional(),
+    password: z.string().optional().register(sensitive),
+    passwordFile: z.string().optional(),
+    nickserv: IrcNickServSchema.optional(),
+    channels: z.array(z.string()).optional(),
+    dmPolicy: DmPolicySchema.optional().default("pairing"),
+    allowFrom: z.array(z.union([z.string(), z.number()])).optional(),
+    groupAllowFrom: z.array(z.union([z.string(), z.number()])).optional(),
+    groupPolicy: GroupPolicySchema.optional().default("allowlist"),
+    groups: z.record(z.string(), IrcGroupSchema.optional()).optional(),
+    mentionPatterns: z.array(z.string()).optional(),
+    historyLimit: z.number().int().min(0).optional(),
+    dmHistoryLimit: z.number().int().min(0).optional(),
+    dms: z.record(z.string(), DmConfigSchema.optional()).optional(),
+    textChunkLimit: z.number().int().positive().optional(),
+    chunkMode: z.enum(["length", "newline"]).optional(),
+    blockStreaming: z.boolean().optional(),
+    blockStreamingCoalesce: BlockStreamingCoalesceSchema.optional(),
+    mediaMaxMb: z.number().positive().optional(),
+    heartbeat: ChannelHeartbeatVisibilitySchema,
+    responsePrefix: z.string().optional(),
+  })
+  .strict();
+
+export const IrcAccountSchema = IrcAccountSchemaBase.superRefine((value, ctx) => {
+  requireOpenAllowFrom({
+    policy: value.dmPolicy,
+    allowFrom: value.allowFrom,
+    ctx,
+    path: ["allowFrom"],
+    message: 'channels.irc.dmPolicy="open" requires channels.irc.allowFrom to include "*"',
+  });
+  if (value.nickserv?.register && !value.nickserv.registerEmail?.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["nickserv", "registerEmail"],
+      message: "channels.irc.nickserv.register=true requires channels.irc.nickserv.registerEmail",
+    });
+  }
+});
+
+export const IrcConfigSchema = IrcAccountSchemaBase.extend({
+  accounts: z.record(z.string(), IrcAccountSchema.optional()).optional(),
+}).superRefine((value, ctx) => {
+  requireOpenAllowFrom({
+    policy: value.dmPolicy,
+    allowFrom: value.allowFrom,
+    ctx,
+    path: ["allowFrom"],
+    message: 'channels.irc.dmPolicy="open" requires channels.irc.allowFrom to include "*"',
+  });
+  if (value.nickserv?.register && !value.nickserv.registerEmail?.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["nickserv", "registerEmail"],
+      message: "channels.irc.nickserv.register=true requires channels.irc.nickserv.registerEmail",
+    });
+  }
+});
+
+export const IMessageAccountSchemaBase = z
+  .object({
+    name: z.string().optional(),
+    capabilities: z.array(z.string()).optional(),
+    markdown: MarkdownConfigSchema,
+    enabled: z.boolean().optional(),
+    configWrites: z.boolean().optional(),
+    cliPath: ExecutableTokenSchema.optional(),
+    dbPath: z.string().optional(),
+    remoteHost: z.string().optional(),
+    service: z.union([z.literal("imessage"), z.literal("sms"), z.literal("auto")]).optional(),
+    region: z.string().optional(),
+    dmPolicy: DmPolicySchema.optional().default("pairing"),
+    allowFrom: z.array(z.union([z.string(), z.number()])).optional(),
+    groupAllowFrom: z.array(z.union([z.string(), z.number()])).optional(),
+    groupPolicy: GroupPolicySchema.optional().default("allowlist"),
+    historyLimit: z.number().int().min(0).optional(),
+    dmHistoryLimit: z.number().int().min(0).optional(),
+    dms: z.record(z.string(), DmConfigSchema.optional()).optional(),
+    includeAttachments: z.boolean().optional(),
+    mediaMaxMb: z.number().int().positive().optional(),
+    textChunkLimit: z.number().int().positive().optional(),
+    chunkMode: z.enum(["length", "newline"]).optional(),
+    blockStreaming: z.boolean().optional(),
+    blockStreamingCoalesce: BlockStreamingCoalesceSchema.optional(),
+    groups: z
+      .record(
+        z.string(),
+        z
+          .object({
+            requireMention: z.boolean().optional(),
+            tools: ToolPolicySchema,
+            toolsBySender: ToolPolicyBySenderSchema,
+          })
+          .strict()
+          .optional(),
+      )
+      .optional(),
+    heartbeat: ChannelHeartbeatVisibilitySchema,
+    responsePrefix: z.string().optional(),
+  })
+  .strict();
+
+export const IMessageAccountSchema = IMessageAccountSchemaBase.superRefine((value, ctx) => {
+  requireOpenAllowFrom({
+    policy: value.dmPolicy,
+    allowFrom: value.allowFrom,
+    ctx,
+    path: ["allowFrom"],
+    message:
+      'channels.imessage.dmPolicy="open" requires channels.imessage.allowFrom to include "*"',
+  });
+});
+
+export const IMessageConfigSchema = IMessageAccountSchemaBase.extend({
+  accounts: z.record(z.string(), IMessageAccountSchema.optional()).optional(),
+}).superRefine((value, ctx) => {
+  requireOpenAllowFrom({
+    policy: value.dmPolicy,
+    allowFrom: value.allowFrom,
+    ctx,
+    path: ["allowFrom"],
+    message:
+      'channels.imessage.dmPolicy="open" requires channels.imessage.allowFrom to include "*"',
+  });
+});
+
+const BlueBubblesAllowFromEntry = z.union([z.string(), z.number()]);
+
+const BlueBubblesActionSchema = z
+  .object({
+    reactions: z.boolean().optional(),
+    edit: z.boolean().optional(),
+    unsend: z.boolean().optional(),
+    reply: z.boolean().optional(),
+    sendWithEffect: z.boolean().optional(),
+    renameGroup: z.boolean().optional(),
+    setGroupIcon: z.boolean().optional(),
+    addParticipant: z.boolean().optional(),
+    removeParticipant: z.boolean().optional(),
+    leaveGroup: z.boolean().optional(),
+    sendAttachment: z.boolean().optional(),
+  })
+  .strict()
+  .optional();
+
+const BlueBubblesGroupConfigSchema = z
+  .object({
+    requireMention: z.boolean().optional(),
+    tools: ToolPolicySchema,
+    toolsBySender: ToolPolicyBySenderSchema,
+  })
+  .strict();
+
+export const BlueBubblesAccountSchemaBase = z
+  .object({
+    name: z.string().optional(),
+    capabilities: z.array(z.string()).optional(),
+    markdown: MarkdownConfigSchema,
+    configWrites: z.boolean().optional(),
+    enabled: z.boolean().optional(),
+    serverUrl: z.string().optional(),
+    password: z.string().optional().register(sensitive),
+    webhookPath: z.string().optional(),
+    dmPolicy: DmPolicySchema.optional().default("pairing"),
+    allowFrom: z.array(BlueBubblesAllowFromEntry).optional(),
+    groupAllowFrom: z.array(BlueBubblesAllowFromEntry).optional(),
+    groupPolicy: GroupPolicySchema.optional().default("allowlist"),
+    historyLimit: z.number().int().min(0).optional(),
+    dmHistoryLimit: z.number().int().min(0).optional(),
+    dms: z.record(z.string(), DmConfigSchema.optional()).optional(),
+    textChunkLimit: z.number().int().positive().optional(),
+    chunkMode: z.enum(["length", "newline"]).optional(),
+    mediaMaxMb: z.number().int().positive().optional(),
+    sendReadReceipts: z.boolean().optional(),
+    blockStreaming: z.boolean().optional(),
+    blockStreamingCoalesce: BlockStreamingCoalesceSchema.optional(),
+    groups: z.record(z.string(), BlueBubblesGroupConfigSchema.optional()).optional(),
+    heartbeat: ChannelHeartbeatVisibilitySchema,
+    responsePrefix: z.string().optional(),
+  })
+  .strict();
+
+export const BlueBubblesAccountSchema = BlueBubblesAccountSchemaBase.superRefine((value, ctx) => {
+  requireOpenAllowFrom({
+    policy: value.dmPolicy,
+    allowFrom: value.allowFrom,
+    ctx,
+    path: ["allowFrom"],
+    message: 'channels.bluebubbles.accounts.*.dmPolicy="open" requires allowFrom to include "*"',
+  });
+});
+
+export const BlueBubblesConfigSchema = BlueBubblesAccountSchemaBase.extend({
+  accounts: z.record(z.string(), BlueBubblesAccountSchema.optional()).optional(),
+  actions: BlueBubblesActionSchema,
+}).superRefine((value, ctx) => {
+  requireOpenAllowFrom({
+    policy: value.dmPolicy,
+    allowFrom: value.allowFrom,
+    ctx,
+    path: ["allowFrom"],
+    message:
+      'channels.bluebubbles.dmPolicy="open" requires channels.bluebubbles.allowFrom to include "*"',
+  });
+});
+
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 export const MSTeamsChannelSchema = z
   .object({
     requireMention: z.boolean().optional(),
@@ -647,7 +936,7 @@ export const MSTeamsConfigSchema = z
     markdown: MarkdownConfigSchema,
     configWrites: z.boolean().optional(),
     appId: z.string().optional(),
-    appPassword: z.string().optional(),
+    appPassword: z.string().optional().register(sensitive),
     tenantId: z.string().optional(),
     webhook: z
       .object({

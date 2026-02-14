@@ -10,6 +10,10 @@ import type {
   ChannelPlugin,
   ChannelThreadingAdapter,
 } from "./plugins/types.js";
+import {
+  resolveChannelGroupRequireMention,
+  resolveChannelGroupToolsPolicy,
+} from "../config/group-policy.js";
 import { resolveDiscordAccount } from "../discord/accounts.js";
 import { requireActivePluginRegistry } from "../plugins/runtime.js";
 import { normalizeAccountId } from "../routing/session-key.js";
@@ -17,7 +21,13 @@ import { resolveSignalAccount } from "../signal/accounts.js";
 import { resolveSlackAccount, resolveSlackReplyToMode } from "../slack/accounts.js";
 import { buildSlackThreadingToolContext } from "../slack/threading-tool-context.js";
 import { resolveTelegramAccount } from "../telegram/accounts.js";
+<<<<<<< HEAD
 import { normalizeE164 } from "../utils.js";
+=======
+import { escapeRegExp, normalizeE164 } from "../utils.js";
+import { resolveWhatsAppAccount } from "../web/accounts.js";
+import { normalizeWhatsAppTarget } from "../whatsapp/normalize.js";
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 import {
   resolveDiscordGroupRequireMention,
   resolveDiscordGroupToolPolicy,
@@ -68,9 +78,6 @@ const formatLower = (allowFrom: Array<string | number>) =>
     .map((entry) => String(entry).trim())
     .filter(Boolean)
     .map((entry) => entry.toLowerCase());
-
-const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
 // Channel docks: lightweight channel metadata/behavior for shared code paths.
 //
 // Rules:
@@ -107,7 +114,7 @@ const DOCKS: Record<ChatChannelId, ChannelDock> = {
       resolveToolPolicy: resolveTelegramGroupToolPolicy,
     },
     threading: {
-      resolveReplyToMode: ({ cfg }) => cfg.channels?.telegram?.replyToMode ?? "first",
+      resolveReplyToMode: ({ cfg }) => cfg.channels?.telegram?.replyToMode ?? "off",
       buildToolContext: ({ context, hasRepliedRef }) => {
         const threadId = context.MessageThreadId ?? context.ReplyToId;
         return {
@@ -118,6 +125,59 @@ const DOCKS: Record<ChatChannelId, ChannelDock> = {
       },
     },
   },
+<<<<<<< HEAD
+=======
+  whatsapp: {
+    id: "whatsapp",
+    capabilities: {
+      chatTypes: ["direct", "group"],
+      polls: true,
+      reactions: true,
+      media: true,
+    },
+    commands: {
+      enforceOwnerForCommands: true,
+      skipWhenConfigEmpty: true,
+    },
+    outbound: { textChunkLimit: 4000 },
+    config: {
+      resolveAllowFrom: ({ cfg, accountId }) =>
+        resolveWhatsAppAccount({ cfg, accountId }).allowFrom ?? [],
+      formatAllowFrom: ({ allowFrom }) =>
+        allowFrom
+          .map((entry) => String(entry).trim())
+          .filter((entry): entry is string => Boolean(entry))
+          .map((entry) => (entry === "*" ? entry : normalizeWhatsAppTarget(entry)))
+          .filter((entry): entry is string => Boolean(entry)),
+    },
+    groups: {
+      resolveRequireMention: resolveWhatsAppGroupRequireMention,
+      resolveToolPolicy: resolveWhatsAppGroupToolPolicy,
+      resolveGroupIntroHint: () =>
+        "WhatsApp IDs: SenderId is the participant JID (group participant id).",
+    },
+    mentions: {
+      stripPatterns: ({ ctx }) => {
+        const selfE164 = (ctx.To ?? "").replace(/^whatsapp:/, "");
+        if (!selfE164) {
+          return [];
+        }
+        const escaped = escapeRegExp(selfE164);
+        return [escaped, `@${escaped}`];
+      },
+    },
+    threading: {
+      buildToolContext: ({ context, hasRepliedRef }) => {
+        const channelId = context.From?.trim() || context.To?.trim() || undefined;
+        return {
+          currentChannelId: channelId,
+          currentThreadTs: context.ReplyToId,
+          hasRepliedRef,
+        };
+      },
+    },
+  },
+>>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
   discord: {
     id: "discord",
     capabilities: {
@@ -156,6 +216,73 @@ const DOCKS: Record<ChatChannelId, ChannelDock> = {
         currentThreadTs: context.ReplyToId,
         hasRepliedRef,
       }),
+    },
+  },
+  irc: {
+    id: "irc",
+    capabilities: {
+      chatTypes: ["direct", "group"],
+      media: true,
+      blockStreaming: true,
+    },
+    outbound: { textChunkLimit: 350 },
+    streaming: {
+      blockStreamingCoalesceDefaults: { minChars: 300, idleMs: 1000 },
+    },
+    config: {
+      resolveAllowFrom: ({ cfg, accountId }) => {
+        const channel = cfg.channels?.irc;
+        const normalized = normalizeAccountId(accountId);
+        const account =
+          channel?.accounts?.[normalized] ??
+          channel?.accounts?.[
+            Object.keys(channel?.accounts ?? {}).find(
+              (key) => key.toLowerCase() === normalized.toLowerCase(),
+            ) ?? ""
+          ];
+        return (account?.allowFrom ?? channel?.allowFrom ?? []).map((entry) => String(entry));
+      },
+      formatAllowFrom: ({ allowFrom }) =>
+        allowFrom
+          .map((entry) => String(entry).trim())
+          .filter(Boolean)
+          .map((entry) =>
+            entry
+              .replace(/^irc:/i, "")
+              .replace(/^user:/i, "")
+              .toLowerCase(),
+          ),
+    },
+    groups: {
+      resolveRequireMention: ({ cfg, accountId, groupId }) => {
+        if (!groupId) {
+          return true;
+        }
+        return resolveChannelGroupRequireMention({
+          cfg,
+          channel: "irc",
+          groupId,
+          accountId,
+          groupIdCaseInsensitive: true,
+        });
+      },
+      resolveToolPolicy: ({ cfg, accountId, groupId, senderId, senderName, senderUsername }) => {
+        if (!groupId) {
+          return undefined;
+        }
+        // IRC supports per-channel tool policies. Prefer the shared resolver so
+        // toolsBySender is honored consistently across surfaces.
+        return resolveChannelGroupToolsPolicy({
+          cfg,
+          channel: "irc",
+          groupId,
+          accountId,
+          groupIdCaseInsensitive: true,
+          senderId,
+          senderName,
+          senderUsername,
+        });
+      },
     },
   },
   googlechat: {
