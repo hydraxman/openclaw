@@ -28,6 +28,10 @@ type AuthChoiceFlagOptions = Pick<
   | "xaiApiKey"
   | "litellmApiKey"
   | "qianfanApiKey"
+  | "azureFoundryApiKey"
+  | "azureFoundryEndpoint"
+  | "azureFoundryDeployment"
+  | "azureFoundryModel"
   | "customBaseUrl"
   | "customModelId"
   | "customApiKey"
@@ -51,6 +55,20 @@ export function inferAuthChoiceFromFlags(opts: OnboardOptions): AuthChoiceInfere
     authChoice: flag.authChoice,
     label: flag.cliFlag,
   }));
+
+  if (
+    hasStringValue(opts.azureFoundryApiKey) ||
+    hasStringValue(opts.azureFoundryEndpoint) ||
+    hasStringValue(opts.azureFoundryDeployment) ||
+    hasStringValue(opts.azureFoundryModel)
+  ) {
+    matches.push({
+      optionKey: "azureFoundryApiKey",
+      authChoice: "azure-foundry-api-key",
+      label:
+        "--azure-foundry-api-key/--azure-foundry-endpoint/--azure-foundry-deployment/--azure-foundry-model",
+    });
+  }
 
   if (
     hasStringValue(opts.customBaseUrl) ||

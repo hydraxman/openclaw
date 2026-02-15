@@ -148,7 +148,6 @@ describe("config plugin validation", () => {
   });
 
   it("accepts plugin heartbeat targets", async () => {
-<<<<<<< HEAD
     await withTempHome(async (home) => {
       process.env.OPENCLAW_STATE_DIR = path.join(home, ".openclaw");
       const pluginDir = path.join(home, "matrix-plugin");
@@ -166,15 +165,6 @@ describe("config plugin validation", () => {
         plugins: { enabled: false, load: { paths: [pluginDir] } },
       });
       expect(res.ok).toBe(true);
-=======
-    const home = await createCaseHome();
-    const pluginDir = path.join(home, "bluebubbles-plugin");
-    await writePluginFixture({
-      dir: pluginDir,
-      id: "bluebubbles-plugin",
-      channels: ["bluebubbles"],
-      schema: { type: "object" },
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
     });
 
     const res = validateInHome(home, {

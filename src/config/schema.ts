@@ -10,7 +10,6 @@ export type ConfigSchema = ReturnType<typeof OpenClawSchema.toJSONSchema>;
 
 type JsonSchemaNode = Record<string, unknown>;
 
-<<<<<<< HEAD
 export type ConfigSchemaResponse = {
   schema: ConfigSchema;
   uiHints: ConfigUiHints;
@@ -684,7 +683,7 @@ const FIELD_HELP: Record<string, string> = {
   "channels.slack.commands.nativeSkills":
     'Override native skill commands for Slack (bool or "auto").',
   "session.agentToAgent.maxPingPongTurns":
-    "Max reply-back turns between requester and target (0–5).",
+    "Max reply-back turns between requester and target (0�?).",
   "channels.telegram.customCommands":
     "Additional Telegram bot menu commands (merged with native; conflicts ignored).",
   "messages.ackReaction": "Emoji reaction used to acknowledge inbound messages (empty disables).",
@@ -751,8 +750,6 @@ function isSensitivePath(path: string): boolean {
   return SENSITIVE_PATTERNS.some((pattern) => pattern.test(path));
 }
 
-=======
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 type JsonSchemaObject = JsonSchemaNode & {
   type?: string | string[];
   properties?: Record<string, JsonSchemaObject>;
@@ -804,32 +801,6 @@ function mergeObjectSchema(base: JsonSchemaObject, extension: JsonSchemaObject):
   }
   return merged;
 }
-
-export type ConfigSchemaResponse = {
-  schema: ConfigSchema;
-  uiHints: ConfigUiHints;
-  version: string;
-  generatedAt: string;
-};
-
-export type PluginUiMetadata = {
-  id: string;
-  name?: string;
-  description?: string;
-  configUiHints?: Record<
-    string,
-    Pick<ConfigUiHint, "label" | "help" | "advanced" | "sensitive" | "placeholder">
-  >;
-  configSchema?: JsonSchemaNode;
-};
-
-export type ChannelUiMetadata = {
-  id: string;
-  label?: string;
-  description?: string;
-  configSchema?: JsonSchemaNode;
-  configUiHints?: Record<string, ConfigUiHint>;
-};
 
 function collectExtensionHintKeys(
   hints: ConfigUiHints,

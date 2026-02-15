@@ -9,11 +9,7 @@ import {
   listChatChannels,
   normalizeChatChannelId,
 } from "../channels/registry.js";
-<<<<<<< HEAD
-=======
 import { isRecord } from "../utils.js";
-import { hasAnyWhatsAppAuth } from "../web/accounts.js";
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 
 type PluginEnableChange = {
   pluginId: string;

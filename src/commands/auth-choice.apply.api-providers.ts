@@ -17,6 +17,8 @@ import {
   applyAuthProfileConfig,
   applyCloudflareAiGatewayConfig,
   applyCloudflareAiGatewayProviderConfig,
+  applyAzureFoundryConfig,
+  applyAzureFoundryProviderConfig,
   applyQianfanConfig,
   applyQianfanProviderConfig,
   applyKimiCodeConfig,
@@ -45,6 +47,7 @@ import {
   LITELLM_DEFAULT_MODEL_REF,
   QIANFAN_DEFAULT_MODEL_REF,
   KIMI_CODING_MODEL_REF,
+  AZURE_FOUNDRY_DEFAULT_MODEL_REF,
   MOONSHOT_DEFAULT_MODEL_REF,
   SYNTHETIC_DEFAULT_MODEL_REF,
   TOGETHER_DEFAULT_MODEL_REF,
@@ -52,6 +55,7 @@ import {
   VERCEL_AI_GATEWAY_DEFAULT_MODEL_REF,
   XIAOMI_DEFAULT_MODEL_REF,
   setCloudflareAiGatewayConfig,
+  setAzureFoundryApiKey,
   setQianfanApiKey,
   setGeminiApiKey,
   setLitellmApiKey,
@@ -124,6 +128,8 @@ export async function applyAuthChoiceApiProviders(
       authChoice = "opencode-zen";
     } else if (params.opts.tokenProvider === "qianfan") {
       authChoice = "qianfan-api-key";
+    } else if (params.opts.tokenProvider === "azure-foundry") {
+      authChoice = "azure-foundry-api-key";
     }
   }
 
@@ -921,6 +927,80 @@ export async function applyAuthChoiceApiProviders(
 
   if (authChoice === "huggingface-api-key") {
     return applyAuthChoiceHuggingface({ ...params, authChoice });
+  }
+
+  if (authChoice === "azure-foundry-api-key") {
+    let hasCredential = false;
+    const endpoint = params.opts?.azureFoundryEndpoint?.trim() ?? "";
+    const deployment = params.opts?.azureFoundryDeployment?.trim() ?? "";
+    let modelId = params.opts?.azureFoundryModel?.trim() ?? "";
+
+    if (!hasCredential && params.opts?.token && params.opts?.tokenProvider === "azure-foundry") {
+      setAzureFoundryApiKey(normalizeApiKeyInput(params.opts.token), params.agentDir);
+      hasCredential = true;
+    }
+
+    const envKey = resolveEnvApiKey("azure-foundry");
+    if (envKey) {
+      const useExisting = await params.prompter.confirm({
+        message: `Use existing AZURE_FOUNDRY_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        initialValue: true,
+      });
+      if (useExisting) {
+        setAzureFoundryApiKey(envKey.apiKey, params.agentDir);
+        hasCredential = true;
+      }
+    }
+
+    if (!hasCredential) {
+      const key = await params.prompter.text({
+        message: "Enter Azure AI Foundry API key",
+        validate: validateApiKeyInput,
+      });
+      setAzureFoundryApiKey(normalizeApiKeyInput(String(key ?? "")), params.agentDir);
+    }
+
+    if (!modelId) {
+      const value = await params.prompter.text({
+        message: "Enter Azure AI Foundry model id",
+        initialValue: "gpt-4.1",
+        validate: (val) => (String(val ?? "").trim() ? undefined : "Model id is required"),
+      });
+      modelId = String(value ?? "").trim();
+    }
+
+    nextConfig = applyAuthProfileConfig(nextConfig, {
+      profileId: "azure-foundry:default",
+      provider: "azure-foundry",
+      mode: "api_key",
+    });
+    {
+      const applied = await applyDefaultModelChoice({
+        config: nextConfig,
+        setDefaultModel: params.setDefaultModel,
+        defaultModel:
+          modelId === "gpt-4.1" ? AZURE_FOUNDRY_DEFAULT_MODEL_REF : `azure-foundry/${modelId}`,
+        applyDefaultConfig: (cfg) =>
+          applyAzureFoundryConfig(cfg, {
+            endpoint,
+            deployment,
+            modelId,
+          }),
+        applyProviderConfig: (cfg) =>
+          applyAzureFoundryProviderConfig(cfg, {
+            endpoint,
+            deployment,
+            modelId,
+          }),
+        noteDefault:
+          modelId === "gpt-4.1" ? AZURE_FOUNDRY_DEFAULT_MODEL_REF : `azure-foundry/${modelId}`,
+        noteAgentModel,
+        prompter: params.prompter,
+      });
+      nextConfig = applied.config;
+      agentModelOverride = applied.agentModelOverride ?? agentModelOverride;
+    }
+    return { config: nextConfig, agentModelOverride };
   }
 
   if (authChoice === "qianfan-api-key") {

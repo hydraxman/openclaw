@@ -22,7 +22,6 @@ function createQrMatrix(input: string) {
   return qr;
 }
 
-<<<<<<< HEAD:src/infra/qr-image.ts
 function fillPixel(
   buf: Buffer,
   x: number,
@@ -100,8 +99,6 @@ function encodePngRgba(buffer: Buffer, width: number, height: number) {
   ]);
 }
 
-=======
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627:src/web/qr-image.ts
 export async function renderQrPngBase64(
   input: string,
   opts: { scale?: number; marginModules?: number } = {},

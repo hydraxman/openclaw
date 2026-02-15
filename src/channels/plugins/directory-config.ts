@@ -207,3 +207,39 @@ export async function listTelegramDirectoryGroupsFromConfig(
     .slice(0, params.limit && params.limit > 0 ? params.limit : undefined)
     .map((id) => ({ kind: "group", id }) as const);
 }
+
+export async function listWhatsAppDirectoryPeersFromConfig(
+  params: DirectoryConfigParams,
+): Promise<ChannelDirectoryEntry[]> {
+  const q = params.query?.trim().toLowerCase() || "";
+  const channels = params.cfg.channels as Record<string, unknown> | undefined;
+  const whatsapp = (channels?.whatsapp ?? {}) as {
+    allowFrom?: Array<string | number>;
+  };
+  return Array.from(
+    new Set(
+      (whatsapp.allowFrom ?? [])
+        .map((entry) => String(entry).trim())
+        .filter((entry) => Boolean(entry) && entry !== "*"),
+    ),
+  )
+    .filter((id) => (q ? id.toLowerCase().includes(q) : true))
+    .slice(0, params.limit && params.limit > 0 ? params.limit : undefined)
+    .map((id) => ({ kind: "user", id }) as const);
+}
+
+export async function listWhatsAppDirectoryGroupsFromConfig(
+  params: DirectoryConfigParams,
+): Promise<ChannelDirectoryEntry[]> {
+  const q = params.query?.trim().toLowerCase() || "";
+  const channels = params.cfg.channels as Record<string, unknown> | undefined;
+  const whatsapp = (channels?.whatsapp ?? {}) as {
+    groups?: Record<string, unknown>;
+  };
+  return Object.keys(whatsapp.groups ?? {})
+    .map((id) => id.trim())
+    .filter((id) => Boolean(id) && id !== "*")
+    .filter((id) => (q ? id.toLowerCase().includes(q) : true))
+    .slice(0, params.limit && params.limit > 0 ? params.limit : undefined)
+    .map((id) => ({ kind: "group", id }) as const);
+}

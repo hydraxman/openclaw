@@ -130,12 +130,7 @@
     "@mozilla/readability": "^0.6.0",
     "@sinclair/typebox": "0.34.48",
     "@slack/bolt": "^4.6.0",
-<<<<<<< HEAD
     "@slack/web-api": "^7.13.0",
-=======
-    "@slack/web-api": "^7.14.0",
-    "@whiskeysockets/baileys": "7.0.0-rc.9",
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
     "ajv": "^8.17.1",
     "chalk": "^5.6.2",
     "chokidar": "^5.0.0",
@@ -194,8 +189,7 @@
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "@napi-rs/canvas": "^0.1.89",
-    "node-llama-cpp": "3.15.1"
+    "@napi-rs/canvas": "^0.1.89"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -217,7 +211,6 @@
       "@napi-rs/canvas",
       "authenticate-pam",
       "esbuild",
-      "node-llama-cpp",
       "protobufjs",
       "sharp"
     ]

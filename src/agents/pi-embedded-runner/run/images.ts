@@ -3,12 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { SandboxFsBridge } from "../../sandbox/fs-bridge.js";
 import { resolveUserPath } from "../../../utils.js";
-<<<<<<< HEAD
 import { loadWebMedia } from "../../../media/load.js";
 import { assertSandboxPath } from "../../sandbox-paths.js";
-=======
-import { loadWebMedia } from "../../../web/media.js";
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 import { sanitizeImageBlocks } from "../../tool-images.js";
 import { log } from "../logger.js";
 

@@ -21,6 +21,7 @@ type OnboardProviderAuthOptionKey = keyof Pick<
   | "xaiApiKey"
   | "litellmApiKey"
   | "qianfanApiKey"
+  | "azureFoundryApiKey"
 >;
 
 export type OnboardProviderAuthFlag = {
@@ -158,6 +159,13 @@ export const ONBOARD_PROVIDER_AUTH_FLAGS: ReadonlyArray<OnboardProviderAuthFlag>
     cliFlag: "--litellm-api-key",
     cliOption: "--litellm-api-key <key>",
     description: "LiteLLM API key",
+  },
+  {
+    optionKey: "azureFoundryApiKey",
+    authChoice: "azure-foundry-api-key",
+    cliFlag: "--azure-foundry-api-key",
+    cliOption: "--azure-foundry-api-key <key>",
+    description: "Azure AI Foundry API key",
   },
   {
     optionKey: "qianfanApiKey",

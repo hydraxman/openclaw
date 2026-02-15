@@ -5,10 +5,6 @@ import { telegramOutbound } from "../../channels/plugins/outbound/telegram.js";
 import { setActivePluginRegistry } from "../../plugins/runtime.js";
 import { markdownToSignalTextChunks } from "../../signal/format.js";
 import { createOutboundTestPlugin, createTestRegistry } from "../../test-utils/channel-plugins.js";
-<<<<<<< HEAD
-=======
-import { createIMessageTestPlugin } from "../../test-utils/imessage-test-plugin.js";
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 
 const mocks = vi.hoisted(() => ({
   appendAssistantMessageToSessionTranscript: vi.fn(async () => ({ ok: true, sessionFile: "x" })),
@@ -425,7 +421,7 @@ describe("deliverOutboundPayloads", () => {
     // onError was called for the first payload's failure.
     expect(onError).toHaveBeenCalledTimes(1);
 
-    // Queue entry should NOT be acked — failDelivery should be called instead.
+    // Queue entry should NOT be acked �?failDelivery should be called instead.
     expect(queueMocks.ackDelivery).not.toHaveBeenCalled();
     expect(queueMocks.failDelivery).toHaveBeenCalledWith(
       "mock-queue-id",

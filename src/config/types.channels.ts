@@ -1,11 +1,7 @@
 import type { GroupPolicy } from "./types.base.js";
 import type { DiscordConfig } from "./types.discord.js";
 import type { GoogleChatConfig } from "./types.googlechat.js";
-<<<<<<< HEAD
-=======
-import type { IMessageConfig } from "./types.imessage.js";
 import type { IrcConfig } from "./types.irc.js";
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 import type { MSTeamsConfig } from "./types.msteams.js";
 import type { SignalConfig } from "./types.signal.js";
 import type { SlackConfig } from "./types.slack.js";

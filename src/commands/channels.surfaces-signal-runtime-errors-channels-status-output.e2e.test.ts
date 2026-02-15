@@ -3,10 +3,6 @@ import type { RuntimeEnv } from "../runtime.js";
 import { signalPlugin } from "../../extensions/signal/src/channel.js";
 import { setActivePluginRegistry } from "../plugins/runtime.js";
 import { createTestRegistry } from "../test-utils/channel-plugins.js";
-<<<<<<< HEAD:src/commands/channels.surfaces-signal-runtime-errors-channels-status-output.test.ts
-=======
-import { createIMessageTestPlugin } from "../test-utils/imessage-test-plugin.js";
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627:src/commands/channels.surfaces-signal-runtime-errors-channels-status-output.e2e.test.ts
 
 const configMocks = vi.hoisted(() => ({
   readConfigFileSnapshot: vi.fn(),

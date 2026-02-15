@@ -29,6 +29,7 @@ import {
   VENICE_MODEL_CATALOG,
 } from "../agents/venice-models.js";
 import {
+  AZURE_FOUNDRY_DEFAULT_MODEL_REF,
   HUGGINGFACE_DEFAULT_MODEL_REF,
   OPENROUTER_DEFAULT_MODEL_REF,
   TOGETHER_DEFAULT_MODEL_REF,
@@ -49,6 +50,8 @@ export {
   LITELLM_DEFAULT_MODEL_ID,
 } from "./onboard-auth.config-litellm.js";
 import {
+  AZURE_FOUNDRY_DEFAULT_MODEL_ID,
+  buildAzureFoundryModelDefinition,
   buildZaiModelDefinition,
   buildMoonshotModelDefinition,
   buildXaiModelDefinition,
@@ -766,6 +769,105 @@ export function applyXaiConfig(cfg: OpenClawConfig): OpenClawConfig {
               }
             : undefined),
           primary: XAI_DEFAULT_MODEL_REF,
+        },
+      },
+    },
+  };
+}
+
+export function applyAzureFoundryProviderConfig(
+  cfg: OpenClawConfig,
+  params?: { endpoint?: string; deployment?: string; modelId?: string },
+): OpenClawConfig {
+  const modelId = params?.modelId?.trim() || AZURE_FOUNDRY_DEFAULT_MODEL_ID;
+  const modelRef = `azure-foundry/${modelId}`;
+  const endpoint = params?.endpoint?.trim();
+  const deployment = params?.deployment?.trim();
+
+  const models = { ...cfg.agents?.defaults?.models };
+  models[modelRef] = {
+    ...models[modelRef],
+    alias: models[modelRef]?.alias ?? "Azure Foundry",
+  };
+
+  const providers = { ...cfg.models?.providers };
+  const existingProvider = providers["azure-foundry"] as
+    | (Record<string, unknown> & {
+        apiKey?: string;
+        baseUrl?: string;
+        deployment?: string;
+        models?: Array<{ id: string }>;
+      })
+    | undefined;
+  const existingModels = Array.isArray(existingProvider?.models) ? existingProvider.models : [];
+  const defaultModel = buildAzureFoundryModelDefinition(modelId);
+  const mergedModels = existingModels.some((model) => model.id === modelId)
+    ? existingModels
+    : [...existingModels, defaultModel];
+  const { apiKey: existingApiKey, ...existingProviderRest } = (existingProvider ?? {}) as Record<
+    string,
+    unknown
+  > as { apiKey?: string };
+  const normalizedApiKey = typeof existingApiKey === "string" ? existingApiKey.trim() : "";
+
+  providers["azure-foundry"] = {
+    ...existingProviderRest,
+    ...(endpoint
+      ? { baseUrl: endpoint }
+      : typeof existingProvider?.baseUrl === "string" && existingProvider.baseUrl.trim()
+        ? { baseUrl: existingProvider.baseUrl.trim() }
+        : {}),
+    ...(deployment
+      ? { deployment }
+      : typeof existingProvider?.deployment === "string" && existingProvider.deployment.trim()
+        ? { deployment: existingProvider.deployment.trim() }
+        : {}),
+    api: "openai-completions" as ModelApi,
+    ...(normalizedApiKey ? { apiKey: normalizedApiKey } : {}),
+    models: mergedModels.length > 0 ? mergedModels : [defaultModel],
+  };
+
+  return {
+    ...cfg,
+    agents: {
+      ...cfg.agents,
+      defaults: {
+        ...cfg.agents?.defaults,
+        models,
+      },
+    },
+    models: {
+      mode: cfg.models?.mode ?? "merge",
+      providers,
+    },
+  };
+}
+
+export function applyAzureFoundryConfig(
+  cfg: OpenClawConfig,
+  params?: { endpoint?: string; deployment?: string; modelId?: string },
+): OpenClawConfig {
+  const modelId = params?.modelId?.trim() || AZURE_FOUNDRY_DEFAULT_MODEL_ID;
+  const modelRef =
+    modelId === AZURE_FOUNDRY_DEFAULT_MODEL_ID
+      ? AZURE_FOUNDRY_DEFAULT_MODEL_REF
+      : `azure-foundry/${modelId}`;
+  const next = applyAzureFoundryProviderConfig(cfg, params);
+  const existingModel = next.agents?.defaults?.model;
+
+  return {
+    ...next,
+    agents: {
+      ...next.agents,
+      defaults: {
+        ...next.agents?.defaults,
+        model: {
+          ...(existingModel && "fallbacks" in (existingModel as Record<string, unknown>)
+            ? {
+                fallbacks: (existingModel as { fallbacks?: string[] }).fallbacks,
+              }
+            : undefined),
+          primary: modelRef,
         },
       },
     },

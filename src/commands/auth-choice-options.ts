@@ -89,6 +89,12 @@ const AUTH_CHOICE_GROUP_DEFS: {
     choices: ["zai-coding-global", "zai-coding-cn", "zai-global", "zai-cn"],
   },
   {
+    value: "azure",
+    label: "Azure AI Foundry",
+    hint: "Endpoint + deployment + API key",
+    choices: ["azure-foundry-api-key"],
+  },
+  {
     value: "qianfan",
     label: "Qianfan",
     hint: "API key",
@@ -180,6 +186,11 @@ const BASE_AUTH_CHOICE_OPTIONS: ReadonlyArray<AuthChoiceOption> = [
   },
   { value: "openai-api-key", label: "OpenAI API key" },
   { value: "xai-api-key", label: "xAI (Grok) API key" },
+  {
+    value: "azure-foundry-api-key",
+    label: "Azure AI Foundry API key",
+    hint: "Endpoint + deployment + model + API key",
+  },
   {
     value: "qianfan-api-key",
     label: "Qianfan API key",

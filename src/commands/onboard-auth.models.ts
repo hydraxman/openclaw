@@ -169,6 +169,26 @@ export const XAI_DEFAULT_COST = {
   cacheWrite: 0,
 };
 
+export const AZURE_FOUNDRY_DEFAULT_MODEL_ID = "gpt-4.1";
+export const AZURE_FOUNDRY_DEFAULT_MODEL_REF = `azure-foundry/${AZURE_FOUNDRY_DEFAULT_MODEL_ID}`;
+
+export function buildAzureFoundryModelDefinition(modelId: string): ModelDefinitionConfig {
+  return {
+    id: modelId,
+    name: modelId,
+    reasoning: false,
+    input: ["text"],
+    cost: {
+      input: 0,
+      output: 0,
+      cacheRead: 0,
+      cacheWrite: 0,
+    },
+    contextWindow: 131072,
+    maxTokens: 8192,
+  };
+}
+
 export function buildXaiModelDefinition(): ModelDefinitionConfig {
   return {
     id: XAI_DEFAULT_MODEL_ID,

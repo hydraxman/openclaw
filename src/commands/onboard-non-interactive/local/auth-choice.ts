@@ -12,6 +12,7 @@ import { applyGoogleGeminiModelDefault } from "../../google-gemini-model-default
 import {
   applyAuthProfileConfig,
   applyCloudflareAiGatewayConfig,
+  applyAzureFoundryConfig,
   applyQianfanConfig,
   applyKimiCodeConfig,
   applyMinimaxApiConfig,
@@ -32,6 +33,7 @@ import {
   applyZaiConfig,
   setAnthropicApiKey,
   setCloudflareAiGatewayConfig,
+  setAzureFoundryApiKey,
   setQianfanApiKey,
   setGeminiApiKey,
   setKimiCodingApiKey,
@@ -324,6 +326,34 @@ export async function applyNonInteractiveAuthChoice(params: {
       mode: "api_key",
     });
     return applyQianfanConfig(nextConfig);
+  }
+
+  if (authChoice === "azure-foundry-api-key") {
+    const resolved = await resolveNonInteractiveApiKey({
+      provider: "azure-foundry",
+      cfg: baseConfig,
+      flagValue: opts.azureFoundryApiKey,
+      flagName: "--azure-foundry-api-key",
+      envVar: "AZURE_FOUNDRY_API_KEY",
+      runtime,
+    });
+    if (!resolved) {
+      return null;
+    }
+    if (resolved.source !== "profile") {
+      setAzureFoundryApiKey(resolved.key);
+    }
+    nextConfig = applyAuthProfileConfig(nextConfig, {
+      profileId: "azure-foundry:default",
+      provider: "azure-foundry",
+      mode: "api_key",
+    });
+    const modelId = opts.azureFoundryModel?.trim() || "gpt-4.1";
+    return applyAzureFoundryConfig(nextConfig, {
+      endpoint: opts.azureFoundryEndpoint,
+      deployment: opts.azureFoundryDeployment,
+      modelId,
+    });
   }
 
   if (authChoice === "openai-api-key") {

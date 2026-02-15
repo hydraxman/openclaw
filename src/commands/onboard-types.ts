@@ -46,6 +46,7 @@ export type AuthChoice =
   | "qwen-portal"
   | "xai-api-key"
   | "qianfan-api-key"
+  | "azure-foundry-api-key"
   | "custom-api-key"
   | "skip";
 export type AuthChoiceGroupId =
@@ -70,6 +71,7 @@ export type AuthChoiceGroupId =
   | "together"
   | "huggingface"
   | "qianfan"
+  | "azure"
   | "xai"
   | "custom";
 export type GatewayAuthChoice = "token" | "password";
@@ -120,6 +122,10 @@ export type OnboardOptions = {
   opencodeZenApiKey?: string;
   xaiApiKey?: string;
   qianfanApiKey?: string;
+  azureFoundryApiKey?: string;
+  azureFoundryEndpoint?: string;
+  azureFoundryDeployment?: string;
+  azureFoundryModel?: string;
   customBaseUrl?: string;
   customApiKey?: string;
   customModelId?: string;

@@ -75,7 +75,10 @@ export function registerOnboardCommand(program: Command) {
     )
     .option("--token-expires-in <duration>", "Optional token expiry duration (e.g. 365d, 12h)")
     .option("--cloudflare-ai-gateway-account-id <id>", "Cloudflare Account ID")
-    .option("--cloudflare-ai-gateway-gateway-id <id>", "Cloudflare AI Gateway ID");
+    .option("--cloudflare-ai-gateway-gateway-id <id>", "Cloudflare AI Gateway ID")
+    .option("--azure-foundry-endpoint <url>", "Azure AI Foundry endpoint URL")
+    .option("--azure-foundry-deployment <id>", "Azure AI Foundry deployment name")
+    .option("--azure-foundry-model <id>", "Azure AI Foundry model id");
 
   for (const providerFlag of ONBOARD_PROVIDER_AUTH_FLAGS) {
     command.option(providerFlag.cliOption, providerFlag.description);
@@ -142,6 +145,10 @@ export function registerOnboardCommand(program: Command) {
           zaiApiKey: opts.zaiApiKey as string | undefined,
           xiaomiApiKey: opts.xiaomiApiKey as string | undefined,
           qianfanApiKey: opts.qianfanApiKey as string | undefined,
+          azureFoundryApiKey: opts.azureFoundryApiKey as string | undefined,
+          azureFoundryEndpoint: opts.azureFoundryEndpoint as string | undefined,
+          azureFoundryDeployment: opts.azureFoundryDeployment as string | undefined,
+          azureFoundryModel: opts.azureFoundryModel as string | undefined,
           minimaxApiKey: opts.minimaxApiKey as string | undefined,
           syntheticApiKey: opts.syntheticApiKey as string | undefined,
           veniceApiKey: opts.veniceApiKey as string | undefined,

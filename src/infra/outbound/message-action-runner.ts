@@ -21,11 +21,7 @@ import {
   type GatewayClientMode,
   type GatewayClientName,
 } from "../../utils/message-channel.js";
-<<<<<<< HEAD
 import { loadWebMedia } from "../../media/load.js";
-=======
-import { throwIfAborted } from "./abort.js";
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 import {
   listConfiguredMessageChannels,
   resolveMessageChannelSelection,

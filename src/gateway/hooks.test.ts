@@ -4,10 +4,7 @@ import type { ChannelPlugin } from "../channels/plugins/types.js";
 import type { OpenClawConfig } from "../config/config.js";
 import { setActivePluginRegistry } from "../plugins/runtime.js";
 import { createTestRegistry } from "../test-utils/channel-plugins.js";
-<<<<<<< HEAD
-=======
 import { createIMessageTestPlugin } from "../test-utils/imessage-test-plugin.js";
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 import {
   extractHookToken,
   isHookAgentAllowed,
@@ -101,7 +98,6 @@ describe("gateway hooks helpers", () => {
         },
       ]),
     );
-<<<<<<< HEAD
     const sms = normalizeAgentPayload(
       { message: "yo", channel: "sms" },
       { idFactory: () => "x" },
@@ -109,12 +105,6 @@ describe("gateway hooks helpers", () => {
     expect(sms.ok).toBe(true);
     if (sms.ok) {
       expect(sms.value.channel).toBe("signal");
-=======
-    const imsg = normalizeAgentPayload({ message: "yo", channel: "imsg" });
-    expect(imsg.ok).toBe(true);
-    if (imsg.ok) {
-      expect(imsg.value.channel).toBe("imessage");
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
     }
 
     setActivePluginRegistry(

@@ -513,7 +513,6 @@ describe("subagent announce formatting", () => {
     expect(call?.params?.channel).toBe("matrix");
     expect(call?.params?.to).toBe("matrix:room:!abc:example.org");
   });
-<<<<<<< HEAD:src/agents/subagent-announce.format.test.ts
 
   it("splits collect-mode announces when accountId differs", async () => {
     const { runSubagentAnnounceFlow } = await import("./subagent-announce.js");
@@ -568,6 +567,4 @@ describe("subagent announce formatting", () => {
     expect(accountIds).toContain("acct-b");
     expect(agentSpy).toHaveBeenCalledTimes(2);
   });
-=======
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627:src/agents/subagent-announce.format.e2e.test.ts
 });

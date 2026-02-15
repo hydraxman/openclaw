@@ -126,8 +126,6 @@ import { probeTelegram } from "../../telegram/probe.js";
 import { sendMessageTelegram } from "../../telegram/send.js";
 import { resolveTelegramToken } from "../../telegram/token.js";
 import { textToSpeechTelephony } from "../../tts/tts.js";
-<<<<<<< HEAD
-=======
 import { getActiveWebListener } from "../../web/active-listener.js";
 import {
   getWebAuthAgeMs,
@@ -136,8 +134,6 @@ import {
   readWebSelfId,
   webAuthExists,
 } from "../../web/auth-store.js";
-import { loadWebMedia } from "../../web/media.js";
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 import { formatNativeDependencyHint } from "./native-deps.js";
 
 let cachedVersion: string | null = null;
@@ -373,30 +369,6 @@ export function createPluginRuntime(): PluginRuntime {
         monitorSignalProvider,
         messageActions: signalMessageActions,
       },
-<<<<<<< HEAD
-=======
-      imessage: {
-        monitorIMessageProvider,
-        probeIMessage,
-        sendMessageIMessage,
-      },
-      whatsapp: {
-        getActiveWebListener,
-        getWebAuthAgeMs,
-        logoutWeb,
-        logWebSelfId,
-        readWebSelfId,
-        webAuthExists,
-        sendMessageWhatsApp: sendMessageWhatsAppLazy,
-        sendPollWhatsApp: sendPollWhatsAppLazy,
-        loginWeb: loginWebLazy,
-        startWebLoginWithQr: startWebLoginWithQrLazy,
-        waitForWebLogin: waitForWebLoginLazy,
-        monitorWebChannel: monitorWebChannelLazy,
-        handleWhatsAppAction: handleWhatsAppActionLazy,
-        createLoginTool: createWhatsAppLoginTool,
-      },
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
       line: {
         listLineAccountIds,
         resolveDefaultLineAccountId,

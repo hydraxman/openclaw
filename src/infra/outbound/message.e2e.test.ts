@@ -1,14 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChannelOutboundAdapter, ChannelPlugin } from "../../channels/plugins/types.js";
-<<<<<<< HEAD:src/infra/outbound/message.test.ts
 import { createTestRegistry } from "../../test-utils/channel-plugins.js";
 const loadMessage = async () => await import("./message.js");
-=======
-import { setActivePluginRegistry } from "../../plugins/runtime.js";
-import { createTestRegistry } from "../../test-utils/channel-plugins.js";
-import { createIMessageTestPlugin } from "../../test-utils/imessage-test-plugin.js";
-import { sendMessage, sendPoll } from "./message.js";
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627:src/infra/outbound/message.e2e.test.ts
 
 const setRegistry = (registry: ReturnType<typeof createTestRegistry>) => {
   setActivePluginRegistry(registry);
@@ -59,16 +52,10 @@ describe("sendMessage channel normalization", () => {
     expect(result.channel).toBe("msteams");
   });
 
-<<<<<<< HEAD:src/infra/outbound/message.test.ts
   it("normalizes Signal alias", async () => {
     const { sendMessage } = await loadMessage();
     const sendSignal = vi.fn(async () => ({ messageId: "s1" }));
     await setRegistry(
-=======
-  it("normalizes iMessage alias", async () => {
-    const sendIMessage = vi.fn(async () => ({ messageId: "i1" }));
-    setRegistry(
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627:src/infra/outbound/message.e2e.test.ts
       createTestRegistry([
         {
           pluginId: "signal",
@@ -212,7 +199,6 @@ const createMSTeamsOutbound = (opts?: { includePoll?: boolean }): ChannelOutboun
     : {}),
 });
 
-<<<<<<< HEAD:src/infra/outbound/message.test.ts
 const createSignalAliasPlugin = (): ChannelPlugin => ({
   id: "signal",
   meta: {
@@ -226,27 +212,10 @@ const createSignalAliasPlugin = (): ChannelPlugin => ({
   capabilities: { chatTypes: ["direct"] },
   config: {
     listAccountIds: () => [],
-=======
-const createMattermostLikePlugin = (opts: {
-  onSendText: (ctx: Record<string, unknown>) => void;
-}): ChannelPlugin => ({
-  id: "mattermost",
-  meta: {
-    id: "mattermost",
-    label: "Mattermost",
-    selectionLabel: "Mattermost",
-    docsPath: "/channels/mattermost",
-    blurb: "Mattermost test stub.",
-  },
-  capabilities: { chatTypes: ["direct", "channel"] },
-  config: {
-    listAccountIds: () => ["default"],
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627:src/infra/outbound/message.e2e.test.ts
     resolveAccount: () => ({}),
   },
   outbound: {
     deliveryMode: "direct",
-<<<<<<< HEAD:src/infra/outbound/message.test.ts
     sendText: async ({ deps, to, text }) => {
       const send = deps?.sendSignal;
       if (!send) {
@@ -255,13 +224,6 @@ const createMattermostLikePlugin = (opts: {
       const result = await send(to, text, {});
       return { channel: "signal", ...result };
     },
-=======
-    sendText: async (ctx) => {
-      opts.onSendText(ctx as unknown as Record<string, unknown>);
-      return { channel: "mattermost", messageId: "m1" };
-    },
-    sendMedia: async () => ({ channel: "mattermost", messageId: "m2" }),
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627:src/infra/outbound/message.e2e.test.ts
   },
 });
 

@@ -9,14 +9,8 @@ import { signalPlugin } from "../../../extensions/signal/src/channel.js";
 import { telegramPlugin } from "../../../extensions/telegram/src/channel.js";
 import { jsonResult } from "../../agents/tools/common.js";
 import { setActivePluginRegistry } from "../../plugins/runtime.js";
-<<<<<<< HEAD
 import { createTestRegistry } from "../../test-utils/channel-plugins.js";
 import { loadWebMedia } from "../../media/load.js";
-=======
-import { createOutboundTestPlugin, createTestRegistry } from "../../test-utils/channel-plugins.js";
-import { createIMessageTestPlugin } from "../../test-utils/imessage-test-plugin.js";
-import { loadWebMedia } from "../../web/media.js";
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
 import { runMessageAction } from "./message-action-runner.js";
 
 vi.mock("../../media/load.js", async () => {

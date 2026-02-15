@@ -31,7 +31,7 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     detailLabel: "Telegram Bot",
     docsPath: "/channels/telegram",
     docsLabel: "telegram",
-    blurb: "simplest way to get started — register a bot with @BotFather and get going.",
+    blurb: "simplest way to get started �?register a bot with @BotFather and get going.",
     systemImage: "paperplane",
     selectionDocsPrefix: "",
     selectionDocsOmitLabel: true,
@@ -90,11 +90,6 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
 };
 
 export const CHAT_CHANNEL_ALIASES: Record<string, ChatChannelId> = {
-<<<<<<< HEAD
-=======
-  imsg: "imessage",
-  "internet-relay-chat": "irc",
->>>>>>> 3bbd29bef942ac6b8c81432b9c5e2d968b6e1627
   "google-chat": "googlechat",
   gchat: "googlechat",
 };
@@ -168,5 +163,5 @@ export function formatChannelSelectionLine(
     ? docsLink(meta.docsPath)
     : docsLink(meta.docsPath, docsLabel);
   const extras = (meta.selectionExtras ?? []).filter(Boolean).join(" ");
-  return `${meta.label} — ${meta.blurb} ${docsPrefix ? `${docsPrefix} ` : ""}${docs}${extras ? ` ${extras}` : ""}`;
+  return `${meta.label} �?${meta.blurb} ${docsPrefix ? `${docsPrefix} ` : ""}${docs}${extras ? ` ${extras}` : ""}`;
 }
