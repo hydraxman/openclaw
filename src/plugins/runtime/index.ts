@@ -123,7 +123,7 @@ import {
 } from "../../telegram/audit.js";
 import { monitorTelegramProvider } from "../../telegram/monitor.js";
 import { probeTelegram } from "../../telegram/probe.js";
-import { sendMessageTelegram } from "../../telegram/send.js";
+import { sendMessageTelegram, sendPollTelegram } from "../../telegram/send.js";
 import { resolveTelegramToken } from "../../telegram/token.js";
 import { textToSpeechTelephony } from "../../tts/tts.js";
 import { formatNativeDependencyHint } from "./native-deps.js";
@@ -273,6 +273,7 @@ export function createPluginRuntime(): PluginRuntime {
         probeTelegram,
         resolveTelegramToken,
         sendMessageTelegram,
+        sendPollTelegram,
         monitorTelegramProvider,
         messageActions: telegramMessageActions,
       },
