@@ -14,7 +14,7 @@ import { buildChannelsTable } from "./status-all/channels.js";
 import { getAgentLocalStatuses } from "./status.agent-local.js";
 import { pickGatewaySelfPresence, resolveGatewayProbeAuth } from "./status.gateway-probe.js";
 import { getStatusSummary } from "./status.summary.js";
-import { getUpdateCheckResult } from "./status.update.js";
+import { getDisabledUpdateCheckResult, getUpdateCheckResult } from "./status.update.js";
 
 type MemoryStatusSnapshot = MemoryProviderStatus & {
   agentId: string;
@@ -93,13 +93,16 @@ export async function scanStatus(
           : null;
       progress.tick();
 
-      progress.setLabel("Checking for updates…");
+      const updatesDisabled = cfg.update?.checkOnStart === false;
+      progress.setLabel(updatesDisabled ? "Skipping update check…" : "Checking for updates…");
       const updateTimeoutMs = opts.all ? 6500 : 2500;
-      const update = await getUpdateCheckResult({
-        timeoutMs: updateTimeoutMs,
-        fetchGit: true,
-        includeRegistry: true,
-      });
+      const update = updatesDisabled
+        ? getDisabledUpdateCheckResult()
+        : await getUpdateCheckResult({
+            timeoutMs: updateTimeoutMs,
+            fetchGit: true,
+            includeRegistry: true,
+          });
       progress.tick();
 
       progress.setLabel("Resolving agents…");

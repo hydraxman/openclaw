@@ -49,6 +49,7 @@ import {
 import { executePollAction, executeSendAction } from "./outbound-send-service.js";
 import { ensureOutboundSessionEntry, resolveOutboundSessionRoute } from "./outbound-session.js";
 import { resolveChannelTarget, type ResolvedMessagingTarget } from "./target-resolver.js";
+import { throwIfAborted } from "./abort.js";
 
 export type MessageActionRunnerGateway = {
   url?: string;

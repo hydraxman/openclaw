@@ -209,13 +209,7 @@ export async function loadImageFromRef(
     }
 
     // loadWebMedia handles local file paths (including file:// URLs)
-    const media = options?.sandbox
-      ? await loadWebMedia(targetPath, {
-          maxBytes: options.maxBytes,
-          readFile: (filePath) =>
-            options.sandbox!.bridge.readFile({ filePath, cwd: options.sandbox!.root }),
-        })
-      : await loadWebMedia(targetPath, options?.maxBytes);
+    const media = await loadWebMedia(targetPath, options?.maxBytes);
 
     if (media.kind !== "image") {
       log.debug(`Native image: not an image file: ${targetPath} (got ${media.kind})`);

@@ -198,6 +198,7 @@
   "pnpm": {
     "minimumReleaseAge": 2880,
     "overrides": {
+      "vite>rollup": "npm:@rollup/wasm-node@4.57.1",
       "fast-xml-parser": "5.3.4",
       "form-data": "2.5.4",
       "qs": "6.14.1",

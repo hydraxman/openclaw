@@ -13,6 +13,19 @@ describe("resolveMemoryBackendConfig", () => {
     expect(resolved.qmd).toBeUndefined();
   });
 
+  it("resolves text backend without qmd config", () => {
+    const cfg = {
+      agents: { defaults: { workspace: "/tmp/memory-test" } },
+      memory: {
+        backend: "text",
+      },
+    } as OpenClawConfig;
+    const resolved = resolveMemoryBackendConfig({ cfg, agentId: "main" });
+    expect(resolved.backend).toBe("text");
+    expect(resolved.citations).toBe("auto");
+    expect(resolved.qmd).toBeUndefined();
+  });
+
   it("resolves qmd backend with default collections", () => {
     const cfg = {
       agents: { defaults: { workspace: "/tmp/memory-test" } },

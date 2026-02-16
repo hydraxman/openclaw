@@ -93,4 +93,51 @@ describe("modelsListCommand forward-compat", () => {
     expect(codex?.missing).toBe(false);
     expect(codex?.tags).not.toContain("missing");
   });
+
+  it("does not mark configured github-copilot gpt-5.3-codex as missing when forward-compat can build a fallback", async () => {
+    mocks.resolveConfiguredEntries.mockReturnValueOnce({
+      entries: [
+        {
+          key: "github-copilot/gpt-5.3-codex",
+          ref: { provider: "github-copilot", model: "gpt-5.3-codex" },
+          tags: new Set(["configured"]),
+          aliases: [],
+        },
+      ],
+    });
+
+    mocks.resolveForwardCompatModel.mockImplementationOnce((provider: string, model: string) => {
+      if (provider !== "github-copilot" || model !== "gpt-5.3-codex") {
+        return undefined;
+      }
+      return {
+        provider: "github-copilot",
+        id: "gpt-5.3-codex",
+        name: "GPT-5.3 Codex",
+        api: "openai-responses",
+        baseUrl: "https://api.individual.githubcopilot.com",
+        input: ["text", "image"],
+        contextWindow: 272000,
+        maxTokens: 128000,
+        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+      };
+    });
+
+    const runtime = { log: vi.fn(), error: vi.fn() };
+
+    await modelsListCommand({ json: true }, runtime as never);
+
+    expect(mocks.printModelTable).toHaveBeenCalled();
+    const lastCall = mocks.printModelTable.mock.calls[mocks.printModelTable.mock.calls.length - 1];
+    const rows = lastCall?.[0] as Array<{
+      key: string;
+      tags: string[];
+      missing: boolean;
+    }>;
+
+    const codex = rows.find((r) => r.key === "github-copilot/gpt-5.3-codex");
+    expect(codex).toBeTruthy();
+    expect(codex?.missing).toBe(false);
+    expect(codex?.tags).not.toContain("missing");
+  });
 });

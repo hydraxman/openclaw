@@ -172,6 +172,43 @@ describe("resolveModel", () => {
     });
   });
 
+  it("builds a github-copilot forward-compat fallback for gpt-5.3-codex", () => {
+    const templateModel = {
+      id: "gpt-5.2-codex",
+      name: "GPT-5.2-Codex",
+      provider: "github-copilot",
+      api: "openai-responses",
+      baseUrl: "https://api.individual.githubcopilot.com",
+      reasoning: true,
+      input: ["text", "image"] as const,
+      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+      contextWindow: 272000,
+      maxTokens: 128000,
+    };
+
+    vi.mocked(discoverModels).mockReturnValue({
+      find: vi.fn((provider: string, modelId: string) => {
+        if (provider === "github-copilot" && modelId === "gpt-5.2-codex") {
+          return templateModel;
+        }
+        return null;
+      }),
+    } as unknown as ReturnType<typeof discoverModels>);
+
+    const result = resolveModel("github-copilot", "gpt-5.3-codex", "/tmp/agent");
+
+    expect(result.error).toBeUndefined();
+    expect(result.model).toMatchObject({
+      provider: "github-copilot",
+      id: "gpt-5.3-codex",
+      api: "openai-responses",
+      baseUrl: "https://api.individual.githubcopilot.com",
+      reasoning: true,
+      contextWindow: 272000,
+      maxTokens: 128000,
+    });
+  });
+
   it("builds an anthropic forward-compat fallback for claude-opus-4-6", () => {
     const templateModel = {
       id: "claude-opus-4-5",

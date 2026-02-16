@@ -439,11 +439,7 @@ export function createImageTool(options?: {
       const media = isDataUrl
         ? decodeDataUrl(resolvedImage)
         : sandboxConfig
-          ? await loadWebMedia(resolvedPath ?? resolvedImage, {
-              maxBytes,
-              readFile: (filePath) =>
-                sandboxConfig.bridge.readFile({ filePath, cwd: sandboxConfig.root }),
-            })
+          ? await loadWebMedia(resolvedPath ?? resolvedImage, maxBytes)
           : await loadWebMedia(resolvedPath ?? resolvedImage, maxBytes);
       if (media.kind !== "image") {
         throw new Error(`Unsupported media type: ${media.kind}`);

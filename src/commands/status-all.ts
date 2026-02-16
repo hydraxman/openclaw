@@ -31,6 +31,7 @@ import { buildChannelsTable } from "./status-all/channels.js";
 import { formatDurationPrecise, formatGatewayAuthUsed } from "./status-all/format.js";
 import { pickGatewaySelfPresence } from "./status-all/gateway.js";
 import { buildStatusAllReportLines } from "./status-all/report-lines.js";
+import { getDisabledUpdateCheckResult } from "./status.update.js";
 
 export async function statusAllCommand(
   runtime: RuntimeEnv,
@@ -80,18 +81,23 @@ export async function statusAllCommand(
         : null;
     progress.tick();
 
-    progress.setLabel("Checking for updates…");
-    const root = await resolveOpenClawPackageRoot({
-      moduleUrl: import.meta.url,
-      argv1: process.argv[1],
-      cwd: process.cwd(),
-    });
-    const update = await checkUpdateStatus({
-      root,
-      timeoutMs: 6500,
-      fetchGit: true,
-      includeRegistry: true,
-    });
+    const updatesDisabled = cfg.update?.checkOnStart === false;
+    progress.setLabel(updatesDisabled ? "Skipping update check…" : "Checking for updates…");
+    const update = updatesDisabled
+      ? getDisabledUpdateCheckResult()
+      : await (async () => {
+          const root = await resolveOpenClawPackageRoot({
+            moduleUrl: import.meta.url,
+            argv1: process.argv[1],
+            cwd: process.cwd(),
+          });
+          return await checkUpdateStatus({
+            root,
+            timeoutMs: 6500,
+            fetchGit: true,
+            includeRegistry: true,
+          });
+        })();
     const configChannel = normalizeUpdateChannel(cfg.update?.channel);
     const channelInfo = resolveEffectiveUpdateChannel({
       configChannel,

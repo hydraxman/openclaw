@@ -85,7 +85,26 @@ if [[ -f "$HASH_FILE" ]]; then
   fi
 fi
 
-pnpm -s exec tsc -p "$A2UI_RENDERER_DIR/tsconfig.json"
-rolldown -c "$A2UI_APP_DIR/rolldown.config.mjs"
+if command -v pnpm >/dev/null 2>&1; then
+  run_pnpm() {
+    pnpm "$@"
+  }
+elif [[ -f "$ROOT_DIR/pnpm.cmd" ]]; then
+  if command -v cygpath >/dev/null 2>&1; then
+    ROOT_DIR_WIN="$(cygpath -w "$ROOT_DIR")"
+  else
+    ROOT_DIR_WIN="$ROOT_DIR"
+  fi
+
+  run_pnpm() {
+    cmd.exe //c "$ROOT_DIR_WIN\\pnpm.cmd" "$@"
+  }
+else
+  echo "pnpm not found. Install pnpm or add $ROOT_DIR/pnpm.cmd." >&2
+  exit 1
+fi
+
+run_pnpm -s exec tsc -p "$A2UI_RENDERER_DIR/tsconfig.json"
+run_pnpm -s exec rolldown -c "$A2UI_APP_DIR/rolldown.config.mjs"
 
 echo "$current_hash" > "$HASH_FILE"

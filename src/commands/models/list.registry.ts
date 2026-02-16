@@ -144,14 +144,23 @@ function appendAntigravityForwardCompatModels(
   const nextModels = [...models];
   const synthesizedForwardCompat: SynthesizedForwardCompat[] = [];
 
-  for (const candidate of ANTIGRAVITY_OPUS_46_FORWARD_COMPAT_CANDIDATES) {
-    const key = modelKey("google-antigravity", candidate.id);
+  const forwardCompatCandidates = [
+    ...ANTIGRAVITY_OPUS_46_FORWARD_COMPAT_CANDIDATES,
+    {
+      id: "gpt-5.3-codex",
+      templatePrefixes: ["github-copilot/gpt-5.2-codex", "github-copilot/gpt-5.2"],
+    },
+  ] as const;
+
+  for (const candidate of forwardCompatCandidates) {
+    const provider = candidate.id === "gpt-5.3-codex" ? "github-copilot" : "google-antigravity";
+    const key = modelKey(provider, candidate.id);
     const hasForwardCompat = nextModels.some((model) => modelKey(model.provider, model.id) === key);
     if (hasForwardCompat) {
       continue;
     }
 
-    const fallback = resolveForwardCompatModel("google-antigravity", candidate.id, modelRegistry);
+    const fallback = resolveForwardCompatModel(provider, candidate.id, modelRegistry);
     if (!fallback) {
       continue;
     }

@@ -7,6 +7,8 @@ import {
 } from "../infra/update-check.js";
 import { VERSION } from "../version.js";
 
+const DISABLED_UPDATE_CHECK_ERROR = "disabled-by-config";
+
 export async function getUpdateCheckResult(params: {
   timeoutMs: number;
   fetchGit: boolean;
@@ -23,6 +25,18 @@ export async function getUpdateCheckResult(params: {
     fetchGit: params.fetchGit,
     includeRegistry: params.includeRegistry,
   });
+}
+
+export function getDisabledUpdateCheckResult(): UpdateCheckResult {
+  return {
+    root: null,
+    installKind: "unknown",
+    packageManager: "unknown",
+    registry: {
+      latestVersion: null,
+      error: DISABLED_UPDATE_CHECK_ERROR,
+    },
+  };
 }
 
 export type UpdateAvailability = {
@@ -70,6 +84,10 @@ export function formatUpdateAvailableHint(update: UpdateCheckResult): string | n
 }
 
 export function formatUpdateOneLiner(update: UpdateCheckResult): string {
+  if (update.registry?.error === DISABLED_UPDATE_CHECK_ERROR) {
+    return "Update: disabled";
+  }
+
   const parts: string[] = [];
   if (update.installKind === "git" && update.git) {
     const branch = update.git.branch ? `git ${update.git.branch}` : "git";

@@ -229,6 +229,7 @@ export function loadOpenClawPlugins(options: PluginLoadOptions = {}): PluginRegi
   const memorySlot = normalized.slots.memory;
   let selectedMemoryPluginId: string | null = null;
   let memorySlotMatched = false;
+  const hardDisabledPluginIds = new Set(["whatsapp"]);
 
   for (const candidate of discovery.candidates) {
     const manifestRecord = manifestByRoot.get(candidate.rootDir);
@@ -252,6 +253,28 @@ export function loadOpenClawPlugins(options: PluginLoadOptions = {}): PluginRegi
       record.status = "disabled";
       record.error = `overridden by ${existingOrigin} plugin`;
       registry.plugins.push(record);
+      continue;
+    }
+
+    if (hardDisabledPluginIds.has(pluginId)) {
+      const record = createPluginRecord({
+        id: pluginId,
+        name: manifestRecord.name ?? pluginId,
+        description: manifestRecord.description,
+        version: manifestRecord.version,
+        source: candidate.source,
+        origin: candidate.origin,
+        workspaceDir: candidate.workspaceDir,
+        enabled: false,
+        configSchema: Boolean(manifestRecord.configSchema),
+      });
+      record.kind = manifestRecord.kind;
+      record.configUiHints = manifestRecord.configUiHints;
+      record.configJsonSchema = manifestRecord.configSchema;
+      record.status = "disabled";
+      record.error = "hard-disabled in this local build";
+      registry.plugins.push(record);
+      seenIds.set(pluginId, candidate.origin);
       continue;
     }
 
@@ -284,7 +307,6 @@ export function loadOpenClawPlugins(options: PluginLoadOptions = {}): PluginRegi
       record.status = "error";
       record.error = "missing config schema";
       registry.plugins.push(record);
-      seenIds.set(pluginId, candidate.origin);
       registry.diagnostics.push({
         level: "error",
         pluginId: record.id,
@@ -302,7 +324,6 @@ export function loadOpenClawPlugins(options: PluginLoadOptions = {}): PluginRegi
       record.status = "error";
       record.error = String(err);
       registry.plugins.push(record);
-      seenIds.set(pluginId, candidate.origin);
       registry.diagnostics.push({
         level: "error",
         pluginId: record.id,
@@ -375,7 +396,6 @@ export function loadOpenClawPlugins(options: PluginLoadOptions = {}): PluginRegi
       record.status = "error";
       record.error = `invalid config: ${validatedConfig.errors?.join(", ")}`;
       registry.plugins.push(record);
-      seenIds.set(pluginId, candidate.origin);
       registry.diagnostics.push({
         level: "error",
         pluginId: record.id,
@@ -396,7 +416,6 @@ export function loadOpenClawPlugins(options: PluginLoadOptions = {}): PluginRegi
       record.status = "error";
       record.error = "plugin export missing register/activate";
       registry.plugins.push(record);
-      seenIds.set(pluginId, candidate.origin);
       registry.diagnostics.push({
         level: "error",
         pluginId: record.id,
@@ -430,7 +449,6 @@ export function loadOpenClawPlugins(options: PluginLoadOptions = {}): PluginRegi
       record.status = "error";
       record.error = String(err);
       registry.plugins.push(record);
-      seenIds.set(pluginId, candidate.origin);
       registry.diagnostics.push({
         level: "error",
         pluginId: record.id,

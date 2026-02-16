@@ -47,6 +47,14 @@ function resolveRunner() {
   if (pnpm) {
     return { cmd: pnpm, kind: "pnpm" };
   }
+
+  if (process.platform === "win32") {
+    const localPnpmCmd = path.join(repoRoot, "pnpm.cmd");
+    if (fs.existsSync(localPnpmCmd)) {
+      return { cmd: localPnpmCmd, kind: "pnpm.cmd" };
+    }
+  }
+
   return null;
 }
 
@@ -104,7 +112,7 @@ if (!action) {
 
 const runner = resolveRunner();
 if (!runner) {
-  process.stderr.write("Missing UI runner: install pnpm, then retry.\n");
+  process.stderr.write("Missing UI runner: install pnpm (or provide pnpm.cmd in repo root on Windows), then retry.\n");
   process.exit(1);
 }
 

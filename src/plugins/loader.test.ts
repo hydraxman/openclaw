@@ -377,6 +377,35 @@ describe("loadOpenClawPlugins", () => {
     expect(httpPlugin?.httpHandlers).toBe(1);
   });
 
+  it("tries later duplicate plugin when earlier duplicate fails", () => {
+    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
+    const first = writePlugin({
+      id: "dupe-plugin",
+      body: `throw new Error("broken candidate");`,
+      filename: "dupe-a.js",
+    });
+    const second = writePlugin({
+      id: "dupe-plugin",
+      body: `export default { id: "dupe-plugin", register() {} };`,
+      filename: "dupe-b.js",
+    });
+
+    const registry = loadOpenClawPlugins({
+      cache: false,
+      config: {
+        plugins: {
+          load: { paths: [first.file, second.file] },
+          allow: ["dupe-plugin"],
+        },
+      },
+    });
+
+    const loaded = registry.plugins.find(
+      (entry) => entry.id === "dupe-plugin" && entry.status === "loaded",
+    );
+    expect(loaded).toBeDefined();
+    expect(loaded?.source).toBe(second.file);
+  });
   it("respects explicit disable in config", () => {
     process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
     const plugin = writePlugin({
