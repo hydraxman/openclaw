@@ -61,6 +61,25 @@ type TelegramSendResult = {
   chatId: string;
 };
 
+type TelegramPollInput = {
+  question: string;
+  options: string[];
+  maxSelections?: number;
+  durationSeconds?: number;
+  durationHours?: number;
+};
+
+type TelegramSendPollOpts = {
+  token?: string;
+  accountId?: string;
+  verbose?: boolean;
+  api?: Bot["api"];
+  retry?: RetryConfig;
+  messageThreadId?: number;
+  silent?: boolean;
+  isAnonymous?: boolean;
+};
+
 type TelegramReactionOpts = {
   token?: string;
   accountId?: string;
@@ -589,6 +608,97 @@ export async function sendMessageTelegram(
     direction: "outbound",
   });
   return { messageId, chatId: String(res?.chat?.id ?? chatId) };
+}
+
+export async function sendPollTelegram(
+  to: string,
+  poll: TelegramPollInput,
+  opts: TelegramSendPollOpts = {},
+): Promise<TelegramSendResult> {
+  const cfg = loadConfig();
+  const account = resolveTelegramAccount({
+    cfg,
+    accountId: opts.accountId,
+  });
+  const token = resolveToken(opts.token, account);
+  const target = parseTelegramTarget(to);
+  const chatId = normalizeChatId(target.chatId);
+  const client = resolveTelegramClientOptions(account);
+  const api = opts.api ?? new Bot(token, client ? { client } : undefined).api;
+
+  const messageThreadId =
+    opts.messageThreadId != null ? opts.messageThreadId : target.messageThreadId;
+  const threadSpec =
+    messageThreadId != null ? { id: messageThreadId, scope: "forum" as const } : undefined;
+  const threadIdParams = buildTelegramThreadParams(threadSpec);
+
+  const request = createTelegramRetryRunner({
+    retry: opts.retry,
+    configRetry: account.config.retry,
+    verbose: opts.verbose,
+    shouldRetry: (err) => isRecoverableTelegramNetworkError(err, { context: "send" }),
+  });
+  const logHttpError = createTelegramHttpLogger(cfg);
+  const requestWithDiag = <T>(fn: () => Promise<T>, label?: string) =>
+    withTelegramApiErrorLogging({
+      operation: label ?? "poll",
+      fn: () => request(fn, label),
+    }).catch((err) => {
+      logHttpError(label ?? "poll", err);
+      throw err;
+    });
+
+  const question = poll.question?.trim();
+  const options = (poll.options ?? []).map((entry) => String(entry).trim()).filter(Boolean);
+  if (!question) {
+    throw new Error("Poll question is required for Telegram sends");
+  }
+  if (options.length < 2) {
+    throw new Error("Telegram poll requires at least 2 options");
+  }
+
+  const openPeriodFromSeconds =
+    typeof poll.durationSeconds === "number" && Number.isFinite(poll.durationSeconds)
+      ? Math.max(5, Math.min(600, Math.floor(poll.durationSeconds)))
+      : undefined;
+  const openPeriodFromHours =
+    openPeriodFromSeconds == null &&
+    typeof poll.durationHours === "number" &&
+    Number.isFinite(poll.durationHours)
+      ? Math.max(5, Math.min(600, Math.floor(poll.durationHours * 3600)))
+      : undefined;
+  const openPeriod = openPeriodFromSeconds ?? openPeriodFromHours;
+
+  const maxSelections =
+    typeof poll.maxSelections === "number" && Number.isFinite(poll.maxSelections)
+      ? Math.max(1, Math.floor(poll.maxSelections))
+      : 1;
+
+  const params = {
+    ...(threadIdParams ? { ...threadIdParams } : {}),
+    ...(opts.silent === true ? { disable_notification: true } : {}),
+    ...(opts.isAnonymous !== undefined ? { is_anonymous: opts.isAnonymous } : {}),
+    ...(maxSelections > 1 ? { allows_multiple_answers: true } : {}),
+    ...(openPeriod != null ? { open_period: openPeriod } : {}),
+  };
+
+  const res = await requestWithDiag(
+    () => api.sendPoll(chatId, question, options, params as Parameters<typeof api.sendPoll>[3]),
+    "poll",
+  );
+
+  const messageId = String(res?.message_id ?? "unknown");
+  const resolvedChatId = String(res?.chat?.id ?? chatId);
+  if (res?.message_id) {
+    recordSentMessage(chatId, res.message_id);
+  }
+  recordChannelActivity({
+    channel: "telegram",
+    accountId: account.accountId,
+    direction: "outbound",
+  });
+
+  return { messageId, chatId: resolvedChatId };
 }
 
 export async function reactMessageTelegram(

@@ -3,7 +3,8 @@ import type {
   ChannelGroupContext,
   GroupToolPolicyConfig,
 } from "openclaw/plugin-sdk";
-import { resolveAllowlistMatchSimple } from "openclaw/plugin-sdk";
+// Backward compatibility: some OpenClaw builds don't expose resolveAllowlistMatchSimple.
+import * as pluginSdk from "openclaw/plugin-sdk";
 import type { FeishuConfig, FeishuGroupConfig } from "./types.js";
 
 export type FeishuAllowlistMatch = AllowlistMatch<"wildcard" | "id" | "name">;
@@ -13,7 +14,24 @@ export function resolveFeishuAllowlistMatch(params: {
   senderId: string;
   senderName?: string | null;
 }): FeishuAllowlistMatch {
-  return resolveAllowlistMatchSimple(params);
+  const fn = (pluginSdk as any).resolveAllowlistMatchSimple as
+    | ((p: { allowFrom: Array<string | number>; senderId: string; senderName?: string | null }) => FeishuAllowlistMatch)
+    | undefined;
+
+  if (typeof fn === "function") {
+    return fn(params);
+  }
+
+  // Fallback for older plugin-sdk versions: exact id/name match only.
+  const allow = (params.allowFrom ?? []).map((x) => String(x).trim().toLowerCase()).filter(Boolean);
+  const senderId = params.senderId?.trim().toLowerCase();
+  const senderName = params.senderName?.trim().toLowerCase();
+  const allowed = allow.includes(senderId) || (senderName ? allow.includes(senderName) : false);
+  return {
+    allowed,
+    mode: allowed ? "id" : "id",
+    matchedBy: allowed ? (allow.includes(senderId) ? senderId : senderName ?? null) : null,
+  } as FeishuAllowlistMatch;
 }
 
 export function resolveFeishuGroupConfig(params: {

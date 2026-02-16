@@ -225,6 +225,12 @@ export {
   readReactionParams,
   readStringParam,
 } from "../agents/tools/common.js";
+export {
+  buildBaseChannelStatusSummary,
+  collectStatusIssuesFromLastError,
+  createDefaultChannelRuntimeState,
+} from "./status-helpers.js";
+export { buildAgentMediaPayload, type AgentMediaPayload } from "./agent-media-payload.js";
 export { formatDocsLink } from "../terminal/links.js";
 export type { HookEntry } from "../hooks/types.js";
 export { clamp, escapeRegExp, normalizeE164, safeParseJson, sleep } from "../utils.js";
