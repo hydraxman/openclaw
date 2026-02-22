@@ -25,6 +25,7 @@ import {
 } from "../agents/model-selection.js";
 import { runEmbeddedPiAgent } from "../agents/pi-embedded.js";
 import { buildWorkspaceSkillSnapshot } from "../agents/skills.js";
+import { matchesSkillFilter } from "../agents/skills/filter.js";
 import { getSkillsSnapshotVersion } from "../agents/skills/refresh.js";
 import { resolveAgentTimeoutMs } from "../agents/timeout.js";
 import { ensureAgentWorkspace } from "../agents/workspace.js";
@@ -312,9 +313,14 @@ export async function agentCommand(
       });
     }
 
-    const needsSkillsSnapshot = isNewSession || !sessionEntry?.skillsSnapshot;
     const skillsSnapshotVersion = getSkillsSnapshotVersion(workspaceDir);
     const skillFilter = resolveAgentSkillsFilter(cfg, sessionAgentId);
+    const existingSkillsSnapshot = sessionEntry?.skillsSnapshot;
+    const needsSkillsSnapshot =
+      isNewSession ||
+      !existingSkillsSnapshot ||
+      existingSkillsSnapshot.version !== skillsSnapshotVersion ||
+      !matchesSkillFilter(existingSkillsSnapshot.skillFilter, skillFilter);
     const skillsSnapshot = needsSkillsSnapshot
       ? buildWorkspaceSkillSnapshot(workspaceDir, {
           config: cfg,
@@ -322,7 +328,7 @@ export async function agentCommand(
           snapshotVersion: skillsSnapshotVersion,
           skillFilter,
         })
-      : sessionEntry?.skillsSnapshot;
+      : existingSkillsSnapshot;
 
     if (skillsSnapshot && sessionStore && sessionKey && needsSkillsSnapshot) {
       const current = sessionEntry ?? {
