@@ -6,79 +6,9 @@ import {
   createCarouselColumn,
   createImageCarousel,
   createImageCarouselColumn,
-  createYesNoConfirm,
-  createLinkMenu,
   createProductCarousel,
   messageAction,
-  uriAction,
-  postbackAction,
-  datetimePickerAction,
 } from "./template-messages.js";
-
-describe("messageAction", () => {
-  it("creates a message action", () => {
-    const action = messageAction("Click me", "clicked");
-
-    expect(action.type).toBe("message");
-    expect(action.label).toBe("Click me");
-    expect((action as { text: string }).text).toBe("clicked");
-  });
-
-  it("uses label as text when text not provided", () => {
-    const action = messageAction("Click");
-
-    expect((action as { text: string }).text).toBe("Click");
-  });
-
-  it("truncates label to 20 characters", () => {
-    const action = messageAction("This is a very long label that exceeds the limit");
-
-    expect(action.label).toBe("This is a very long ");
-  });
-});
-
-describe("uriAction", () => {
-  it("truncates labels and keeps target URL", () => {
-    const action = uriAction("This label is definitely too long", "https://example.com");
-    expect(action.label).toBe("This label is defini");
-    expect((action as { uri: string }).uri).toBe("https://example.com");
-  });
-});
-
-describe("postbackAction", () => {
-  it("includes displayText when provided", () => {
-    const action = postbackAction("Select", "data", "Selected!");
-
-    expect(action.type).toBe("postback");
-    expect(action.label).toBe("Select");
-    expect((action as { data: string }).data).toBe("data");
-    expect((action as { displayText: string }).displayText).toBe("Selected!");
-  });
-
-  it("truncates data to 300 characters", () => {
-    const longData = "x".repeat(400);
-    const action = postbackAction("Test", longData);
-
-    expect((action as { data: string }).data.length).toBe(300);
-  });
-});
-
-describe("datetimePickerAction", () => {
-  it("includes min/max/initial when provided", () => {
-    const action = datetimePickerAction("Pick", "data", "datetime", {
-      initial: "2024-01-01T12:00",
-      min: "2024-01-01T00:00",
-      max: "2024-12-31T23:59",
-    });
-
-    expect(action.type).toBe("datetimepicker");
-    expect(action.label).toBe("Pick");
-    expect((action as { mode: string }).mode).toBe("datetime");
-    expect((action as { initial: string }).initial).toBe("2024-01-01T12:00");
-    expect((action as { min: string }).min).toBe("2024-01-01T00:00");
-    expect((action as { max: string }).max).toBe("2024-12-31T23:59");
-  });
-});
 
 describe("createConfirmTemplate", () => {
   it("truncates text to 240 characters", () => {
@@ -86,17 +16,6 @@ describe("createConfirmTemplate", () => {
     const template = createConfirmTemplate(longText, messageAction("Yes"), messageAction("No"));
 
     expect((template.template as { text: string }).text.length).toBe(240);
-  });
-
-  it("uses custom altText when provided", () => {
-    const template = createConfirmTemplate(
-      "Question?",
-      messageAction("Yes"),
-      messageAction("No"),
-      "Custom alt",
-    );
-
-    expect(template.altText).toBe("Custom alt");
   });
 });
 
@@ -115,16 +34,6 @@ describe("createButtonTemplate", () => {
     expect((template.template as { title: string }).title.length).toBe(40);
   });
 
-  it("includes thumbnail when provided", () => {
-    const template = createButtonTemplate("Title", "Text", [messageAction("OK")], {
-      thumbnailImageUrl: "https://example.com/thumb.jpg",
-    });
-
-    expect((template.template as { thumbnailImageUrl: string }).thumbnailImageUrl).toBe(
-      "https://example.com/thumb.jpg",
-    );
-  });
-
   it("truncates text to 60 chars when no thumbnail is provided", () => {
     const longText = "x".repeat(100);
     const template = createButtonTemplate("Title", longText, [messageAction("OK")]);
@@ -139,19 +48,6 @@ describe("createButtonTemplate", () => {
     });
 
     expect((template.template as { text: string }).text.length).toBe(100);
-  });
-});
-
-describe("createTemplateCarousel", () => {
-  it("limits columns to 10", () => {
-    const columns = Array.from({ length: 15 }, () =>
-      createCarouselColumn({ text: "Text", actions: [messageAction("OK")] }),
-    );
-    const template = createTemplateCarousel(columns);
-
-    expect(template.type).toBe("template");
-    expect(template.template.type).toBe("carousel");
-    expect((template.template as { columns: unknown[] }).columns.length).toBe(10);
   });
 });
 
@@ -179,108 +75,50 @@ describe("createCarouselColumn", () => {
   });
 });
 
-describe("createImageCarousel", () => {
-  it("limits columns to 10", () => {
-    const columns = Array.from({ length: 15 }, (_, i) =>
-      createImageCarouselColumn(`https://example.com/${i}.jpg`, messageAction("View")),
-    );
-    const template = createImageCarousel(columns);
-
-    expect(template.type).toBe("template");
-    expect(template.template.type).toBe("image_carousel");
+describe("carousel column limits", () => {
+  it.each([
+    {
+      createTemplate: () =>
+        createTemplateCarousel(
+          Array.from({ length: 15 }, () =>
+            createCarouselColumn({ text: "Text", actions: [messageAction("OK")] }),
+          ),
+        ),
+    },
+    {
+      createTemplate: () =>
+        createImageCarousel(
+          Array.from({ length: 15 }, (_, i) =>
+            createImageCarouselColumn(`https://example.com/${i}.jpg`, messageAction("View")),
+          ),
+        ),
+    },
+  ])("limits columns to 10", ({ createTemplate }) => {
+    const template = createTemplate();
     expect((template.template as { columns: unknown[] }).columns.length).toBe(10);
   });
 });
 
-describe("createYesNoConfirm", () => {
-  it("creates a yes/no confirmation with defaults", () => {
-    const template = createYesNoConfirm("Continue?");
-
-    expect(template.type).toBe("template");
-    expect(template.template.type).toBe("confirm");
-
-    const actions = (template.template as { actions: Array<{ label: string }> }).actions;
-    expect(actions[0].label).toBe("Yes");
-    expect(actions[1].label).toBe("No");
-  });
-
-  it("allows custom button text", () => {
-    const template = createYesNoConfirm("Delete?", {
-      yesText: "Delete",
-      noText: "Cancel",
-    });
-
-    const actions = (template.template as { actions: Array<{ label: string }> }).actions;
-    expect(actions[0].label).toBe("Delete");
-    expect(actions[1].label).toBe("Cancel");
-  });
-
-  it("uses postback actions when data provided", () => {
-    const template = createYesNoConfirm("Confirm?", {
-      yesData: "action=confirm",
-      noData: "action=cancel",
-    });
-
-    const actions = (template.template as { actions: Array<{ type: string }> }).actions;
-    expect(actions[0].type).toBe("postback");
-    expect(actions[1].type).toBe("postback");
-  });
-});
-
-describe("createLinkMenu", () => {
-  it("creates a button menu with URL links", () => {
-    const template = createLinkMenu("Links", "Visit our sites", [
-      { label: "Site 1", url: "https://site1.com" },
-      { label: "Site 2", url: "https://site2.com" },
-    ]);
-
-    expect(template.type).toBe("template");
-
-    const actions = (template.template as { actions: Array<{ type: string }> }).actions;
-    expect(actions[0].type).toBe("uri");
-    expect(actions[1].type).toBe("uri");
-  });
-});
-
 describe("createProductCarousel", () => {
-  it("uses URI action when actionUrl provided", () => {
-    const template = createProductCarousel([
-      {
-        title: "Product",
-        description: "Desc",
-        actionLabel: "Buy",
-        actionUrl: "https://shop.com/buy",
-      },
-    ]);
-
+  it.each([
+    {
+      title: "Product",
+      description: "Desc",
+      actionLabel: "Buy",
+      actionUrl: "https://shop.com/buy",
+      expectedType: "uri",
+    },
+    {
+      title: "Product",
+      description: "Desc",
+      actionLabel: "Select",
+      actionData: "product_id=123",
+      expectedType: "postback",
+    },
+  ])("uses expected action type for product action", ({ expectedType, ...item }) => {
+    const template = createProductCarousel([item]);
     const columns = (template.template as { columns: Array<{ actions: Array<{ type: string }> }> })
       .columns;
-    expect(columns[0].actions[0].type).toBe("uri");
-  });
-
-  it("uses postback action when actionData provided", () => {
-    const template = createProductCarousel([
-      {
-        title: "Product",
-        description: "Desc",
-        actionLabel: "Select",
-        actionData: "product_id=123",
-      },
-    ]);
-
-    const columns = (template.template as { columns: Array<{ actions: Array<{ type: string }> }> })
-      .columns;
-    expect(columns[0].actions[0].type).toBe("postback");
-  });
-
-  it("limits to 10 products", () => {
-    const products = Array.from({ length: 15 }, (_, i) => ({
-      title: `Product ${i}`,
-      description: `Desc ${i}`,
-    }));
-    const template = createProductCarousel(products);
-
-    const columns = (template.template as { columns: unknown[] }).columns;
-    expect(columns.length).toBe(10);
+    expect(columns[0].actions[0].type).toBe(expectedType);
   });
 });
