@@ -315,6 +315,7 @@ export async function resolveMedia(
       url,
       fetchImpl,
       filePathHint: filePath,
+      maxBytes,
     });
     const originalName = fetched.fileName ?? filePath;
     return saveMediaBuffer(fetched.buffer, fetched.contentType, "inbound", maxBytes, originalName);

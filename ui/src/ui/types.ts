@@ -242,6 +242,7 @@ export type ConfigSnapshot = {
 export type ConfigUiHint = {
   label?: string;
   help?: string;
+  tags?: string[];
   group?: string;
   order?: number;
   advanced?: boolean;

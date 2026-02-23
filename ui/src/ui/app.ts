@@ -78,6 +78,7 @@ import type {
   NostrProfile,
 } from "./types.ts";
 import { type ChatAttachment, type ChatQueueItem, type CronFormState } from "./ui-types.ts";
+import { generateUUID } from "./uuid.ts";
 import type { NostrProfileFormState } from "./views/channels.nostr-profile-form.ts";
 
 declare global {
@@ -104,6 +105,7 @@ function resolveOnboardingMode(): boolean {
 @customElement("openclaw-app")
 export class OpenClawApp extends LitElement {
   private i18nController = new I18nController(this);
+  clientInstanceId = generateUUID();
   @state() settings: UiSettings = loadSettings();
   constructor() {
     super();
@@ -119,6 +121,7 @@ export class OpenClawApp extends LitElement {
   @state() themeResolved: ResolvedTheme = "dark";
   @state() hello: GatewayHelloOk | null = null;
   @state() lastError: string | null = null;
+  @state() lastErrorCode: string | null = null;
   @state() eventLog: EventLogEntry[] = [];
   private eventLogBuffer: EventLogEntry[] = [];
   private toolStreamSyncTimer: number | null = null;

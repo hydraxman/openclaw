@@ -85,19 +85,7 @@ export type HookConfig = {
   [key: string]: unknown;
 };
 
-export type HookInstallRecord = {
-  source: "npm" | "archive" | "path";
-  spec?: string;
-  sourcePath?: string;
-  installPath?: string;
-  version?: string;
-  resolvedName?: string;
-  resolvedVersion?: string;
-  resolvedSpec?: string;
-  integrity?: string;
-  shasum?: string;
-  resolvedAt?: string;
-  installedAt?: string;
+export type HookInstallRecord = InstallRecordBase & {
   hooks?: string[];
 };
 
@@ -149,3 +137,4 @@ export type HooksConfig = {
   /** Internal agent event hooks */
   internal?: InternalHooksConfig;
 };
+import type { InstallRecordBase } from "./types.installs.js";

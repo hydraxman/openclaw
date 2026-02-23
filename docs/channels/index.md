@@ -22,6 +22,7 @@ Text is supported everywhere; media and reactions vary by channel.
 - [Mattermost](/channels/mattermost) — Bot API + WebSocket; channels, groups, DMs (plugin, installed separately).
  - [Signal](/channels/signal) — signal-cli; privacy-focused.
 - [Microsoft Teams](/channels/msteams) — Bot Framework; enterprise support (plugin, installed separately).
+- [Synology Chat](/channels/synology-chat) — Synology NAS Chat via outgoing+incoming webhooks (plugin, installed separately).
 - [LINE](/channels/line) — LINE Messaging API bot (plugin, installed separately).
 - [Nextcloud Talk](/channels/nextcloud-talk) — Self-hosted chat via Nextcloud Talk (plugin, installed separately).
 - [Matrix](/channels/matrix) — Matrix protocol (plugin, installed separately).
